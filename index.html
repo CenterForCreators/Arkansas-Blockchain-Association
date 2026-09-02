@@ -53,7 +53,19 @@ body{color:#d7e3f1;background:var(--navy)}
 .arkansas-network:before,.arkansas-network:after{display:none}
 .arkansas-network .replacement-infrastructure-logo{display:block;width:100%;height:100%;object-fit:contain;object-position:center;position:relative;z-index:4;border-radius:0;clip-path:none}
 
-  </style>
+  
+/* Enterprise offerings and working groups — aligned to existing ABA card system */
+.executive-programs{margin-top:85px;padding-top:72px;border-top:1px solid var(--line)}
+.executive-intro{display:grid;grid-template-columns:.85fr 1.15fr;gap:100px;align-items:start;margin-bottom:36px}.executive-intro h2{font-size:clamp(2rem,3.5vw,3.35rem);line-height:1.03;letter-spacing:-.045em;margin:12px 0 0}.executive-intro p{font-size:.98rem;line-height:1.75;color:var(--muted);max-width:600px;margin:0}
+.executive-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:14px}.executive-card{min-height:210px;border:1px solid var(--line);padding:25px 22px;display:flex;flex-direction:column;transition:.25s;background:rgba(255,255,255,.015)}.executive-card:hover{border-color:var(--blue);transform:translateY(-4px)}.executive-card.featured{border-color:rgba(44,137,230,.48);background:linear-gradient(145deg,rgba(8,43,85,.55),rgba(255,255,255,.02))}.program-index,.group-icon{display:block;color:var(--blue);font-size:.62rem;font-weight:800;letter-spacing:.14em;margin-bottom:auto}.executive-card h3{font-size:1rem;line-height:1.2;margin:25px 0 12px}.executive-card.featured h3{color:#166dbe}.executive-card p{font-size:.79rem;line-height:1.55;color:var(--muted);margin:0}
+.working-groups{position:relative;overflow:hidden}.working-groups:before{content:"";position:absolute;width:580px;height:580px;right:-210px;top:-300px;border-radius:50%;background:radial-gradient(circle,rgba(19,103,190,.22),transparent 67%);pointer-events:none}.working-group-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:18px}.working-group-card{position:relative;min-height:230px;padding:32px;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.018);transition:.25s}.working-group-card:hover{border-color:rgba(89,173,255,.6);background:rgba(20,91,166,.14);transform:translateY(-4px)}.working-group-card h3{font-size:clamp(1.2rem,2vw,1.55rem);line-height:1.12;letter-spacing:-.025em;margin:35px 0 15px;max-width:470px}.working-group-card p{max-width:550px;font-size:.88rem;line-height:1.6;color:#b9c9dc;margin:0}.working-group-card .group-icon{color:var(--gold2)}
+@media(max-width:1080px){.executive-grid{grid-template-columns:repeat(3,1fr)}.executive-card{min-height:185px}}
+@media(max-width:880px){.executive-intro{grid-template-columns:1fr;gap:15px}.executive-programs{margin-top:65px;padding-top:55px}.working-group-grid{grid-template-columns:1fr}}
+@media(max-width:620px){.executive-grid{grid-template-columns:1fr}.executive-card{min-height:0}.working-group-card{min-height:0;padding:28px}.working-group-card h3{margin-top:28px}}
+
+/* Get Involved participation paths */
+.participation-options{grid-column:1/-1;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px;margin-top:12px}.participation-card{background:#fff;border:1px solid var(--line);padding:30px;box-shadow:0 12px 30px rgba(5,18,39,.06);display:flex;flex-direction:column;align-items:flex-start}.participation-card:hover{border-color:#8fc7ff;transform:translateY(-3px);box-shadow:0 18px 36px rgba(5,18,39,.1)}.participation-card small{font-size:.68rem;letter-spacing:.15em;font-weight:800;color:var(--blue);margin-bottom:14px}.participation-card h3{font-size:1.42rem;line-height:1.15;letter-spacing:-.03em;margin:0 0 13px;color:var(--navy)}.participation-card p{color:var(--muted);font-size:.94rem;line-height:1.65;margin:0 0 22px}.participation-card .btn{margin-top:auto;display:inline-flex;align-items:center;gap:12px;padding:13px 18px;border:1px solid var(--navy);background:var(--navy);color:var(--white);font-size:.78rem;font-weight:800;letter-spacing:.06em;line-height:1.2;transition:background .2s ease,border-color .2s ease,transform .2s ease;cursor:pointer}.participation-card .btn:hover,.participation-card .btn:focus-visible{background:var(--blue);border-color:var(--blue);transform:translateY(-1px)}.participation-card .btn:focus-visible{outline:3px solid rgba(26,140,255,.35);outline-offset:3px}.participation-card .btn span{font-size:1rem;line-height:1}@media(max-width:700px){.participation-options{grid-template-columns:1fr}.participation-card{padding:25px}}
+</style>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"Organization","name":"Arkansas Blockchain Association","alternateName":"ABA","url":"https://centerforcreators.github.io/Arkansas-Blockchain-Association/","email":"info@arkansasblockchainassociation.com","description":"A statewide organization advancing blockchain technology, tokenization, digital assets, and emerging digital infrastructure across Arkansas."}</script>
 </head>
 <body>
@@ -66,7 +78,8 @@ body{color:#d7e3f1;background:var(--navy)}
       </a>
       <button class="menu-toggle" aria-label="Open navigation" aria-expanded="false"><span></span><span></span><span></span></button>
       <nav class="main-nav" aria-label="Primary navigation">
-        <a href="#home">Home</a><a href="#about">About</a><a href="#focus">Focus Areas</a><a href="#education">Education</a><a href="#innovation">Industry &amp; Innovation</a><a href="#partnerships">Partnerships</a>
+        <a href="#home">Home</a><a href="#about">About</a><a href="#focus">Focus Areas</a><a href="#education">Education</a><a href="#innovation">Industry &amp; Innovation</a><a href="#partnerships">Partnerships</a><a href="#membership">Membership</a>
+        
         <a class="nav-cta" href="#involved">Get Involved <span>↗</span></a>
       </nav>
     </div>
@@ -190,7 +203,30 @@ body{color:#d7e3f1;background:var(--navy)}
           <article><div><span>05</span><h3>Entrepreneurs &amp; Investors</h3></div><p>New models, opportunity evaluation, diligence, and responsible innovation.</p></article>
         </div>
       </div>
+
+      <div class="container executive-programs" aria-labelledby="executive-title">
+        <div class="executive-intro reveal"><span class="kicker">ENTERPRISE PROGRAM OFFERINGS</span><h2 id="executive-title">Executive Intelligence &amp; Strategic Readiness</h2><p>Practical programs designed to help business leaders understand emerging technologies, evaluate opportunities and risks, and prepare their organizations for what comes next.</p></div>
+        <div class="executive-grid">
+          <article class="executive-card featured reveal"><span class="program-index">01</span><h3>Executive Briefings</h3><p>Concise, decision-focused sessions for executives and leadership teams.</p></article>
+          <article class="executive-card featured reveal"><span class="program-index">02</span><h3>Strategic Masterclasses</h3><p>Expert-led, in-depth sessions focused on critical technologies, opportunities and business implications.</p></article>
+          <article class="executive-card reveal"><span class="program-index">03</span><h3>Applied Workshops</h3><p>Interactive sessions designed to move from understanding to practical application.</p></article>
+          <article class="executive-card reveal"><span class="program-index">04</span><h3>Workforce Training</h3><p>Structured programs that build organizational knowledge and emerging technology readiness.</p></article>
+          <article class="executive-card reveal"><span class="program-index">05</span><h3>Certificate Programs</h3><p>Multi-session programs with defined learning objectives and completion requirements.</p></article>
+        </div>
+      </div>
       <div class="curriculum-strip"><div class="marquee"><span>BLOCKCHAIN FOR EXECUTIVES</span><i>◆</i><span>TOKENIZATION</span><i>◆</i><span>STABLECOINS</span><i>◆</i><span>AI + BLOCKCHAIN</span><i>◆</i><span>DIGITAL IDENTITY</span><i>◆</i><span>GOVERNANCE</span><i>◆</i><span>COMPLIANCE &amp; RISK</span><i>◆</i><span>INTEROPERABILITY</span><i>◆</i></div></div>
+    </section>
+
+    <section class="working-groups section section-dark" id="working-groups" aria-labelledby="working-groups-title">
+      <div class="container">
+        <div class="section-intro reveal"><div><span class="kicker">COLLABORATIVE EXPLORATION</span><h2 id="working-groups-title">Industry Working Groups</h2></div><p>ABA Working Groups bring together leaders and subject matter experts to examine emerging opportunities, identify challenges and develop practical insights for Arkansas industries and communities.</p></div>
+        <div class="working-group-grid">
+          <article class="working-group-card reveal"><span class="group-icon" aria-hidden="true">01</span><h3>Enterprise Blockchain &amp; Tokenization</h3><p>Enterprise adoption, tokenization, digital assets, real world assets and practical business applications.</p></article>
+          <article class="working-group-card reveal"><span class="group-icon" aria-hidden="true">02</span><h3>Supply Chain, Logistics &amp; Agriculture</h3><p>Traceability, provenance, coordination and emerging applications across industries central to Arkansas.</p></article>
+          <article class="working-group-card reveal"><span class="group-icon" aria-hidden="true">03</span><h3>Government, Smart Cities &amp; Digital Infrastructure</h3><p>Public services, digital identity, infrastructure, payments and responsible technology adoption.</p></article>
+          <article class="working-group-card reveal"><span class="group-icon" aria-hidden="true">04</span><h3>AI, Quantum &amp; Blockchain Readiness</h3><p>Technology convergence, cybersecurity, post-quantum considerations and organizational preparedness.</p></article>
+        </div>
+      </div>
     </section>
 
     <section class="applications section" aria-labelledby="applications-title">
@@ -202,10 +238,13 @@ body{color:#d7e3f1;background:var(--navy)}
       </div>
     </section>
 
+    
+    
+
     <section class="partnerships section section-dark" id="partnerships" aria-labelledby="partner-title">
       <div class="container partner-grid">
         <div class="partner-copy reveal"><span class="kicker kicker-light">PARTNERSHIPS</span><h2 id="partner-title">Build something more valuable than a network.</h2><p>ABA invites organizations interested in strengthening Arkansas’s understanding, capabilities, and participation in the digital economy to begin a conversation.</p></div>
-        <div class="partner-value reveal"><h3>Potential areas of collaboration</h3><div class="value-grid"><span>Executive education</span><span>Industry intelligence</span><span>Workforce development</span><span>Research and thought leadership</span><span>Government and industry dialogue</span><span>Innovation and economic development</span></div><p class="disclaimer">These are areas for potential collaboration and do not represent existing formal programs or partnerships.</p></div>
+        <div class="partner-value reveal"><h3>Potential areas of collaboration</h3><div class="value-grid"><span>Executive Intelligence &amp; Strategic Readiness</span><span>Industry intelligence</span><span>Workforce development</span><span>Research and thought leadership</span><span>Government and industry dialogue</span><span>Innovation and economic development</span></div><p class="disclaimer">These are areas for potential collaboration and do not represent existing formal programs or partnerships.</p></div>
       </div>
       <div class="partner-audiences container reveal"><span>Corporations</span><span>Financial Institutions</span><span>Technology Companies</span><span>Professional Services</span><span>Universities</span><span>Economic Development</span><span>Public Organizations</span><span>Healthcare</span><span>Investment</span><span>Cultural Institutions</span></div>
     </section>
@@ -213,6 +252,10 @@ body{color:#d7e3f1;background:var(--navy)}
     <section class="involved section" id="involved" aria-labelledby="involved-title">
       <div class="container involved-grid">
         <div class="involved-copy reveal"><span class="kicker">GET INVOLVED</span><h2 id="involved-title">Help shape Arkansas’s participation in the digital economy.</h2><p>ABA is bringing together organizations and individuals interested in blockchain technology, tokenization, emerging digital infrastructure, education, innovation, and economic development.</p><div class="pathways"><span>Business &amp; Professional Services</span><span>Government &amp; Economic Development</span><span>Education &amp; Workforce</span><span>Technology, Investment &amp; Innovation</span></div><div class="direct-contact"><small>DIRECT CONTACT</small><a href="mailto:info@arkansasblockchainassociation.com">info@arkansasblockchainassociation.com</a></div></div>
+        <div class="participation-options">
+          <article class="participation-card reveal" id="membership" aria-labelledby="membership-title"><small>BECOME A MEMBER</small><h3 id="membership-title">Join the Arkansas Blockchain Association</h3><p>ABA membership brings together individuals and organizations interested in advancing blockchain, tokenization, emerging technologies, industry collaboration, and responsible innovation across Arkansas.</p><a class="btn btn-primary" href="mailto:info@arkansasblockchainassociation.com?subject=ABA%20Membership%20Information">Request Membership Information <span>→</span></a></article>
+          <article class="participation-card reveal" aria-labelledby="sponsorship-title"><small>BECOME A SPONSOR</small><h3 id="sponsorship-title">Support the Arkansas Blockchain Association</h3><p>Connect with ABA to explore sponsorship opportunities supporting industry collaboration, executive programs, workforce development, innovation, and Arkansas's participation in the emerging digital economy.</p><a class="btn btn-primary" href="mailto:info@arkansasblockchainassociation.com?subject=ABA%20Sponsorship%20Information">Request Sponsorship Information <span>→</span></a></article>
+        </div>
       </div>
     </section>
   </main>
@@ -253,7 +296,7 @@ body{color:#d7e3f1;background:var(--navy)}
   const focusData = {
     enterprise: { index:'01 / 04', title:'Enterprise & Markets', intro:'Practical infrastructure for representing value, coordinating commerce, and managing assets.', tags:['Enterprise Blockchain','Tokenization','Digital Assets','Real-World Assets'], why:'Arkansas enterprises can assess where verifiable data, programmable assets, and shared systems may reduce friction or create value.' },
     infrastructure: { index:'02 / 04', title:'Digital Infrastructure', intro:'Foundational systems for trusted data, identity, governance, and interoperability.', tags:['Digital Identity','Interoperability','Governance','Smart Contracts'], why:'Trusted infrastructure can strengthen coordination, confidence in records, and ownership across organizational boundaries.' },
-    people: { index:'03 / 04', title:'Education & Workforce', intro:'Knowledge and skills for an economy shaped by emerging digital infrastructure.', tags:['Executive Education','Workforce Development','AI + Blockchain','Responsible Adoption'], why:'Practical fluency can help Arkansas leaders, workers, entrepreneurs, and students participate with confidence.' },
+    people: { index:'03 / 04', title:'Education & Workforce', intro:'Knowledge and skills for an economy shaped by emerging digital infrastructure.', tags:['Executive Intelligence & Strategic Readiness','Workforce Development','AI + Blockchain','Responsible Adoption'], why:'Practical fluency can help Arkansas leaders, workers, entrepreneurs, and students participate with confidence.' },
     public: { index:'04 / 04', title:'Public & Community Innovation', intro:'Grounded applications for institutions, communities, and connected public systems.', tags:['Smart Cities','Government Applications','Arts & Culture','Economic Development'], why:'Arkansas can explore responsible approaches to identity, infrastructure, cultural assets, and public value.' }
   };
   const panel = document.getElementById('focus-panel');
