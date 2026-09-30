@@ -300,7 +300,7 @@ body{color:#d7e3f1;background:var(--navy)}
 
 </script>
 <script>
-const API_BASE_URL='https://aba-membership-backend.onrender.com';const $=s=>document.querySelector(s);let email='',page=1,profile=null;
+const API_BASE_URL='https://api.arkansasblockchainassociation.com';const $=s=>document.querySelector(s);let email='',page=1,profile=null;
 const api=async(path,options={})=>{const r=await fetch(API_BASE_URL+path,{credentials:'include',...options,headers:{Accept:'application/json',...(options.headers||{})}});const d=await r.json().catch(()=>({}));if(!r.ok)throw Error(d.error||'The service is unavailable. Please try again.');return d};
 const text=(el,v)=>el.textContent=v||'';const avatar=(p)=>{const a=document.createElement(p?.profilePhotoUrl?'img':'div');a.className='avatar';if(p?.profilePhotoUrl){a.src=p.profilePhotoUrl;a.alt=`${p.firstName} ${p.lastName}`}else text(a,`${p?.firstName?.[0]||''}${p?.lastName?.[0]||''}`);return a};
 function status(id,msg,bad=false){const e=$(id);text(e,msg);e.classList.toggle('error',bad)}function card(p){const a=document.createElement('article');a.className='network-card student-card';a.append(avatar(p));const h=document.createElement('h3');text(h,`${p.firstName} ${p.lastName}`);a.append(h);for(const v of [p.university,p.country])if(v){const x=document.createElement('p');text(x,v);a.append(x)}if(p.linkedin){const l=document.createElement('a');l.className='network-link';l.href=p.linkedin;l.target='_blank';l.rel='noopener noreferrer';text(l,'LinkedIn Profile ↗');a.append(l)}return a}
