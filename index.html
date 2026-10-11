@@ -144,6 +144,20 @@ body{color:#d7e3f1;background:var(--navy)}
     font-size:2.55rem;
   }
 }
+
+/* Requested partner logo banner only. */
+.aba-partner-banner{padding:48px 0;background:linear-gradient(135deg,#06162f,#092753);color:#fff}
+.aba-partner-banner h2{margin:0 0 24px;font-size:.74rem;font-weight:800;letter-spacing:.22em;text-transform:uppercase;color:#75baff}
+.aba-partner-viewport{overflow:hidden;padding:4px 0}
+.aba-partner-track{display:flex;width:max-content;animation:aba-partner-scroll 60s linear infinite}
+.aba-partner-group{display:flex;align-items:center;gap:24px;padding-right:24px;flex-shrink:0}
+.aba-partner-logo{display:flex;align-items:center;justify-content:center;width:210px;height:120px;padding:18px;background:#fff;border-radius:8px;flex-shrink:0}
+.aba-partner-logo img{display:block;width:100%;height:100%;object-fit:contain}
+.aba-partner-logo:focus-visible{outline:3px solid #9ac8ff;outline-offset:2px}
+.aba-partner-viewport:hover .aba-partner-track,.aba-partner-viewport:focus-within .aba-partner-track{animation-play-state:paused}
+@keyframes aba-partner-scroll{to{transform:translateX(-50%)}}
+@media(max-width:600px){.aba-partner-banner{padding:36px 0}.aba-partner-logo{width:180px;height:110px}.aba-partner-group{gap:18px;padding-right:18px}}
+@media(prefers-reduced-motion:reduce){.aba-partner-track{animation:none;width:100%}.aba-partner-group{flex-wrap:wrap;justify-content:center;padding-right:0;width:100%}.aba-partner-group[aria-hidden="true"]{display:none}}
   </style>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"Organization","name":"Arkansas Blockchain Association","alternateName":"ABA","url":"https://arkansasblockchainassociation.com/","email":"info@arkansasblockchainassociation.com","description":"An Arkansas-based organization advancing blockchain technology, tokenization, digital assets, and emerging digital infrastructure nationally and globally."}</script>
 </head>
@@ -340,6 +354,32 @@ body{color:#d7e3f1;background:var(--navy)}
           <article class="working-group-card reveal"><span class="group-icon" aria-hidden="true">02</span><h3>Supply Chain, Logistics &amp; Agriculture</h3><p>Traceability, provenance, coordination and emerging applications across industries central to Arkansas.</p></article>
           <article class="working-group-card reveal"><span class="group-icon" aria-hidden="true">03</span><h3>Government, Smart Cities &amp; Digital Infrastructure</h3><p>Public services, digital identity, infrastructure, payments and responsible technology adoption.</p></article>
           <article class="working-group-card reveal"><span class="group-icon" aria-hidden="true">04</span><h3>AI, Quantum &amp; Blockchain Readiness</h3><p>Technology convergence, cybersecurity, post-quantum considerations and organizational preparedness.</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="aba-partner-banner" aria-labelledby="aba-partner-banner-title">
+      <div class="container">
+        <h2 id="aba-partner-banner-title">Our Partners</h2>
+        <div class="aba-partner-viewport">
+          <div class="aba-partner-track">
+            <div class="aba-partner-group">
+              <a class="aba-partner-logo" href="https://digitalchamber.org/" target="_blank" rel="noopener noreferrer"><img src="The-Digital-Chamber.png" alt="The Digital Chamber" width="174" height="84"></a>
+              <a class="aba-partner-logo" href="https://centerforcreators.com/" target="_blank" rel="noopener noreferrer"><img src="Center_for_Creators.jpg" alt="Center for Creators" width="174" height="84"></a>
+              <a class="aba-partner-logo" href="https://i-blockchain.com/" target="_blank" rel="noopener noreferrer"><img src="iblockchain.jpeg" alt="iBlockchain" width="174" height="84"></a>
+              <a class="aba-partner-logo" href="https://cdhls.org/" target="_blank" rel="noopener noreferrer"><img src="CDHLS.png" alt="CDHLS" width="174" height="84"></a>
+              <a class="aba-partner-logo" href="https://www.estglobalinc.com/" target="_blank" rel="noopener noreferrer"><img src="est.png" alt="EST Global Inc." width="174" height="84"></a>
+              <a class="aba-partner-logo" href="https://jacksonvarela1.github.io/cryptohogs/" target="_blank" rel="noopener noreferrer"><img src="crypto-hogs.png" alt="Crypto Hogs" width="174" height="84"></a>
+            </div>
+            <div class="aba-partner-group" aria-hidden="true">
+              <a class="aba-partner-logo" href="https://digitalchamber.org/" target="_blank" rel="noopener noreferrer" tabindex="-1"><img src="The-Digital-Chamber.png" alt="The Digital Chamber" width="174" height="84"></a>
+              <a class="aba-partner-logo" href="https://centerforcreators.com/" target="_blank" rel="noopener noreferrer" tabindex="-1"><img src="Center_for_Creators.jpg" alt="Center for Creators" width="174" height="84"></a>
+              <a class="aba-partner-logo" href="https://i-blockchain.com/" target="_blank" rel="noopener noreferrer" tabindex="-1"><img src="iblockchain.jpeg" alt="iBlockchain" width="174" height="84"></a>
+              <a class="aba-partner-logo" href="https://cdhls.org/" target="_blank" rel="noopener noreferrer" tabindex="-1"><img src="CDHLS.png" alt="CDHLS" width="174" height="84"></a>
+              <a class="aba-partner-logo" href="https://www.estglobalinc.com/" target="_blank" rel="noopener noreferrer" tabindex="-1"><img src="est.png" alt="EST Global Inc." width="174" height="84"></a>
+              <a class="aba-partner-logo" href="https://jacksonvarela1.github.io/cryptohogs/" target="_blank" rel="noopener noreferrer" tabindex="-1"><img src="crypto-hogs.png" alt="Crypto Hogs" width="174" height="84"></a>
+            </div>
+          </div>
         </div>
       </div>
     </section>
