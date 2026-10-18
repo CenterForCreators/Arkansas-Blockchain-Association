@@ -188,6 +188,15 @@ body{color:#d7e3f1;background:var(--navy)}
 .ambassador-director-body p{margin:0 0 20px;color:#9bc9f7;font-size:.94rem;font-weight:800;text-transform:uppercase;letter-spacing:.09em}
 .ambassador-director-body a{display:inline-flex;align-items:center;color:#fff;font-size:.76rem;font-weight:800;letter-spacing:.03em;border-bottom:1px solid rgba(110,183,255,.75);padding-bottom:3px}
 .ambassador-director-body a:hover,.ambassador-director-body a:focus-visible{color:#8fc7ff;border-color:#fff}
+
+/* Ambassador rows below the director. */
+.ambassador-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px;max-width:1188px;margin-top:38px}
+.ambassador-grid .ambassador-director-card{max-width:none;min-width:0;display:flex;flex-direction:column}
+.ambassador-grid .ambassador-director-body{display:flex;flex:1;flex-direction:column;align-items:flex-start}
+.ambassador-grid .ambassador-director-body h2{overflow-wrap:break-word}
+.ambassador-grid .ambassador-director-body a{margin-top:auto}
+@media(max-width:880px){.ambassador-grid{grid-template-columns:repeat(2,minmax(0,1fr));max-width:784px}}
+@media(max-width:600px){.ambassador-grid{grid-template-columns:1fr;max-width:380px}}
 </style>
 </head>
 <body>
@@ -226,6 +235,16 @@ body{color:#d7e3f1;background:var(--navy)}
           <img src="image(20261014-225541).png" alt="Isaac Mccorry">
           <div class="ambassador-director-body"><h2>ISAAC MCCORRY</h2><p>Director of Global Ambassadors</p><a href="https://www.linkedin.com/in/isaacmcorry/" target="_blank" rel="noopener noreferrer">LinkedIn</a></div>
         </article>
+        <div class="ambassador-grid">
+          <article class="ambassador-director-card">
+            <img src="abdurahman.jpeg" alt="Abdurahman Adesina">
+            <div class="ambassador-director-body"><h2>ABDURAHMAN ADESINA</h2><p>Global Ambassador Representing Nigeria</p><a href="https://www.linkedin.com/in/adesina-abdurahman-babatunde/" target="_blank" rel="noopener noreferrer">LinkedIn</a></div>
+          </article>
+          <article class="ambassador-director-card">
+            <img src="max_bassler.jpeg" alt="Max Bassler">
+            <div class="ambassador-director-body"><h2>MAX BASSLER</h2><p>Global Student Ambassador</p><a href="https://www.linkedin.com/in/maxbassler/" target="_blank" rel="noopener noreferrer">LinkedIn</a></div>
+          </article>
+        </div>
       </div>
     </section>
     <section class="section section-dark" aria-labelledby="ambassador-expectations-title">
