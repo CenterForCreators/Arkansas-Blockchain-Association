@@ -176,6 +176,46 @@ body{color:#d7e3f1;background:var(--navy)}
 @media(max-width:600px){.aba-partner-directory-grid{grid-template-columns:1fr}.aba-partner-directory-link{height:170px}}
 @media(prefers-reduced-motion:reduce){.aba-partner-directory-link{transition:none}.aba-partner-directory-link:hover,.aba-partner-directory-link:focus-visible{transform:none}}
 </style>
+<style id="aba-grouped-navigation-styles">
+/* Shared ABA grouped navigation */
+#aba-primary-nav{display:flex;align-items:center;gap:24px;color:#dce7f5;font-size:.78rem;font-weight:600}
+#aba-primary-nav .aba-nav-group{position:relative}
+#aba-primary-nav .aba-nav-trigger{display:flex;align-items:center;justify-content:space-between;gap:8px;border:0;background:transparent;color:inherit;font:inherit;padding:14px 0;cursor:pointer;text-align:left}
+#aba-primary-nav .aba-nav-trigger>span{color:var(--gold2);transition:transform .2s}
+#aba-primary-nav .aba-nav-trigger[aria-expanded="true"]>span{transform:rotate(180deg)}
+#aba-primary-nav .aba-nav-trigger:hover,#aba-primary-nav .aba-nav-trigger[aria-expanded="true"]{color:#fff}
+#aba-primary-nav .aba-nav-submenu{position:absolute;top:100%;left:-18px;min-width:250px;max-width:320px;padding:10px;background:#071d3e;border:1px solid rgba(126,183,240,.28);border-radius:12px;box-shadow:0 18px 40px rgba(0,0,0,.3)}
+#aba-primary-nav .aba-nav-submenu[hidden]{display:none}
+#aba-primary-nav .aba-nav-submenu a{display:block;font-size:.78rem;line-height:1.5;padding:12px 14px;border-radius:6px;color:#dce7f5;white-space:normal}
+#aba-primary-nav .aba-nav-submenu a:hover,#aba-primary-nav .aba-nav-submenu a:focus-visible{background:#123760;color:#fff}
+#aba-primary-nav a:focus-visible,#aba-primary-nav button:focus-visible,.site-header .menu-toggle:focus-visible{outline:2px solid var(--gold2);outline-offset:5px}
+@media(min-width:961px){
+ #aba-primary-nav{position:static;inset:auto;flex-direction:row;justify-content:flex-start;background:transparent;transform:none;transition:none;overflow:visible;visibility:visible;pointer-events:auto}
+ #aba-primary-nav>a:not(.nav-join){font-size:.78rem}
+ #aba-primary-nav>.nav-join{font-size:.7rem}
+ .site-header .menu-toggle{display:none}
+}
+@media(max-width:960px){
+ .site-header .nav-wrap{height:88px}
+ .site-header .menu-toggle{display:block;position:relative;z-index:2}
+ body.menu-open{overflow:hidden}
+ body.menu-open .site-header{background:#06152f;backdrop-filter:none}
+ #aba-primary-nav{position:fixed;inset:88px 0 0;display:flex;flex-direction:column;align-items:stretch;justify-content:flex-start;gap:0;padding:18px 24px calc(30px + env(safe-area-inset-bottom));background:#06152f;overflow-y:auto;overscroll-behavior:contain;max-height:calc(100dvh - 88px);transform:translateX(100%);visibility:hidden;pointer-events:none;transition:transform .25s ease,visibility .25s}
+ #aba-primary-nav.open{transform:none;visibility:visible;pointer-events:auto}
+ #aba-primary-nav>a:not(.nav-join),#aba-primary-nav .aba-nav-trigger{font-size:1rem;padding:17px 0;width:100%;border-bottom:1px solid rgba(126,183,240,.18);border-radius:0}
+ #aba-primary-nav>a:after{display:none}
+ #aba-primary-nav .aba-nav-submenu{position:static;min-width:0;max-width:none;padding:0 0 8px 14px;border:0;border-left:1px solid rgba(126,183,240,.28);border-radius:0;box-shadow:none;background:transparent;margin:0 0 8px 6px}
+ #aba-primary-nav .aba-nav-submenu a{font-size:.9rem;padding:12px 14px}
+ #aba-primary-nav>.nav-join{font-size:.78rem;justify-content:center;align-self:flex-start;margin-top:22px;padding:12px 22px}
+}
+@media(max-width:600px){
+ .site-header .nav-wrap{height:74px}
+ .site-header.scrolled .nav-wrap{height:70px}
+ #aba-primary-nav{top:74px;max-height:calc(100dvh - 74px);padding-left:20px;padding-right:20px}
+ .site-header.scrolled #aba-primary-nav{top:70px;max-height:calc(100dvh - 70px)}
+}
+@media(prefers-reduced-motion:reduce){#aba-primary-nav,#aba-primary-nav .aba-nav-trigger>span{transition:none}}
+</style>
 </head>
 <body>
   <header class="site-header" id="top">
@@ -184,17 +224,32 @@ body{color:#d7e3f1;background:var(--navy)}
         <img src="ABA-Banner.png" alt="Arkansas Blockchain Association logo">
         <span><strong>ARKANSAS</strong><b>BLOCKCHAIN</b><em>ASSOCIATION</em></span>
       </a>
-      <button class="menu-toggle" aria-label="Open navigation" aria-expanded="false"><span></span><span></span><span></span></button>
-   <nav class="main-nav" aria-label="Primary navigation">
+      <button class="menu-toggle" type="button" aria-label="Open navigation" aria-expanded="false" aria-controls="aba-primary-nav"><span></span><span></span><span></span></button>
+   <nav class="main-nav" id="aba-primary-nav" aria-label="Primary navigation">
   <a href="/">Home</a>
-  <a href="/masterclasses">Masterclasses</a>
-     <a href="/team">Team</a>
-     <a href="/member-network">Member Network</a>
-     <a href="/partnerships">Partnerships</a>
+  <div class="aba-nav-group">
+    <button class="aba-nav-trigger" type="button" aria-expanded="false" aria-controls="aba-nav-about">About ABA <span aria-hidden="true">⌄</span></button>
+    <div class="aba-nav-submenu" id="aba-nav-about" hidden>
+      <a href="/team">Team</a>
+      <a href="/partnerships">Partnerships</a>
+    </div>
+  </div>
+  <div class="aba-nav-group">
+    <button class="aba-nav-trigger" type="button" aria-expanded="false" aria-controls="aba-nav-community">Community <span aria-hidden="true">⌄</span></button>
+    <div class="aba-nav-submenu" id="aba-nav-community" hidden>
+      <a href="/member-network">Member Network</a>
       <a href="/global-student-network">Global Student Network</a>
-     <a href="/DASC">DASC</a>
-     <a href="/ambassadors">Ambassadors</a>
-  <a class="nav-cta" href="/#involved">Get Involved <span>↗</span></a>
+      <a href="/ambassadors">Ambassadors</a>
+      <a href="/#involved">Get Involved <span aria-hidden="true">↗</span></a>
+    </div>
+  </div>
+  <div class="aba-nav-group">
+    <button class="aba-nav-trigger" type="button" aria-expanded="false" aria-controls="aba-nav-initiatives">Initiatives <span aria-hidden="true">⌄</span></button>
+    <div class="aba-nav-submenu" id="aba-nav-initiatives" hidden>
+      <a href="/DASC">DASC</a>
+    </div>
+  </div>
+  <a href="/masterclasses">Masterclasses</a>
   <a class="nav-join" href="/join">Join ABA</a>
 </nav>
     </div>
@@ -258,21 +313,65 @@ body{color:#d7e3f1;background:var(--navy)}
   </footer>
   <script>
 (() => {
+  // Shared ABA grouped navigation.
   const header = document.querySelector('.site-header');
   const toggle = document.querySelector('.menu-toggle');
-  const nav = document.querySelector('.main-nav');
-  const onScroll = () => header.classList.toggle('scrolled', scrollY > 24);
-  addEventListener('scroll', onScroll, { passive: true }); onScroll();
-  toggle.addEventListener('click', () => {
-    const open = nav.classList.toggle('open');
-    document.body.classList.toggle('menu-open', open);
-    toggle.setAttribute('aria-expanded', String(open));
-    toggle.setAttribute('aria-label', open ? 'Close navigation' : 'Open navigation');
-  });
-  nav.querySelectorAll('a').forEach(a => a.addEventListener('click', () => {
-    nav.classList.remove('open'); document.body.classList.remove('menu-open');
-    toggle.setAttribute('aria-expanded', 'false');
+  const nav = document.getElementById('aba-primary-nav');
+  const mobile = matchMedia('(max-width:960px)');
+  const groups = [...nav.querySelectorAll('.aba-nav-group')];
+  const triggers = groups.map(group => group.querySelector('.aba-nav-trigger'));
+  const background = [document.querySelector('main'),document.querySelector('footer')].filter(Boolean);
+  const originalInert = background.map(el => el.inert);
+  function closeGroups(except) {
+    triggers.forEach(button => {
+      if(button !== except) {
+        button.setAttribute('aria-expanded','false');
+        document.getElementById(button.getAttribute('aria-controls')).hidden = true;
+      }
+    });
+  }
+  function setMenu(open, returnFocus = false) {
+    const active = mobile.matches && open;
+    nav.classList.toggle('open',active);
+    document.body.classList.toggle('menu-open',active);
+    toggle.setAttribute('aria-expanded',String(active));
+    toggle.setAttribute('aria-label',active ? 'Close navigation' : 'Open navigation');
+    nav.inert = mobile.matches && !active;
+    background.forEach((el,i) => { el.inert = active || originalInert[i]; });
+    if(!active) closeGroups();
+    if(returnFocus) toggle.focus();
+  }
+  const onScroll = () => header.classList.toggle('scrolled',scrollY > 24);
+  addEventListener('scroll',onScroll,{passive:true}); onScroll();
+  toggle.addEventListener('click',() => setMenu(!nav.classList.contains('open')));
+  triggers.forEach(button => button.addEventListener('click',() => {
+    const open = button.getAttribute('aria-expanded') !== 'true';
+    closeGroups(button);
+    button.setAttribute('aria-expanded',String(open));
+    document.getElementById(button.getAttribute('aria-controls')).hidden = !open;
   }));
+  nav.querySelectorAll('a').forEach(link => link.addEventListener('click',() => setMenu(false)));
+  document.addEventListener('click',event => {
+    if(!header.contains(event.target)) { closeGroups(); if(mobile.matches) setMenu(false); }
+  });
+  header.addEventListener('focusout',event => {
+    if(!mobile.matches && !header.contains(event.relatedTarget)) closeGroups();
+  });
+  document.addEventListener('keydown',event => {
+    if(event.key === 'Escape') {
+      const expanded = triggers.find(button => button.getAttribute('aria-expanded') === 'true');
+      if(expanded) {closeGroups(); expanded.focus(); event.preventDefault();}
+      else if(mobile.matches && nav.classList.contains('open')) {setMenu(false,true); event.preventDefault();}
+    }
+    if(event.key === 'Tab' && mobile.matches && nav.classList.contains('open')) {
+      const focusable = [...header.querySelectorAll('a,button')].filter(el => el.getClientRects().length && !el.closest('[hidden]'));
+      const first = focusable[0], last = focusable[focusable.length-1];
+      if(event.shiftKey && document.activeElement === first) {event.preventDefault(); last.focus();}
+      else if(!event.shiftKey && document.activeElement === last) {event.preventDefault(); first.focus();}
+    }
+  });
+  mobile.addEventListener('change',() => setMenu(false));
+  setMenu(false);
 
   const revealObserver = new IntersectionObserver(entries => entries.forEach(entry => {
     if (entry.isIntersecting) { entry.target.classList.add('visible'); revealObserver.unobserve(entry.target); }
