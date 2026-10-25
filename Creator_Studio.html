@@ -422,41 +422,49 @@ body.aba-membership-pending #aba-member-access{display:block}
 <canvas id="canvas"></canvas>
 <!-- NAV -->
 <header class="site-header" id="top">
-<div class="nav-wrap">
-<a aria-label="Arkansas Blockchain Association home" class="brand" href="/">
-<img alt="Arkansas Blockchain Association logo" src="ABA-Banner.png"/>
-<span><strong>ARKANSAS</strong><b>BLOCKCHAIN</b><em>ASSOCIATION</em></span>
-</a>
-<button aria-controls="aba-primary-nav" aria-expanded="false" aria-label="Open navigation" class="menu-toggle" type="button"><span></span><span></span><span></span></button>
-<nav aria-label="Primary navigation" class="main-nav" id="aba-primary-nav">
-<a href="/">Home</a>
-<div class="aba-nav-group">
-<button aria-controls="aba-nav-about" aria-expanded="false" class="aba-nav-trigger" type="button">About ABA <span aria-hidden="true">⌄</span></button>
-<div class="aba-nav-submenu" hidden="" id="aba-nav-about">
-<a href="/team">Team</a>
-<a href="/partnerships">Partnerships</a>
-</div>
-</div>
-<div class="aba-nav-group">
-<button aria-controls="aba-nav-community" aria-expanded="false" class="aba-nav-trigger" type="button">Community <span aria-hidden="true">⌄</span></button>
-<div class="aba-nav-submenu" hidden="" id="aba-nav-community">
-<a href="/member-network">Member Network</a>
-<a href="/global-student-network">Global Student Network</a>
-<a href="/ambassadors">Ambassadors</a>
-<a href="/#involved">Get Involved <span aria-hidden="true">↗</span></a>
-</div>
-</div>
-<div class="aba-nav-group">
-<button aria-controls="aba-nav-initiatives" aria-expanded="false" class="aba-nav-trigger" type="button">Initiatives <span aria-hidden="true">⌄</span></button>
-<div class="aba-nav-submenu" hidden="" id="aba-nav-initiatives">
-<a href="/DASC">DASC</a>
-</div>
-</div>
-<a href="/masterclasses">Masterclasses</a>
-<a class="nav-join" href="/join">Join ABA</a>
+    <div class="nav-wrap">
+      <a class="brand" href="/" aria-label="Arkansas Blockchain Association home">
+        <img src="ABA-Banner.png" alt="Arkansas Blockchain Association logo">
+        <span><strong>ARKANSAS</strong><b>BLOCKCHAIN</b><em>ASSOCIATION</em></span>
+      </a>
+      <button class="menu-toggle" type="button" aria-label="Open navigation" aria-expanded="false" aria-controls="aba-primary-nav"><span></span><span></span><span></span></button>
+   <nav class="main-nav" id="aba-primary-nav" aria-label="Primary navigation">
+  <a href="/">Home</a>
+  <div class="aba-nav-group">
+    <button class="aba-nav-trigger" type="button" aria-expanded="false" aria-controls="aba-nav-about">About ABA <span aria-hidden="true">⌄</span></button>
+    <div class="aba-nav-submenu" id="aba-nav-about" hidden>
+      <a href="/team">Team</a>
+      <a href="/partnerships">Partnerships</a>
+    </div>
+  </div>
+  <div class="aba-nav-group">
+    <button class="aba-nav-trigger" type="button" aria-expanded="false" aria-controls="aba-nav-community">Community <span aria-hidden="true">⌄</span></button>
+    <div class="aba-nav-submenu" id="aba-nav-community" hidden>
+      <a href="/member-network">Member Network</a>
+      <a href="/global-student-network">Global Student Network</a>
+      <a href="/ambassadors">Ambassadors</a>
+      <a href="/#involved">Get Involved <span aria-hidden="true">↗</span></a>
+    </div>
+  </div>
+  <div class="aba-nav-group">
+    <button class="aba-nav-trigger" type="button" aria-expanded="false" aria-controls="aba-nav-initiatives">Initiatives <span aria-hidden="true">⌄</span></button>
+    <div class="aba-nav-submenu" id="aba-nav-initiatives" hidden>
+      <a href="/DASC">DASC</a>
+    </div>
+  </div>
+  <div class="aba-nav-group">
+    <button class="aba-nav-trigger" type="button" aria-expanded="false" aria-controls="aba-nav-tik">Tokenized Interactive Knowledge <span aria-hidden="true">⌄</span></button>
+    <div class="aba-nav-submenu" id="aba-nav-tik" hidden>
+      <a href="TIK_Overview.html">TIK Overview</a>
+      <a href="Knowledge_Library.html">Knowledge Library</a>
+      <a href="Leaderboard.html">Leaderboard</a>
+      <a href="Creator_Studio.html">Creator Studio</a>
+    </div>
+  </div>
+  <a class="nav-join" href="/join">Join ABA</a>
 </nav>
-</div>
-</header>
+    </div>
+  </header>
 <div aria-hidden="true" id="creator-nav-compat" style="display:none!important">
 <button id="wallet-btn" type="button"></button>
 <span id="xrp-bal">--</span>
@@ -888,34 +896,39 @@ Edit Profile
 </div><!-- page-content -->
 <!-- FOOTER -->
 <footer class="site-footer">
-<div class="container footer-main">
-<div class="footer-brand"><img alt="Arkansas Blockchain Association logo" src="ABA.png"/><div><strong>ARKANSAS BLOCKCHAIN ASSOCIATION</strong><span>EDUCATE <i>•</i> CONNECT <i>•</i> INNOVATE <i>•</i> ADVANCE</span></div></div>
-<div class="footer-links">
-<div>
-<b>Explore</b>
-<a href="/#about">About</a>
-<a href="/#focus">Focus Areas</a>
-<a href="/masterclasses">Masterclasses</a>
-<a href="/#education">Education</a>
-<a href="/#innovation">Industry &amp; Innovation</a>
+    <div class="container footer-main">
+      <div class="footer-brand"><img src="ABA.png" alt="Arkansas Blockchain Association logo"><div><strong>ARKANSAS BLOCKCHAIN ASSOCIATION</strong><span>EDUCATE <i>•</i> CONNECT <i>•</i> INNOVATE <i>•</i> ADVANCE</span></div></div>
+     <div class="footer-links">
+ <div> 
+  <b>Explore</b> 
+  <a href="/#about">About</a> 
+  <a href="/#focus">Focus Areas</a> 
+  <a href="/masterclasses">Masterclasses</a> 
+  <a href="/#education">Education</a> 
+  <a href="/#innovation">Industry &amp; Innovation</a> 
 </div>
-<div>
-<b>Connect</b>
-<a href="/#partnerships">Partnerships</a>
-<a href="/#involved">Get Involved</a>
-<a href="/join">Join ABA</a>
-<a href="mailto:info@arkansasblockchainassociation.com">Contact Us</a>
-<a aria-label="Arkansas Blockchain Association on LinkedIn" class="footer-linkedin" href="https://www.linkedin.com/company/arkansas-blockchain-association" rel="noopener noreferrer" target="_blank">
-<svg aria-hidden="true" viewbox="0 0 24 24">
-<path d="M20.45 20.45h-3.56v-5.57c0-1.33-.03-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.34V8.98h3.42v1.57h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.29zM5.32 7.41a2.06 2.06 0 1 1 0-4.12 2.06 2.06 0 0 1 0 4.12zM7.1 20.45H3.54V8.98H7.1v11.47z" fill="currentColor"></path>
-</svg>
+  <div>
+    <b>Connect</b>
+    <a href="/#partnerships">Partnerships</a>
+    <a href="/#involved">Get Involved</a>
+    <a href="/join">Join ABA</a>
+    <a href="mailto:info@arkansasblockchainassociation.com">Contact Us</a>
+
+    <a class="footer-linkedin"
+       href="https://www.linkedin.com/company/arkansas-blockchain-association"
+       target="_blank"
+       rel="noopener noreferrer"
+       aria-label="Arkansas Blockchain Association on LinkedIn">
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path fill="currentColor" d="M20.45 20.45h-3.56v-5.57c0-1.33-.03-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.34V8.98h3.42v1.57h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.29zM5.32 7.41a2.06 2.06 0 1 1 0-4.12 2.06 2.06 0 0 1 0 4.12zM7.1 20.45H3.54V8.98H7.1v11.47z"/>
+      </svg>
       LinkedIn
     </a>
+  </div>
 </div>
-</div>
-</div>
-<div class="container footer-bottom"><span>© <span id="year"></span> Arkansas Blockchain Association</span><a href="https://arkansasblockchainassociation.com/">ArkansasBlockchainAssociation.com</a><span>Arkansas-Based • National and Global Reach</span></div>
-</footer>
+    </div>
+    <div class="container footer-bottom"><span>© <span id="year"></span> Arkansas Blockchain Association</span><a href="https://arkansasblockchainassociation.com/">ArkansasBlockchainAssociation.com</a><span>Arkansas-Based • National and Global Reach</span></div>
+  </footer>
 <!-- WALLET MODAL -->
 <div class="modal-overlay" id="wallet-modal">
 <div class="modal-box">
