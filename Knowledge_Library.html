@@ -519,8 +519,32 @@ body{background:var(--aba-navy);color:var(--aba-white);font-family:'Inter',sans-
 }
 </style>
 
+
+<style id="aba-member-access-styles">
+body.aba-membership-pending .page-content,
+body.aba-membership-pending .aba-footer{visibility:hidden;}
+#aba-member-access{display:none;position:relative;z-index:2;min-height:calc(100vh - 78px);padding:140px 1.25rem 80px;background:linear-gradient(180deg,#07111f,#0b1728);}
+body.aba-membership-pending #aba-member-access{display:block;}
+.aba-member-access-card{max-width:560px;margin:0 auto;padding:2.2rem;background:rgba(255,255,255,.035);border:1px solid var(--aba-line);}
+.aba-member-access-card .eyebrow{margin:0 0 .7rem;color:var(--aba-blue-light);font-size:.68rem;font-weight:700;letter-spacing:.17em;}
+.aba-member-access-card h2{margin:0 0 .8rem;font-family:'Space Grotesk',sans-serif;font-size:2rem;font-weight:600;color:var(--aba-white);}
+.aba-member-access-card>p{margin:0 0 1.4rem;color:#aebfcb;line-height:1.65;}
+.aba-member-field{margin-bottom:1rem;}
+.aba-member-field label{display:block;margin-bottom:.4rem;color:#bcd3e0;font-size:.78rem;font-weight:600;}
+.aba-member-field input{width:100%;padding:.82rem .9rem;border:1px solid var(--aba-line);background:#102238;color:var(--aba-white);font:inherit;outline:none;}
+.aba-member-field input:focus{border-color:rgba(155,216,239,.55);}
+.aba-member-actions{display:flex;gap:.7rem;flex-wrap:wrap;margin-top:.9rem;}
+.aba-member-primary,.aba-member-ghost{min-height:44px;padding:.7rem 1rem;font:inherit;font-size:.76rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;}
+.aba-member-primary{background:var(--aba-white);color:var(--aba-navy);border:1px solid var(--aba-white);}
+.aba-member-ghost{background:transparent;color:#bcd3e0;border:1px solid var(--aba-line);}
+.aba-member-status{min-height:1.3em;margin-top:1rem!important;color:#9fb4c3!important;font-size:.84rem;}
+.aba-member-status.error{color:#f87171!important;}
+.aba-member-hidden{display:none!important;}
+@media(max-width:600px){#aba-member-access{padding-top:110px}.aba-member-access-card{padding:1.5rem}}
+</style>
+
 </head>
-<body>
+<body class="aba-membership-pending">
 
 <canvas id="canvas"></canvas>
 
@@ -541,6 +565,33 @@ body{background:var(--aba-navy);color:var(--aba-white);font-family:'Inter',sans-
   </div>
   <button class="mobile-menu-btn" aria-label="Open menu">☰</button>
 </nav>
+
+<section id="aba-member-access" aria-labelledby="aba-member-signin-title">
+  <div class="aba-member-access-card">
+    <p class="eyebrow">MEMBER ACCESS</p>
+    <h2 id="aba-member-signin-title">Member Sign-In</h2>
+    <p>Use the same email address you submitted when joining ABA. We’ll send a six-digit verification code.</p>
+    <form id="aba-member-request-form">
+      <div class="aba-member-field">
+        <label for="aba-member-email">Email address</label>
+        <input id="aba-member-email" name="email" type="email" autocomplete="email" required>
+      </div>
+      <div class="aba-member-actions"><button class="aba-member-primary" type="submit">Send Verification Code</button></div>
+    </form>
+    <form id="aba-member-verify-form" class="aba-member-hidden">
+      <div class="aba-member-field">
+        <label for="aba-member-code">Six-digit verification code</label>
+        <input id="aba-member-code" name="code" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" autocomplete="one-time-code" required>
+      </div>
+      <div class="aba-member-actions">
+        <button class="aba-member-primary" type="submit">Verify and Sign In</button>
+        <button class="aba-member-ghost" type="button" id="aba-member-resend">Resend Code</button>
+        <button class="aba-member-ghost" type="button" id="aba-member-change-email">Change Email</button>
+      </div>
+    </form>
+    <p id="aba-member-auth-status" class="aba-member-status" role="status" aria-live="polite"></p>
+  </div>
+</section>
 
 <!-- PAGE CONTENT -->
 <div class="page-content">
@@ -1563,7 +1614,7 @@ document.querySelectorAll('.modal-overlay').forEach(m=>{
 
   window.open(url, "_blank");
 }
-loadWallet();
+
   async function claimCfcReward(submissionId, btn) {
 
   const msg = btn?.nextElementSibling;
@@ -1635,7 +1686,7 @@ loadWallet();
 
   }
 }
-loadNFTs();
+
 </script>
 <script>
   const links = document.querySelectorAll(".nav-links a");
@@ -1747,6 +1798,30 @@ async function shareNFT(title, image, url){
     console.log('Share cancelled');
   }
 }
+</script>
+  <script id="aba-member-access-script">
+const ABA_MEMBER_API='https://api.arkansasblockchainassociation.com';
+const ABA_MEMBER_CACHE_KEY='aba_member_session';
+let abaMemberEmail='';
+let abaKnowledgeStarted=false;
+const abaCachedMember=()=>{try{return JSON.parse(localStorage.getItem(ABA_MEMBER_CACHE_KEY)||'null')}catch{return null}};
+const abaRememberMember=p=>{try{localStorage.setItem(ABA_MEMBER_CACHE_KEY,JSON.stringify({firstName:p?.firstName||'',verifiedAt:Date.now()}))}catch{}};
+const abaForgetMember=()=>{try{localStorage.removeItem(ABA_MEMBER_CACHE_KEY)}catch{}};
+const abaMemberApi=async(path,options={})=>{const r=await fetch(ABA_MEMBER_API+path,{credentials:'include',...options,headers:{Accept:'application/json',...(options.headers||{})}});const d=await r.json().catch(()=>({}));if(!r.ok)throw Error(d.error||'The service is unavailable. Please try again.');return d};
+function abaMemberStatus(msg,bad=false){const e=document.getElementById('aba-member-auth-status');e.textContent=msg||'';e.classList.toggle('error',bad)}
+function abaStartKnowledgeLibrary(){if(abaKnowledgeStarted)return;abaKnowledgeStarted=true;loadWallet();loadNFTs();}
+function abaShowKnowledgeLibrary(){document.body.classList.remove('aba-membership-pending');abaStartKnowledgeLibrary()}
+function abaShowMemberSignIn(){document.body.classList.add('aba-membership-pending');document.getElementById('aba-member-request-form').classList.remove('aba-member-hidden');document.getElementById('aba-member-verify-form').classList.add('aba-member-hidden');abaMemberStatus('')}
+async function abaConfirmMember(){const d=await abaMemberApi('/api/student-network/me');abaRememberMember(d.profile);abaShowKnowledgeLibrary();return d.profile}
+const abaRequestForm=document.getElementById('aba-member-request-form');
+const abaVerifyForm=document.getElementById('aba-member-verify-form');
+abaRequestForm.onsubmit=async e=>{e.preventDefault();const button=abaRequestForm.querySelector('button[type="submit"]');abaMemberEmail=document.getElementById('aba-member-email').value;button.disabled=true;button.textContent='Sending Verification Code...';abaMemberStatus('Please wait while we send your verification code.');try{await abaMemberApi('/api/student-auth/request-code',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:abaMemberEmail})});abaRequestForm.classList.add('aba-member-hidden');abaVerifyForm.classList.remove('aba-member-hidden');abaMemberStatus('If this address is eligible, a verification code has been sent.')}catch(x){abaMemberStatus(x.message,true)}finally{button.disabled=false;button.textContent='Send Verification Code'}};
+abaVerifyForm.onsubmit=async e=>{e.preventDefault();try{await abaMemberApi('/api/student-auth/verify-code',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:abaMemberEmail,code:document.getElementById('aba-member-code').value})});await abaConfirmMember()}catch(x){abaMemberStatus(x.message,true)}};
+document.getElementById('aba-member-resend').onclick=()=>abaRequestForm.dispatchEvent(new Event('submit',{cancelable:true}));
+document.getElementById('aba-member-change-email').onclick=()=>{abaVerifyForm.classList.add('aba-member-hidden');abaRequestForm.classList.remove('aba-member-hidden');abaMemberStatus('')};
+const abaRestore=abaCachedMember();
+abaRequestForm.classList.add('aba-member-hidden');
+if(abaRestore){abaShowKnowledgeLibrary();abaConfirmMember().catch(()=>{abaForgetMember();abaShowMemberSignIn()})}else{abaMemberStatus('Checking your membership...');abaConfirmMember().catch(()=>{abaRequestForm.classList.remove('aba-member-hidden');abaMemberStatus('')})}
 </script>
   <script>
 document.querySelector('.mobile-menu-btn').addEventListener('click', () => {
