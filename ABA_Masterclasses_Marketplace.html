@@ -1212,7 +1212,7 @@ ${nft.terms ? `
 async function loadNFTs(){
   const grid = document.getElementById('nft-grid');
   try {
-    const r = await fetch(MARKET_API+'/api/market/all');
+    const r = await fetch(MARKET_API+'/api/market/all?tenant=aba');
     if(!r.ok) throw new Error('API error');
     allNFTs = await r.json();
     // Update stat
