@@ -1446,10 +1446,12 @@ function step3Next(){
   const desc = document.getElementById('nft-desc').value.trim();
   const qty = parseInt(document.getElementById('nft-qty').value) || 1;
 const priceXrp = Number(document.getElementById('nft-price-xrp').value);
+const priceRlusd = Number(document.getElementById('nft-price-rlusd').value);
 const err = document.getElementById('step3-error');
   if(!name){ err.textContent = 'NFT title is required.'; err.style.display='block'; return; }
   if(!desc){ err.textContent = 'Description is required.'; err.style.display='block'; return; }
   if(qty < 1 || qty > 25){ err.textContent = 'Quantity must be between 1 and 25.'; err.style.display='block'; return; }
+  if(priceRlusd <= 0){ err.textContent = 'Enter a valid RLUSD price.'; err.style.display='block'; return; }
   err.style.display = 'none';
   goToStep(4);
 }
