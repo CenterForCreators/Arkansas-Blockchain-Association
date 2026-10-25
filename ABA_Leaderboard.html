@@ -1,0 +1,969 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+<title>ABA Leaderboard | Arkansas Blockchain Association</title>
+
+<meta property="og:title" content="ABA Leaderboard | Arkansas Blockchain Association">
+<meta property="og:description" content="Explore participation, rankings, badges, and activity across Arkansas Blockchain Association interactive learning experiences.">
+<meta property="og:url" content="https://arkansasblockchainassociation.com/leaderboard">
+<meta property="og:type" content="website">
+
+<meta property="og:image" content="https://centerforcreators.com/images/creator-content/Leaderboard_url.png">
+<meta property="og:image:secure_url" content="https://centerforcreators.com/images/creator-content/Leaderboard_url.png">
+<meta property="og:image:type" content="image/png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="ABA Leaderboard | Arkansas Blockchain Association">
+<meta name="twitter:description" content="Explore participation, rankings, badges, and activity across Arkansas Blockchain Association interactive learning experiences.">
+<meta name="twitter:image" content="https://centerforcreators.com/images/creator-content/Leaderboard_url.png">
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+:root {
+  --gold: #F0B429; --gold-light: #FFD166; --gold-dark: #C88B00;
+  --purple: #7C3AED; --purple-light: #A855F7; --purple-dark: #5B21B6;
+  --green: #10B981; --green-light: #34D399; --green-dark: #059669;
+  --blue: #63B3ED; --blue-dark: #3182CE;
+  --bg: #07070F; --bg2: #0D0D1A; --bg3: #12121F; --bg4: #1A1A2E;
+  --card: rgba(255,255,255,0.03); --border: rgba(255,255,255,0.07);
+  --text: #E5E7EB; --text-muted: #87CEEB; --text-dim: #8B90A0;
+}
+
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior:smooth; }
+body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; overflow-x: hidden; line-height: 1.6; }
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--gold-dark); border-radius: 3px; }
+#canvas { position: fixed; top:0; left:0; width:100%; height:100%; z-index:0; pointer-events:none; opacity:0.3; }
+nav { position: fixed; top: 0; left: 0; right: 0; z-index: 1000; display: flex; align-items: center; justify-content: space-between; padding: 0 2.5rem; height: 70px; background: rgba(7,7,15,0.92); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border); }
+.nav-logo img { height: 45px; filter: brightness(1.1); }
+.nav-logo { text-decoration: none; }
+.nav-links { display: flex; gap: 1.8rem; list-style: none; margin: 0; }
+.nav-links a { text-decoration: none; color: var(--text); font-size: 0.82rem; font-weight: 500; letter-spacing: 0.03em; transition: color 0.25s; text-transform: uppercase; }
+.nav-links a:hover, .nav-links a.active { color: var(--gold); }
+.nav-ctas { display: flex; gap: 0.75rem; align-items: center; }
+.btn-gold { padding: 0.5rem 1.3rem; border-radius: 8px; background: linear-gradient(135deg, var(--gold), var(--gold-dark)); color: #000; font-weight: 700; font-size: 0.82rem; cursor: pointer; border: none; transition: all 0.25s; text-decoration: none; font-family: inherit; letter-spacing: 0.02em; }
+.btn-gold:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(240,180,41,0.35); }
+.ticker-wrap { position: fixed; top: 70px; left: 0; right: 0; z-index: 999; background: linear-gradient(90deg, var(--bg2), rgba(240,180,41,0.03), var(--bg2)); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); padding: 0.7rem 0; overflow: hidden; }
+.ticker-inner { display: flex; gap: 3rem; white-space: nowrap; animation: ticker 28s linear infinite; }
+.ticker-inner:hover { animation-play-state: paused; }
+@keyframes ticker { 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
+.ticker-item { display: flex; align-items: center; gap: 0.5rem; font-size: 0.78rem; font-weight: 500; color: var(--text); }
+.ticker-item .t-label { color: var(--gold); font-weight: 700; }
+.ticker-item .t-green { color: var(--green); }
+.ticker-item .t-purple { color: var(--purple-light); }
+.ticker-sep { color: var(--text-dim); }
+.page-content { padding-top: 120px; position: relative; z-index: 1; }
+.container { max-width: 1300px; margin: 0 auto; padding: 0 2.5rem; }
+section { padding: 80px 0; position: relative; overflow: hidden; }
+.section-header { text-align: center; margin-bottom: 3rem; }
+.section-header h2 { font-family: 'Space Grotesk', sans-serif; font-size: clamp(2.4rem, 4vw, 3.5rem); font-weight: 800; margin-bottom: 1rem; line-height: 1.1; color: #EEF4FF; -webkit-text-stroke: 1px rgba(135,206,235,0.6); text-shadow: 0 0 20px rgba(135,206,235,0.6), 0 0 60px rgba(135,206,235,0.3), 0 0 120px rgba(96,165,250,0.2); animation: titlePulse 4s ease-in-out infinite; }
+@keyframes titlePulse { 0%, 100% { text-shadow: 0 0 20px rgba(135,206,235,0.6), 0 0 60px rgba(135,206,235,0.3); } 50% { text-shadow: 0 0 30px rgba(135,206,235,0.9), 0 0 90px rgba(135,206,235,0.5), 0 0 160px rgba(96,165,250,0.3); } }
+.section-header p { font-size: 1.05rem; color: var(--text-muted); max-width: 600px; margin: 0 auto; line-height: 1.7; }
+.reveal { opacity: 0; transform: translateY(30px); transition: opacity 0.7s ease, transform 0.7s ease; }
+.reveal.visible { opacity: 1; transform: translateY(0); }
+@keyframes float { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-12px); } }
+@keyframes pulse-glow { 0%, 100% { transform: scale(1) translate(0,0); opacity: 1; } 50% { transform: scale(1.1) translate(10px,-10px); opacity: 0.7; } }
+@keyframes slideInRight { from { opacity: 0; transform: translateX(30px); } to { opacity: 1; transform: translateX(0); } }
+@keyframes float-slow { 0%, 100% { transform: translateY(0) rotate(0deg); } 50% { transform: translateY(-20px) rotate(2deg); } }
+#spotlight { background: linear-gradient(135deg, rgba(124,58,237,0.08) 0%, rgba(240,180,41,0.05) 50%, rgba(16,185,129,0.03) 100%); border-bottom: 1px solid var(--border); padding: 60px 0; }
+.spotlight-glow { position: absolute; border-radius: 50%; pointer-events: none; z-index: 0; }
+.glow-1 { width: 800px; height: 800px; background: radial-gradient(circle, rgba(124,58,237,0.15) 0%, transparent 70%); top: -300px; left: -200px; animation: pulse-glow 8s ease-in-out infinite; }
+.glow-2 { width: 600px; height: 600px; background: radial-gradient(circle, rgba(240,180,41,0.1) 0%, transparent 70%); bottom: -100px; right: -100px; animation: pulse-glow 10s ease-in-out infinite reverse; }
+.spotlight-container { position: relative; z-index: 1; display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center; }
+.spotlight-card { background: var(--card); border: 1px solid rgba(240,180,41,0.2); border-radius: 24px; padding: 2.5rem; box-shadow: 0 20px 60px rgba(240,180,41,0.1), 0 0 80px rgba(124,58,237,0.06); animation: float 5.5s ease-in-out infinite; }
+.spotlight-image { width: 100%; aspect-ratio: 1; border-radius: 16px; object-fit: cover; margin-bottom: 1.5rem; border: 2px solid rgba(240,180,41,0.3); box-shadow: 0 0 40px rgba(240,180,41,0.2), inset 0 0 30px rgba(240,180,41,0.05); }
+.spotlight-name { font-family: 'Space Grotesk', sans-serif; font-size: 1.8rem; font-weight: 700; margin-bottom: 0.5rem; color: var(--gold); }
+.spotlight-title { font-size: 1rem; color: var(--text-muted); margin-bottom: 1.2rem; font-weight: 500; }
+.spotlight-badge { display: inline-block; padding: 0.3rem 0.8rem; border-radius: 100px; font-size: 0.72rem; font-weight: 700; background: rgba(16,185,129,0.15); border: 1px solid rgba(16,185,129,0.3); color: var(--green); margin-right: 0.5rem; margin-bottom: 1rem; }
+.spotlight-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1.5rem 0; }
+.stat-box { background: rgba(255,255,255,0.04); border: 1px solid var(--border); border-radius: 12px; padding: 1rem; text-align: center; }
+.stat-num { font-family: 'Space Grotesk', sans-serif; font-size: 1.5rem; font-weight: 700; color: var(--gold); display: block; }
+.stat-label { font-size: 0.72rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.05em; margin-top: 0.3rem; }
+.spotlight-actions { display: flex; gap: 1rem; margin-top: 1.5rem; }
+.btn-view-creator { flex: 1; padding: 0.8rem; border-radius: 10px; background: linear-gradient(135deg, var(--gold), var(--gold-dark)); color: #000; font-weight: 700; border: none; cursor: pointer; transition: all 0.25s; }
+.btn-view-creator:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(240,180,41,0.3); }
+.btn-view-content { flex: 1; padding: 0.8rem; border-radius: 10px; border: 1px solid var(--border); background: transparent; color: var(--text-muted); font-weight: 600; cursor: pointer; transition: all 0.25s; }
+.btn-view-content:hover { border-color: var(--gold); color: var(--gold); background: rgba(240,180,41,0.05); }
+#progress { background: linear-gradient(180deg, var(--bg2), var(--bg)); border-bottom: 1px solid var(--border); }
+.progress-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 2rem; margin-top: 2rem; }
+.progress-card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 2rem 1.5rem; text-align: center; transition: all 0.3s; }
+.progress-card:hover { border-color: rgba(240,180,41,0.3); transform: translateY(-4px); }
+.progress-metric { font-family: 'Space Grotesk', sans-serif; font-size: 2.2rem; font-weight: 700; color: var(--gold); margin-bottom: 0.5rem; }
+.progress-label { font-size: 0.95rem; color: var(--text-muted); margin-bottom: 1.2rem; }
+.progress-bar-container { height: 12px; background: rgba(255,255,255,0.05); border-radius: 100px; overflow: hidden; position: relative; }
+.progress-bar-fill { height: 100%; background: linear-gradient(90deg, var(--gold), var(--gold-dark)); border-radius: 100px; transition: width 1.5s cubic-bezier(0.34, 1.56, 0.64, 1); box-shadow: 0 0 20px rgba(240,180,41,0.5); }
+.progress-text { font-size: 0.8rem; color: var(--text-dim); margin-top: 0.75rem; }
+.big-progress-section { background: linear-gradient(135deg, rgba(16,185,129,0.08), rgba(240,180,41,0.05)); border: 2px solid rgba(16,185,129,0.2); border-radius: 20px; padding: 3rem 2.5rem; text-align: center; margin-top: 3rem; }
+.big-progress-title { font-family: 'Space Grotesk', sans-serif; font-size: 1.4rem; font-weight: 700; margin-bottom: 0.5rem; color: var(--text); }
+.big-progress-target { font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1.5rem; }
+.big-progress-bar { height: 24px; background: rgba(255,255,255,0.05); border-radius: 100px; overflow: hidden; position: relative; margin: 1.5rem 0; border: 1px solid rgba(16,185,129,0.3); }
+.big-progress-bar-fill { height: 100%; background: linear-gradient(90deg, var(--green), var(--green-dark)); transition: width 2s cubic-bezier(0.34, 1.56, 0.64, 1); display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 700; font-size: 0.78rem; box-shadow: 0 0 30px rgba(16,185,129,0.6); }
+.big-progress-count { font-family: 'Space Grotesk', sans-serif; font-size: 3rem; font-weight: 800; color: var(--green); margin-top: 1rem; }
+#founding { background: linear-gradient(135deg, rgba(16,185,129,0.08) 0%, rgba(124,58,237,0.05) 100%); border-bottom: 1px solid var(--border); }
+.founding-urgency { background: linear-gradient(135deg, rgba(240,180,41,0.12), rgba(124,58,237,0.08)); border: 2px solid rgba(240,180,41,0.3); border-radius: 20px; padding: 2.5rem; text-align: center; margin-bottom: 3rem; box-shadow: 0 20px 60px rgba(240,180,41,0.1); }
+.founding-title { font-family: 'Space Grotesk', sans-serif; font-size: 1.6rem; font-weight: 700; margin-bottom: 0.5rem; color: var(--gold); }
+.founding-counter { font-family: 'Space Grotesk', sans-serif; font-size: 2.8rem; font-weight: 800; color: var(--green); margin: 1rem 0; }
+.founding-sub { font-size: 0.95rem; color: var(--text-muted); margin-top: 1rem; }
+.founding-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1.5rem; margin-top: 2rem; }
+.founding-creator { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 1.2rem; text-align: center; transition: all 0.3s; position: relative; }
+.founding-creator:hover { border-color: rgba(240,180,41,0.3); transform: translateY(-4px); }
+.founding-creator-avatar { width: 80px; height: 80px; border-radius: 12px; object-fit: cover; margin: 0 auto 1rem; border: 2px solid rgba(240,180,41,0.2); }
+.founding-creator-name { font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 0.95rem; margin-bottom: 0.3rem; }
+.founding-badge { display: inline-block; padding: 0.25rem 0.6rem; border-radius: 100px; font-size: 0.65rem; font-weight: 700; background: rgba(240,180,41,0.15); color: var(--gold); border: 1px solid rgba(240,180,41,0.3); margin-top: 0.5rem; position: absolute; top: 10px; right: 10px; }
+#top-creators { background: linear-gradient(180deg, var(--bg), var(--bg2)); border-bottom: 1px solid var(--border); }
+.leaderboard-container { background: var(--card); border: 1px solid var(--border); border-radius: 20px; overflow: hidden; margin-top: 2rem; }
+.leaderboard-header { display: grid; grid-template-columns: 60px 1fr 100px 100px 100px 100px 100px 80px; gap: 1rem; padding: 1.5rem 2rem; background: linear-gradient(90deg, rgba(240,180,41,0.05), rgba(124,58,237,0.03)); border-bottom: 1px solid var(--border); font-weight: 700; font-size: 0.8rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.05em; }
+.leaderboard-rows { max-height: 600px; overflow-y: auto; padding-top: 12px; }
+.leaderboard-row { display: grid; grid-template-columns: 60px 1fr 100px 100px 100px 100px 100px 80px; gap: 1rem; padding: 1.2rem 2rem; border-bottom: 1px solid rgba(255,255,255,0.03); align-items: center; transition: all 0.3s; animation: slideInRight 0.5s ease; }
+.leaderboard-row:hover { background: rgba(240,180,41,0.04); border-color: rgba(240,180,41,0.1); }
+.rank-badge { font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 1.1rem; color: var(--gold); text-align: center; padding: 0.3rem 0; }
+.creator-info { display: flex; align-items: center; gap: 0.75rem; }
+.creator-avatar { width: 40px; height: 40px; border-radius: 8px; object-fit: cover; border: 1px solid rgba(240,180,41,0.2); }
+.creator-details h4 { font-size: 0.9rem; font-weight: 600; margin-bottom: 0.1rem; }
+.creator-details span { font-size: 0.75rem; color: var(--text-dim); }
+.score-metric { text-align: center; font-family: 'Space Grotesk', sans-serif; font-size: 0.95rem; font-weight: 700; color: var(--text); }
+.trend-indicator { text-align: center; font-size: 1.2rem; }
+#all-time { background: linear-gradient(135deg, rgba(124,58,237,0.06), rgba(16,185,129,0.03)); border-bottom: 1px solid var(--border); }
+.leaderboard-controls { display: flex; gap: 1rem; margin-bottom: 2rem; flex-wrap: wrap; }
+.search-box { flex: 1; min-width: 250px; padding: 0.75rem 1.2rem; border-radius: 10px; background: var(--bg3); border: 1px solid var(--border); color: var(--text); font-family: inherit; font-size: 0.9rem; transition: border-color 0.2s; }
+.search-box:focus { outline: none; border-color: var(--gold); }
+.filter-buttons { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+.filter-btn { padding: 0.6rem 1.2rem; border-radius: 8px; border: 1px solid var(--border); background: transparent; color: var(--text-muted); cursor: pointer; transition: all 0.2s; font-size: 0.82rem; font-weight: 600; }
+.filter-btn:hover, .filter-btn.active { border-color: var(--gold); color: var(--gold); background: rgba(240,180,41,0.05); }
+#top-content { background: linear-gradient(180deg, var(--bg2), var(--bg)); border-bottom: 1px solid var(--border); }
+.content-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 2rem; margin-top: 2rem; }
+.content-card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; transition: all 0.3s; display: flex; flex-direction: column; }
+.content-card:hover { transform: translateY(-6px); border-color: rgba(240,180,41,0.3); box-shadow: 0 20px 60px rgba(240,180,41,0.08); }
+.content-image { width: 100%; height: 200px; background: linear-gradient(135deg, var(--bg3), var(--bg4)); object-fit: cover; display: flex; align-items: center; justify-content: center; font-size: 2.5rem; }
+.content-body { padding: 1.5rem; flex: 1; display: flex; flex-direction: column; }
+.content-title { font-family: 'Space Grotesk', sans-serif; font-size: 1.05rem; font-weight: 700; margin-bottom: 0.5rem; line-height: 1.4; }
+.content-creator { font-size: 0.82rem; color: var(--text-dim); margin-bottom: 1rem; }
+.content-metrics { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-top: auto; padding-top: 1rem; border-top: 1px solid rgba(255,255,255,0.05); }
+.metric { text-align: center; font-size: 0.75rem; }
+.metric-num { font-family: 'Space Grotesk', sans-serif; font-size: 1.1rem; font-weight: 700; color: var(--gold); display: block; }
+.metric-label { color: var(--text-dim); font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.04em; }
+#badges { background: linear-gradient(135deg, rgba(240,180,41,0.06), rgba(124,58,237,0.04)); border-bottom: 1px solid var(--border); }
+.badges-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1.5rem; margin-top: 2rem; }
+.badge-card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 2rem 1.5rem; text-align: center; transition: all 0.3s; position: relative; cursor: pointer; }
+.badge-card:hover { border-color: rgba(240,180,41,0.3); transform: translateY(-8px); box-shadow: 0 20px 60px rgba(240,180,41,0.12); }
+.badge-icon { font-size: 3.5rem; margin-bottom: 1rem; display: block; animation: float-slow 4s ease-in-out infinite; }
+.badge-name { font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 0.95rem; margin-bottom: 0.4rem; }
+.badge-description { font-size: 0.8rem; color: var(--text-muted); line-height: 1.5; }
+.badge-details { display: none; position: absolute; inset: 0; background: rgba(7,7,15,0.95); border-radius: 16px; padding: 1.5rem; flex-direction: column; justify-content: center; align-items: center; border: 1px solid rgba(240,180,41,0.2); backdrop-filter: blur(10px); }
+.badge-card:hover .badge-details { display: flex; }
+.badge-card:hover .badge-icon, .badge-card:hover .badge-name, .badge-card:hover .badge-description { display: none; }
+.badge-requirement { font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 1rem; color: var(--gold); margin-bottom: 0.5rem; }
+.badge-requirement-text { font-size: 0.8rem; color: var(--text-muted); }
+#levels { background: linear-gradient(180deg, var(--bg), var(--bg2)); border-bottom: 1px solid var(--border); }
+.levels-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2rem; margin-top: 2rem; }
+.level-card { background: linear-gradient(135deg, var(--bg3), var(--bg4)); border: 2px solid var(--border); border-radius: 16px; padding: 2.5rem 2rem; text-align: center; transition: all 0.3s; position: relative; overflow: hidden; }
+.level-card::before { content: ''; position: absolute; inset: 0; background: radial-gradient(circle at center, rgba(240,180,41,0.1) 0%, transparent 70%); opacity: 0; transition: opacity 0.3s; }
+.level-card:hover { transform: translateY(-6px); border-color: rgba(240,180,41,0.4); box-shadow: 0 20px 60px rgba(240,180,41,0.1); }
+.level-card:hover::before { opacity: 1; }
+.level-icon { font-size: 3.5rem; margin-bottom: 1rem; animation: float 5s ease-in-out infinite; }
+.level-name { font-family: 'Space Grotesk', sans-serif; font-size: 1.3rem; font-weight: 700; margin-bottom: 0.5rem; }
+.level-threshold { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem; }
+.level-perks { text-align: left; font-size: 0.8rem; color: var(--text-dim); margin-top: 1rem; padding-top: 1rem; border-top: 1px solid rgba(255,255,255,0.05); }
+.level-perk { margin-bottom: 0.5rem; }
+.level-perk::before { content: '✓ '; color: var(--green); font-weight: 700; }
+#live-feed { background: linear-gradient(135deg, rgba(16,185,129,0.08), rgba(124,58,237,0.04)); border-bottom: 1px solid var(--border); }
+.live-feed-container { background: var(--card); border: 1px solid var(--border); border-radius: 20px; overflow: hidden; max-height: 500px; display: flex; flex-direction: column; margin-top: 2rem; }
+.live-feed-header { padding: 1.5rem 2rem; background: linear-gradient(90deg, rgba(16,185,129,0.1), rgba(124,58,237,0.05)); border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 0.75rem; position: sticky; top: 0; z-index: 10; }
+.live-badge { width: 10px; height: 10px; border-radius: 50%; background: var(--green); animation: pulse 2s infinite; }
+.live-feed-title { font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 1rem; }
+.feed-items { overflow-y: auto; flex: 1; }
+.feed-item { padding: 1.5rem 2rem; border-bottom: 1px solid rgba(255,255,255,0.03); transition: all 0.3s; animation: slideInRight 0.5s ease; }
+.feed-item:hover { background: rgba(240,180,41,0.03); }
+.feed-item:last-child { border-bottom: none; }
+.feed-time { font-size: 0.72rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 0.4rem; }
+.feed-action { font-size: 0.95rem; color: var(--text); line-height: 1.6; }
+.feed-name { color: var(--gold); font-weight: 700; }
+.feed-badge { color: var(--green); font-weight: 700; }
+.feed-sale { color: var(--purple-light); font-weight: 700; }
+.feed-activity { color: var(--text-muted); }
+@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+#admin-section { background: linear-gradient(135deg, rgba(239,68,68,0.05), rgba(124,58,237,0.04)); border: 2px solid rgba(239,68,68,0.15); border-radius: 16px; padding: 2.5rem; margin: 3rem 0; display: none; }
+.admin-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; margin-top: 1.5rem; }
+.admin-btn { padding: 0.85rem 1.5rem; border-radius: 10px; border: none; background: linear-gradient(135deg, #EF4444, #DC2626); color: #fff; font-weight: 700; font-size: 0.9rem; cursor: pointer; transition: all 0.25s; font-family: inherit; }
+.admin-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(239,68,68,0.3); }
+/* FOOTER */
+footer {
+  background: var(--bg2);
+  border-top: 1px solid var(--border);
+  padding: 60px 2.5rem 30px;
+  z-index: 1;
+  position: relative;
+}
+
+.footer-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.footer-top {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
+  gap: 3rem;
+  margin-bottom: 3rem;
+}
+
+.footer-brand p {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  line-height: 1.6;
+  max-width: 280px;
+  margin-top: 1rem;
+}
+
+.footer-brand img {
+  height: 40px;
+}
+
+.footer-social {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 1.2rem;
+}
+
+.social-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.2s;
+  text-decoration: none;
+}
+
+.social-btn:hover {
+  border-color: var(--gold);
+  color: var(--gold);
+}
+
+.footer-col h5 {
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-muted);
+  margin-bottom: 1rem;
+}
+
+.footer-col ul {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.footer-col ul a {
+  text-decoration: none;
+  color: var(--text-dim);
+  font-size: 0.82rem;
+  transition: color 0.2s;
+}
+
+.footer-col ul a:hover {
+  color: var(--gold);
+}
+
+.footer-bottom {
+  border-top: 1px solid var(--border);
+  padding-top: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.75rem;
+  color: var(--text-dim);
+}
+  .empty-state { text-align: center; padding: 2rem; color: var(--text-muted); }
+@media (max-width: 1024px) { .spotlight-container { grid-template-columns: 1fr; } .progress-grid { grid-template-columns: repeat(2, 1fr); } .leaderboard-header { grid-template-columns: 50px 1fr 80px 80px 80px 80px; gap: 0.75rem; } .leaderboard-row { grid-template-columns: 50px 1fr 80px 80px 80px 80px; gap: 0.75rem; } .content-grid { grid-template-columns: repeat(2, 1fr); } .levels-grid { grid-template-columns: repeat(2, 1fr); } .footer-inner { grid-template-columns: 1fr 1fr; gap: 2rem; } }
+@media (max-width: 768px) { nav { padding: 0 1.5rem; } .nav-links { display: none; } .container { padding: 0 1.5rem; } .progress-grid { grid-template-columns: 1fr; } section { padding: 50px 0; } .section-header h2 { font-size: 1.8rem; } .leaderboard-header { display: none; } .leaderboard-row { grid-template-columns: 1fr; gap: 0.5rem; padding: 1rem 1.5rem; } .content-grid { grid-template-columns: 1fr; } .levels-grid { grid-template-columns: 1fr; } .spotlight-stats { grid-template-columns: 1fr; } .spotlight-actions { flex-direction: column; } .btn-view-creator, .btn-view-content { width: 100%; } .footer-inner { grid-template-columns: 1fr; } .footer-bottom { flex-direction: column; gap: 1rem; text-align: center; } }
+@media (max-width: 480px) { .section-header h2 { font-size: 1.5rem; } .badges-grid { grid-template-columns: repeat(2, 1fr); } .leaderboard-row { padding: 0.75rem 1rem; } }
+#big-progress-percent {
+  display: none;
+}
+.spotlight-links {
+  display: flex;
+  gap: 1.5rem;
+  margin: 1rem 0 1.5rem;
+  flex-wrap: wrap;
+}
+
+.spotlight-links a {
+  color: #7dd3fc;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.spotlight-links a:hover {
+  color: #ffffff;
+}
+
+/* ===== ABA BRAND LAYER — presentation only; leaderboard APIs remain unchanged ===== */
+:root{
+  --aba-navy:#07131f; --aba-navy-2:#0b1f31; --aba-blue:#0f6fae;
+  --aba-blue-light:#87CEEB; --aba-cyan:#58c7e8; --aba-gold:#F0B429;
+}
+body{
+  background:
+    radial-gradient(circle at 15% 12%,rgba(15,111,174,.14),transparent 28rem),
+    radial-gradient(circle at 85% 28%,rgba(88,199,232,.08),transparent 26rem),
+    #07070F;
+}
+.aba-nav{border-bottom:1px solid rgba(88,199,232,.16)}
+.aba-wordmark{display:flex;align-items:center;gap:.8rem;text-decoration:none;min-width:260px}
+.aba-mark{
+  width:46px;height:46px;border-radius:12px;display:grid;place-items:center;
+  font-family:'Space Grotesk',sans-serif;font-size:.78rem;font-weight:800;letter-spacing:.06em;
+  color:#07131f;background:linear-gradient(135deg,#87CEEB,#58c7e8);
+  box-shadow:0 0 28px rgba(88,199,232,.18)
+}
+.aba-wordmark-text{display:flex;flex-direction:column;line-height:1.05}
+.aba-wordmark-text strong{font-size:.72rem;letter-spacing:.11em;color:#f2f7fb}
+.aba-wordmark-text span{font-size:.66rem;letter-spacing:.2em;color:#87CEEB;margin-top:.28rem}
+.nav-links a:hover,.nav-links a.active{color:var(--aba-cyan)}
+.btn-gold{background:linear-gradient(135deg,#87CEEB,#58c7e8);color:#07131f}
+.btn-gold:hover{box-shadow:0 6px 20px rgba(88,199,232,.28)}
+.ticker-wrap{background:linear-gradient(90deg,#07131f,rgba(15,111,174,.12),#07131f);border-color:rgba(88,199,232,.14)}
+.ticker-item .t-label{color:var(--aba-cyan)}
+.section-header h2{color:#f3f8fb;-webkit-text-stroke:0;text-shadow:0 0 28px rgba(88,199,232,.22)}
+.section-header p{color:#9db9c9}
+.aba-eyebrow{
+  display:inline-block;margin-bottom:1rem;padding:.38rem .8rem;border-radius:999px;
+  border:1px solid rgba(88,199,232,.25);background:rgba(88,199,232,.08);
+  color:#87CEEB;font-size:.74rem;font-weight:800;letter-spacing:.12em
+}
+.aba-intro{
+  padding:62px 0 26px;background:linear-gradient(180deg,rgba(15,111,174,.08),transparent);
+  border-bottom:1px solid rgba(88,199,232,.08)
+}
+.aba-intro-inner{max-width:860px;margin:0 auto;text-align:center}
+.aba-intro h1{
+  font-family:'Space Grotesk',sans-serif;font-size:clamp(2.7rem,6vw,5rem);line-height:1;
+  color:#f3f8fb;margin-bottom:1.2rem;letter-spacing:-.045em
+}
+.aba-intro h1 span{color:#87CEEB}
+.aba-intro p{font-size:1.05rem;color:#9db9c9;line-height:1.8;max-width:760px;margin:0 auto}
+.spotlight-card,.progress-card,.leaderboard-container,.content-card,.badge-card,.level-card,.live-feed-container{
+  border-color:rgba(88,199,232,.12)
+}
+.spotlight-card:hover,.progress-card:hover,.content-card:hover,.badge-card:hover,.level-card:hover{
+  border-color:rgba(88,199,232,.32)
+}
+.aba-footer-lockup{display:flex;align-items:center;gap:.8rem}
+.aba-footer-lockup>div{display:flex;flex-direction:column}
+.aba-footer-lockup strong{font-size:.72rem;letter-spacing:.08em;color:#f2f7fb}
+.aba-footer-lockup span{font-size:.62rem;letter-spacing:.11em;color:#87CEEB;margin-top:.25rem}
+.aba-footer .footer-col h5{color:#bcd3e0}
+.aba-footer .footer-col ul a{color:#849baa}
+.aba-footer .footer-col ul a:hover{color:#58c7e8}
+.aba-footer .footer-bottom span:last-child{color:#87CEEB!important}
+@media(max-width:900px){.aba-wordmark-text{display:none}.aba-wordmark{min-width:auto}}
+
+</style>
+ <link rel="preconnect" href="https://leaderboard-backend-vy75.onrender.com">
+<link rel="dns-prefetch" href="https://leaderboard-backend-vy75.onrender.com"> 
+</head>
+<body>
+
+<canvas id="canvas"></canvas>
+<nav class="aba-nav">
+  <a class="aba-wordmark" href="https://arkansasblockchainassociation.com/" aria-label="Arkansas Blockchain Association home">
+    <span class="aba-mark">ABA</span>
+    <span class="aba-wordmark-text"><strong>ARKANSAS BLOCKCHAIN</strong><span>ASSOCIATION</span></span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="https://arkansasblockchainassociation.com/">Home</a></li>
+    <li><a href="ABA_Masterclasses_Marketplace.html">Masterclasses</a></li>
+    <li><a href="ABA_Leaderboard.html" class="active">Leaderboard</a></li>
+    <li><a href="https://arkansasblockchainassociation.com/member-network">Member Network</a></li>
+  </ul>
+  <div class="nav-ctas">
+    <a href="https://arkansasblockchainassociation.com/join" class="btn-gold">Join ABA</a>
+  </div>
+</nav>
+
+<div class="ticker-wrap">
+  <div class="ticker-inner">
+    <span class="ticker-item"><span class="t-label">ABA</span> Interactive Learning & Engagement <span class="ticker-sep">&bull;</span></span>
+    <span class="ticker-item"><span class="t-green">🏆</span> Learn • Participate • Progress <span class="ticker-sep">&bull;</span></span>
+    <span class="ticker-item"><span class="t-label">CFC</span> Eligible Activities Can Earn CFC Rewards <span class="ticker-sep">&bull;</span></span>
+    <span class="ticker-item"><span class="t-purple">⭐</span> Badges • Rankings • Achievements <span class="ticker-sep">&bull;</span></span>
+    <span class="ticker-item"><span class="t-label">ABA</span> Interactive Learning & Engagement <span class="ticker-sep">&bull;</span></span>
+    <span class="ticker-item"><span class="t-green">🏆</span> Learn • Participate • Progress <span class="ticker-sep">&bull;</span></span>
+    <span class="ticker-item"><span class="t-label">CFC</span> Eligible Activities Can Earn CFC Rewards <span class="ticker-sep">&bull;</span></span>
+    <span class="ticker-item"><span class="t-purple">⭐</span> Badges • Rankings • Achievements <span class="ticker-sep">&bull;</span></span>
+  </div>
+</div>
+
+<div class="page-content">
+<section class="aba-intro">
+  <div class="container">
+    <div class="aba-intro-inner">
+      <div class="aba-eyebrow">ARKANSAS BLOCKCHAIN ASSOCIATION</div>
+      <h1>Learning <span>Leaderboard</span></h1>
+      <p>Track engagement, achievements, badges, and ecosystem activity across ABA's Tokenized Interactive Knowledge experiences, powered by Center for Creators.</p>
+    </div>
+  </div>
+</section>
+
+  <section id="progress">
+  <div class="container">
+    <div class="section-header">
+      <h2>📈 Learning Ecosystem</h2>
+      <p>Real-time activity and growth across the interactive learning ecosystem.</p>
+    </div>
+    <div class="progress-grid reveal" id="progress-grid">
+      <div class="empty-state">Loading metrics...</div>
+    </div>
+  </div>
+</section>
+
+<section id="spotlight">
+  <div class="spotlight-glow glow-1"></div>
+  <div class="spotlight-glow glow-2"></div>
+  <div class="container">
+    <div class="section-header">
+      <h2>✨ Community Spotlight</h2>
+      <p>A featured contributor demonstrating meaningful participation, knowledge sharing, and impact.</p>
+    </div>
+    <div class="spotlight-container reveal" id="spotlight-container">
+      <div class="empty-state">Loading community spotlight...</div>
+    </div>
+      <div style="font-size: 0.9rem; color: var(--text-muted); margin-top: 1rem;">
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="founding">
+  <div class="container">
+    <div class="section-header">
+      <h2>👑 Founding Contributors</h2>
+      <p>Recognition for early contributors who helped build the interactive knowledge ecosystem.</p>
+    </div>
+    <div class="founding-urgency reveal">
+      <div class="founding-title">⏰ Founding Status</div>
+      <div class="founding-counter"><span id="founding-claimed">0</span> / 100</div>
+      <div class="founding-sub" id="founding-sub">Founding spots remaining — Limited time opportunity!</div>
+    </div>
+    <div class="founding-list reveal" id="founding-list">
+      <div class="empty-state">Loading founding contributors...</div>
+    </div>
+  </div>
+</section>
+
+<section id="top-creators">
+  <div class="container">
+    <div class="section-header">
+      <h2>🏆 Top Contributors This Week</h2>
+      <p>Weekly rankings based on engagement and contribution data from the existing CFC leaderboard engine.</p>
+    </div>
+    <div class="leaderboard-container reveal">
+      <div class="leaderboard-header">
+        <div>Rank</div><div>Participant</div><div>Level</div><div>Score</div><div>Content</div><div>Readers</div><div>Sales</div><div>Trend</div>
+      </div>
+      <div class="leaderboard-rows" id="leaderboard-rows">
+        <div class="empty-state">Loading weekly leaderboard...</div>
+      </div>
+    </div>
+  </div>
+</section>
+</section>
+
+<section id="levels">
+  <div class="container">
+    <div class="section-header">
+      <h2>📊 Achievement Levels</h2>
+      <p>Progress through levels based on activity, contributions, and measurable ecosystem impact.</p>
+    </div>
+    <div class="levels-grid reveal">
+     <div class="level-card">
+  <div class="level-icon">🥉</div>
+  <div class="level-name">Bronze Creator</div>
+  <div class="level-threshold">1 Published Digital Asset</div>
+  <div class="level-perks">
+    <div class="level-perk">Bronze Creator Badge</div>
+    <div class="level-perk">Visible on Creator Leaderboard</div>
+    <div class="level-perk">100 CFC Token Award</div>
+  </div>
+</div>
+
+<div class="level-card">
+  <div class="level-icon">⚪</div>
+  <div class="level-name">Silver Creator</div>
+  <div class="level-threshold">5 Published Assets 
+    2 Content Completions</div>
+  <div class="level-perks">
+    <div class="level-perk">Silver Creator Badge</div>
+    <div class="level-perk">Featured Creators</div>
+    <div class="level-perk">250 CFC Token Award</div>
+  </div>
+</div>
+
+<div class="level-card">
+  <div class="level-icon">🏆</div>
+  <div class="level-name">Gold Creator</div>
+  <div class="level-threshold">10 Published Assets 
+    5 Content Completions</div>
+  <div class="level-perks">
+    <div class="level-perk">Gold Creator Badge</div>
+    <div class="level-perk">Homepage Creator Spotlight</div>
+    <div class="level-perk">500 CFC Token Award</div>
+  </div>
+</div>
+
+<div class="level-card">
+  <div class="level-icon">💎</div>
+  <div class="level-name">Platinum Creator</div>
+  <div class="level-threshold">25 Published Assets 
+    10 Content Completions</div>
+  <div class="level-perks">
+    <div class="level-perk">Platinum Creator Badge</div>
+    <div class="level-perk">Dedicated Creators Page</div>
+    <div class="level-perk">1,000 CFC Token Award</div>
+  </div>
+</div>
+
+<div class="level-card">
+  <div class="level-icon">✨</div>
+  <div class="level-name">Visionary Creator</div>
+  <div class="level-threshold">50 Published Assets 
+    25 Content Completions</div>
+  <div class="level-perks">
+    <div class="level-perk">Visionary Creator Badge</div>
+    <div class="level-perk">Added to Hall of Fame</div>
+    <div class="level-perk">2,500 CFC Token Award</div>
+  </div>
+</div>
+    </div>
+  </div>
+</section>
+ <section id="badges">
+  <div class="container">
+    <div class="section-header">
+      <h2>🎖️ Badge Gallery</h2>
+      <p>Hover to learn more. Click for requirements.</p>
+    </div>
+    <div class="badges-grid reveal">
+      <div class="badge-card"><span class="badge-icon">👑</span><div class="badge-name">Founding Creator</div><div class="badge-description">First 100 creators on the platform</div><div class="badge-details"><div class="badge-requirement">Limited Edition</div><div class="badge-requirement-text">First 100 to join get this permanent badge.</div></div></div>
+      <div class="badge-card"><span class="badge-icon">🚀</span><div class="badge-name">Pioneer Creator</div><div class="badge-description">Publish first NFT asset</div><div class="badge-details"><div class="badge-requirement">Requirement</div><div class="badge-requirement-text">Publish your first content piece on the platform.</div></div></div>
+      <div class="badge-card"><span class="badge-icon">🤖</span><div class="badge-name">AI Creator</div><div class="badge-description">Embed AI Agent in content</div><div class="badge-details"><div class="badge-requirement">Requirement</div><div class="badge-requirement-text">Create content with embedded AI Agent interaction.</div></div></div>
+      <div class="badge-card"><span class="badge-icon">👥</span><div class="badge-name">Community Builder</div><div class="badge-description">Generate 10 reader interactions</div><div class="badge-details"><div class="badge-requirement">Requirement</div><div class="badge-requirement-text">Get 10 or more unique readers for your content.</div></div></div>
+      <div class="badge-card"><span class="badge-icon">📖</span><div class="badge-name">Knowledge Leader</div><div class="badge-description">50+ readers across content</div><div class="badge-details"><div class="badge-requirement">Requirement</div><div class="badge-requirement-text">Accumulate 50+ unique readers total.</div></div></div>
+      <div class="badge-card"><span class="badge-icon">💰</span><div class="badge-name">Marketplace Leader</div><div class="badge-description">#1 ranked this week</div><div class="badge-details"><div class="badge-requirement">Requirement</div><div class="badge-requirement-text">Reach top rank on weekly leaderboard.</div></div></div>
+      <div class="badge-card"><span class="badge-icon">🥇</span><div class="badge-name">Marketplace Champion</div><div class="badge-description">#1 ranked this month</div><div class="badge-details"><div class="badge-requirement">Requirement</div><div class="badge-requirement-text">Maintain top rank on monthly leaderboard.</div></div></div>
+      <div class="badge-card"><span class="badge-icon">✍️</span><div class="badge-name">Content Creator</div><div class="badge-description">5 published assets</div><div class="badge-details"><div class="badge-requirement">Requirement</div><div class="badge-requirement-text">Publish 5 or more content pieces.</div></div></div>
+      <div class="badge-card"><span class="badge-icon">🏗️</span><div class="badge-name">Content Architect</div><div class="badge-description">25 published assets</div><div class="badge-details"><div class="badge-requirement">Requirement</div><div class="badge-requirement-text">Publish 25 or more content pieces.</div></div></div>
+      <div class="badge-card"><span class="badge-icon">🌍</span><div class="badge-name">Ecosystem Builder</div><div class="badge-description">100 wallet connections generated</div><div class="badge-details"><div class="badge-requirement">Requirement</div><div class="badge-requirement-text">Generate 100+ new wallet connections.</div></div></div>
+    </div>
+  </div>
+
+<section id="live-feed">
+  <div class="container">
+    <div class="section-header">
+      <h2>⚡ Live Ecosystem Feed</h2>
+      <p>Real-time activity from the ABA learning ecosystem powered by Center for Creators.</p>
+    </div>
+    <div class="live-feed-container reveal">
+      <div class="live-feed-header"><div class="live-badge"></div><div class="live-feed-title">Live Now</div></div>
+      <div class="feed-items" id="feed-items"><div class="empty-state">Loading activity feed...</div></div>
+    </div>
+  </div>
+</section>
+ 
+<section id="all-time">
+  <div class="container">
+    <div class="section-header">
+      <h2>⭐ All Time Leaderboard</h2>
+      <p>Search, sort, and explore all-time leaderboard results.</p>
+    </div>
+    <div class="leaderboard-controls reveal">
+      <input type="text" class="search-box" placeholder="Search participants by name..." id="search-input" onkeyup="filterLeaderboard()">
+      <div class="filter-buttons">
+        <button class="filter-btn active" data-sort="score">By Score</button>
+        <button class="filter-btn" data-sort="readers">By Readers</button>
+        <button class="filter-btn" data-sort="sales">By Sales</button>
+      </div>
+    </div>
+    <div class="leaderboard-container reveal">
+      <div class="leaderboard-header">
+        <div>Rank</div><div>Participant</div><div>Level</div><div>Score</div><div>Content</div><div>Readers</div><div>Sales</div><div>Trend</div>
+      </div>
+      <div class="leaderboard-rows" id="all-time-rows">
+        <div class="empty-state">Loading all-time leaderboard...</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="top-content">
+  <div class="container">
+    <div class="section-header">
+      <h2>📚 Top Learning Content This Week</h2>
+      <p>The most engaging masterclasses, workshops, articles, and other learning experiences.</p>
+    </div>
+    <div class="content-grid reveal" id="content-grid">
+      <div class="empty-state">Loading top content...</div>
+    </div>
+  </div>
+</section>
+
+<div id="admin-section" class="container">
+  <h3 style="color: var(--gold); margin-bottom: 1rem;">⚙️ Admin Controls</h3>
+  <div class="admin-grid">
+    <button class="admin-btn" onclick="adminFeatureCreator()">Feature Spotlight Creator</button>
+    <button class="admin-btn" onclick="adminAwardBadge()">Award Special Badge</button>
+    <button class="admin-btn" onclick="adminResetWeekly()">Reset Weekly Rankings</button>
+    <button class="admin-btn" onclick="adminResetMonthly()">Reset Monthly Rankings</button>
+    <button class="admin-btn" onclick="adminViewAnalytics()">View Analytics</button>
+    <button class="admin-btn" onclick="adminRemoveFraud()">Remove Fraudulent Activity</button>
+  </div>
+</div>
+
+</div>
+
+<!-- FOOTER -->
+<footer class="aba-footer">
+  <div class="footer-inner">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <div class="aba-footer-lockup"><span class="aba-mark">ABA</span><div><strong>ARKANSAS BLOCKCHAIN ASSOCIATION</strong><span>EDUCATE • CONNECT • INNOVATE • ADVANCE</span></div></div>
+        <p>Advancing blockchain, digital assets, emerging technology, education, and innovation across Arkansas and beyond.</p>
+      </div>
+      <div class="footer-col"><h5>Explore</h5><ul>
+        <li><a href="https://arkansasblockchainassociation.com/about">About</a></li>
+        <li><a href="ABA_Masterclasses_Marketplace.html">Masterclasses</a></li>
+        <li><a href="https://arkansasblockchainassociation.com/partnerships">Partnerships</a></li>
+      </ul></div>
+      <div class="footer-col"><h5>Community</h5><ul>
+        <li><a href="https://arkansasblockchainassociation.com/member-network">Member Network</a></li>
+        <li><a href="https://arkansasblockchainassociation.com/join">Join ABA</a></li>
+        <li><a href="ABA_Leaderboard.html">Leaderboard</a></li>
+      </ul></div>
+      <div class="footer-col"><h5>Technology</h5><ul>
+        <li><a href="https://centerforcreators.com/" target="_blank" rel="noopener">Powered by Center for Creators</a></li>
+      </ul></div>
+    </div>
+    <div class="footer-bottom">
+      <span>&copy; 2026 Arkansas Blockchain Association.</span>
+      <span>Tokenized Interactive Knowledge • Powered by Center for Creators</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+class Particle {
+  constructor() {
+    this.x = Math.random() * canvas.width;
+    this.y = Math.random() * canvas.height;
+    this.speedX = (Math.random() - 0.5) * 0.5;
+    this.speedY = (Math.random() - 0.5) * 0.5;
+    this.size = Math.random() * 2 + 1;
+    this.opacity = Math.random() * 0.5 + 0.1;
+    this.color = ['#F0B429', '#7C3AED', '#10B981', '#63B3ED'][Math.floor(Math.random() * 4)];
+  }
+  update() {
+    this.x += this.speedX;
+    this.y += this.speedY;
+    if (this.x > canvas.width) this.x = 0;
+    if (this.x < 0) this.x = canvas.width;
+    if (this.y > canvas.height) this.y = 0;
+    if (this.y < 0) this.y = canvas.height;
+  }
+  draw() {
+    ctx.fillStyle = this.color;
+    ctx.globalAlpha = this.opacity;
+    ctx.beginPath();
+    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+    ctx.fill();
+  }
+}
+const particles = [];
+for (let i = 0; i < 80; i++) particles.push(new Particle());
+function animateParticles() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  particles.forEach(p => {p.update(); p.draw();});
+  ctx.globalAlpha = 1;
+  requestAnimationFrame(animateParticles);
+}
+animateParticles();
+window.addEventListener('resize', () => { canvas.width = window.innerWidth; canvas.height = window.innerHeight; });
+const reveals = document.querySelectorAll('.reveal');
+function checkReveal() {
+  reveals.forEach(element => {
+    const windowHeight = window.innerHeight;
+    const elementTop = element.getBoundingClientRect().top;
+    if (elementTop < windowHeight - 50) element.classList.add('visible');
+  });
+}
+window.addEventListener('scroll', checkReveal);
+checkReveal();
+</script>
+
+<script>
+const LEADERBOARD_BACKEND = "https://leaderboard-backend-vy75.onrender.com";
+function getImageUrl(imageField) {
+  if (!imageField) return null;
+  if (imageField.startsWith('http')) return imageField;
+  if (imageField.startsWith('Qm') || imageField.startsWith('b')) return `https://gateway.pinata.cloud/ipfs/${imageField}`;
+  return null;
+}
+function getInitials(name) {
+  return name?.split(' ').map(n => n[0]).join('').toUpperCase() || '?';
+}
+async function fetchDashboard() {
+  try {
+    const res = await fetch(`${LEADERBOARD_BACKEND}/api/creators/dashboard`);
+    if (!res.ok) throw new Error('Failed');
+    const data = await res.json();
+    const progressGrid = document.getElementById('progress-grid');
+    progressGrid.innerHTML = `
+     
+     <div class="progress-card">
+  <div class="progress-label">CFC Trustlines</div>
+  <div class="progress-metric" data-target="${data.trustlines}">0</div> 
+  <div class="progress-bar-container">
+    <div class="progress-bar-fill" style="width: ${Math.min(100, (data.trustlines / 5000) * 100)}%;"></div>
+  </div>
+  <div class="progress-text">active</div>
+</div>
+    <div class="progress-card">
+  <div class="progress-label">Faucet Claims</div>
+  <div class="progress-metric" data-target="${data.faucet_claims}">0</div>
+  <div class="progress-bar-container">
+    <div class="progress-bar-fill" style="width: ${(data.faucet_claims / data.faucet_target) * 100}%;"></div>
+  </div>
+  <div class="progress-text">lifetime claims</div>
+</div>
+      <div class="progress-card"><div class="progress-label">Creators Joined</div><div class="progress-metric" data-target="${data.creator_count}">0</div><div class="progress-bar-container"><div class="progress-bar-fill" style="width: ${data.creator_progress_percent}%;"></div></div><div class="progress-text">of 500 target</div></div>
+      <div class="progress-card"><div class="progress-label">Published Assets</div><div class="progress-metric" data-target="${data.published_assets}">0</div><div class="progress-bar-container"><div class="progress-bar-fill" style="width: ${Math.min(100, (data.published_assets / 2000) * 100)}%;"></div></div><div class="progress-text">live on platform</div></div>
+      <div class="progress-card"><div class="progress-label">NFT Sales</div><div class="progress-metric" data-target="${data.nft_sales}">0</div><div class="progress-bar-container"><div class="progress-bar-fill" style="width: ${Math.min(100, (data.nft_sales / 1000) * 100)}%;"></div></div><div class="progress-text">total transactions</div></div>
+      <div class="progress-card"><div class="progress-label">Content Completions</div><div class="progress-metric" data-target="${data.content_completions}">0</div><div class="progress-bar-container"><div class="progress-bar-fill" style="width: ${Math.min(100, (data.content_completions / 15000) * 100)}%;"></div></div><div class="progress-text">readers engaged</div></div>
+      <div class="progress-card"><div class="progress-label">CFC Distributed</div><div class="progress-metric" data-target="${Math.round(data.cfc_distributed)}">0</div><div class="progress-bar-container"><div class="progress-bar-fill" style="width: ${Math.min(100, (data.cfc_distributed / 60000) * 100)}%;"></div></div><div class="progress-text">distributed from reader</div></div>
+   <div class="progress-card">
+  <div class="progress-label">CFC AMM Swaps</div>
+ <div class="progress-metric" data-target="${data.amm_activity}">0</div>
+  <div class="progress-bar-container">
+    <div class="progress-bar-fill" style="width: ${Math.min(100, (data.amm_activity / 100) * 100)}%;"></div>
+  </div>
+  <div class="progress-text">lifetime</div>
+</div>
+    `;
+    animateCounters();
+    const remaining = data.creator_target - data.creator_count;
+    document.getElementById('creator-count').textContent = data.creator_count;
+    document.getElementById('big-progress-fill').style.width = data.creator_progress_percent + '%';
+    document.getElementById('big-progress-percent').textContent = data.creator_progress_percent + '%';
+    document.getElementById('remaining-creators').textContent = remaining > 0 ? `${remaining} creators` : '0 creators';
+  } catch (e) { console.error('Dashboard error:', e); }
+}
+async function fetchSpotlight() {
+  try {
+    const res = await fetch(`${LEADERBOARD_BACKEND}/api/creators/spotlight`);
+    if (!res.ok) throw new Error('Failed');
+    const data = await res.json();
+    const container = document.getElementById('spotlight-container');
+    if (!data.creator) { container.innerHTML = '<div class="empty-state">No spotlight creator yet.</div>'; return; }
+    const creator = data.creator;
+    const imageUrl = getImageUrl(creator.profile_image) || `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400'%3E%3Crect fill='%23222' width='400' height='400'/%3E%3Ctext x='50%' y='50%' text-anchor='middle' dy='.3em' fill='%23fff' font-size='80' font-family='Arial'%3E${getInitials(creator.profile_name)}%3C/text%3E%3C/svg%3E`;
+    const badgesHtml = creator.badges?.length ? creator.badges.map(b => `<div class="spotlight-badge">${b}</div>`).join('') : '<div class="spotlight-badge">Creator</div>';
+   container.innerHTML = `
+  <div>
+    <img src="${imageUrl}" alt="${creator.profile_name}" class="spotlight-image" loading="eager">
+  </div>
+
+  <div class="spotlight-card">
+    <div class="spotlight-name">${creator.profile_name}</div>
+    <div class="spotlight-title">${creator.bio || 'Content Creator'}</div>
+    <div style="margin-bottom: 1rem;">${badgesHtml}</div>
+
+    <div>
+      <strong style="color: var(--gold);">Weekly Rank:</strong>
+      <div style="font-size: 2.2rem; color: var(--gold); font-weight: 700; margin-bottom: 1rem;">
+        🥇 #${creator.rank_position}
+      </div>
+    </div>
+
+    <div style="background: rgba(255,255,255,0.04); border: 1px solid var(--border); border-radius: 12px; padding: 1.2rem; margin-bottom: 1.5rem;">
+      <div style="font-size: 0.8rem; color: var(--text-dim); text-transform: uppercase; margin-bottom: 0.75rem;">Weekly Stats</div>
+
+      <div class="spotlight-stats">
+        <div class="stat-box"><span class="stat-num">${creator.published_content}</span><span class="stat-label">Published</span></div>
+        <div class="stat-box"><span class="stat-num">${creator.completions?.toLocaleString() || 5}</span><span class="stat-label">Completions</span></div>
+        <div class="stat-box"><span class="stat-num">${creator.wallet_connections || 6}</span><span class="stat-label">Readers</span></div>
+        <div class="stat-box"><span class="stat-num">${creator.badges?.length || 2}</span><span class="stat-label">Badges</span></div>
+      </div>
+    </div>
+
+    ${creator.website || creator.twitter || creator.facebook || creator.linkedin ? `
+      <div class="spotlight-links">
+        ${creator.website ? `<a href="${creator.website}" target="_blank">🌐 Website</a>` : ""}
+        ${creator.twitter ? `<a href="${creator.twitter}" target="_blank">𝕏</a>` : ""}
+        ${creator.facebook ? `<a href="${creator.facebook}" target="_blank">Facebook</a>` : ""}
+        ${creator.linkedin ? `<a href="${creator.linkedin}" target="_blank">LinkedIn</a>` : ""}
+      </div>
+    ` : ""}
+  </div>
+`;
+  } catch (e) { console.error('Spotlight error:', e); document.getElementById('spotlight-container').innerHTML = '<div class="empty-state">Could not load spotlight.</div>'; }
+}
+async function fetchFounding100() {
+  try {
+    const res = await fetch(`${LEADERBOARD_BACKEND}/api/creators/founding-100`);
+    if (!res.ok) throw new Error('Failed');
+    const data = await res.json();
+    document.getElementById('founding-claimed').textContent = data.claimed_count;
+    const remaining = data.remaining_count;
+    document.getElementById('founding-sub').textContent = `${remaining} founding spots remaining — Limited time opportunity!`;
+    const list = document.getElementById('founding-list');
+    if (data.claimed_creators.length === 0) { list.innerHTML = '<div class="empty-state">No founding creators yet.</div>'; return; }
+    list.innerHTML = data.claimed_creators.map(creator => {
+      const imageUrl = getImageUrl(creator.profile_image) || `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80'%3E%3Crect fill='%23222' width='80' height='80'/%3E%3Ctext x='50%' y='50%' text-anchor='middle' dy='.3em' fill='%23fff' font-size='30' font-family='Arial'%3E${getInitials(creator.profile_name)}%3C/text%3E%3C/svg%3E`;
+      return `<div class="founding-creator"><img src="${imageUrl}" alt="${creator.profile_name}" class="founding-creator-avatar" loading="lazy"><div class="founding-creator-name">${creator.profile_name}</div><div class="founding-badge">#${creator.founding_creator_number}</div></div>`;
+    }).join('');
+  } catch (e) { console.error('Founding 100 error:', e); document.getElementById('founding-list').innerHTML = '<div class="empty-state">Could not load founding creators.</div>'; }
+}
+async function fetchWeeklyLeaderboard() {
+  try {
+    const res = await fetch(`${LEADERBOARD_BACKEND}/api/creators/weekly-leaderboard`);
+    if (!res.ok) throw new Error('Failed');
+    const data = await res.json();
+    const rows = document.getElementById('leaderboard-rows');
+    if (!data.creators || data.creators.length === 0) { rows.innerHTML = '<div class="empty-state">No weekly leaderboard data yet.</div>'; return; }
+    rows.innerHTML = data.creators.map((creator, idx) => {
+      const imageUrl = getImageUrl(creator.profile_image) || `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40'%3E%3Crect fill='%23222' width='40' height='40'/%3E%3Ctext x='50%' y='50%' text-anchor='middle' dy='.3em' fill='%23fff' font-size='14' font-family='Arial'%3E${getInitials(creator.profile_name)}%3C/text%3E%3C/svg%3E`;
+      const trendColor = creator.trend === '▲' ? 'var(--green)' : creator.trend === '▼' ? '#EF4444' : 'var(--text-dim)';
+      return `<div class="leaderboard-row" style="animation-delay: ${idx * 0.05}s;"><div class="rank-badge">#${creator.rank}</div><div class="creator-info"><img src="${imageUrl}" alt="${creator.profile_name}" class="creator-avatar" loading="lazy"><div class="creator-details"><h4>${creator.profile_name}</h4><span>${creator.level || 'Creator'}</span></div></div><div class="score-metric">${creator.level || 'Bronze'}</div><div class="score-metric">${creator.score?.toLocaleString() || 0}</div><div class="score-metric">${creator.published_content || 0}</div><div class="score-metric">${creator.completions?.toLocaleString() || 0}</div><div class="score-metric">${creator.sales || 0}</div><div class="trend-indicator" style="color: ${trendColor};">${creator.trend || '▬'}</div></div>`;
+    }).join('');
+  } catch (e) { console.error('Weekly leaderboard error:', e); document.getElementById('leaderboard-rows').innerHTML = '<div class="empty-state">Could not load weekly leaderboard.</div>'; }
+}
+async function fetchAllTimeLeaderboard() {
+  try {
+    const res = await fetch(`${LEADERBOARD_BACKEND}/api/creators/all-time-leaderboard`);
+    if (!res.ok) throw new Error('Failed');
+    const data = await res.json();
+    const rows = document.getElementById('all-time-rows');
+    if (!data.creators || data.creators.length === 0) { rows.innerHTML = '<div class="empty-state">No creators yet.</div>'; return; }
+    rows.innerHTML = data.creators.map((creator, idx) => {
+      const imageUrl = getImageUrl(creator.profile_image) || `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40'%3E%3Crect fill='%23222' width='40' height='40'/%3E%3Ctext x='50%' y='50%' text-anchor='middle' dy='.3em' fill='%23fff' font-size='14' font-family='Arial'%3E${getInitials(creator.profile_name)}%3C/text%3E%3C/svg%3E`;
+      return `<div class="leaderboard-row" style="animation-delay: ${idx * 0.05}s;"><div class="rank-badge">#${creator.rank}</div><div class="creator-info"><img src="${imageUrl}" alt="${creator.profile_name}" class="creator-avatar" loading="lazy"><div class="creator-details"><h4>${creator.profile_name}</h4><span>${creator.level || 'Creator'}</span></div></div><div class="score-metric">${creator.level || 'Bronze'}</div><div class="score-metric">${creator.score?.toLocaleString() || 0}</div><div class="score-metric">${creator.published_content || 0}</div><div class="score-metric">${creator.completions?.toLocaleString() || 0}</div><div class="score-metric">${creator.sales || 0}</div><div class="trend-indicator">▬</div></div>`;
+    }).join('');
+  } catch (e) { console.error('All-time leaderboard error:', e); document.getElementById('all-time-rows').innerHTML = '<div class="empty-state">Could not load all-time leaderboard.</div>'; }
+}
+async function fetchTopContent() {
+  try {
+    const res = await fetch(`${LEADERBOARD_BACKEND}/api/creators/top-content`);
+    if (!res.ok) throw new Error('Failed');
+    const data = await res.json();
+    const grid = document.getElementById('content-grid');
+    if (!data.content || data.content.length === 0) { grid.innerHTML = '<div class="empty-state" style="grid-column: 1/-1;">No content yet.</div>'; return; }
+    grid.innerHTML = data.content.map(content => {
+      const imageUrl = getImageUrl(content.image_cid);
+      return `<div class="content-card reveal"><div class="content-image">${imageUrl ? `<img src="${imageUrl}" style="width:100%; height:100%; object-fit:cover;">` : '📚'}</div><div class="content-body"><div class="content-title">${content.name || 'Untitled'}</div><div class="content-creator">by ${content.creator_name || 'Unknown'}</div><div class="content-metrics"><div class="metric"><span class="metric-num">${content.completions || 0}</span><span class="metric-label">Completions</span></div><div class="metric"><span class="metric-num">${content.sales || 0}</span><span class="metric-label">Sales</span></div></div></div></div>`;
+    }).join('');
+  } catch (e) { console.error('Top content error:', e); document.getElementById('content-grid').innerHTML = '<div class="empty-state" style="grid-column: 1/-1;">Could not load content.</div>'; }
+}
+async function fetchActivityFeed() {
+  try {
+    const res = await fetch(`${LEADERBOARD_BACKEND}/api/creators/activity-feed`);
+    if (!res.ok) throw new Error('Failed');
+    const data = await res.json();
+    const feed = document.getElementById('feed-items');
+    if (!data.activities || data.activities.length === 0) { feed.innerHTML = '<div class="empty-state">No creator activity yet. New activity will appear here as creators publish, sell, and complete content.</div>'; return; }
+    feed.innerHTML = data.activities.map(activity => {
+      const timeAgo = new Date(activity.created_at);
+      const now = new Date();
+      const diff = Math.floor((now - timeAgo) / 1000);
+      let timeStr = 'just now';
+      if (diff < 60) timeStr = 'just now';
+      else if (diff < 3600) timeStr = Math.floor(diff / 60) + ' minutes ago';
+      else if (diff < 86400) timeStr = Math.floor(diff / 3600) + ' hours ago';
+      else timeStr = Math.floor(diff / 86400) + ' days ago';
+      return `<div class="feed-item"><div class="feed-time">${timeStr}</div><div class="feed-action"><span class="feed-name">${activity.profile_name || 'Creator'}</span> ${activity.activity_text || 'was active'}</div></div>`;
+    }).join('');
+  } catch (e) { console.error('Activity feed error:', e); document.getElementById('feed-items').innerHTML = '<div class="empty-state">No creator activity yet. New activity will appear here as creators publish, sell, and complete content.</div>'; }
+}
+function filterLeaderboard() {
+  const search = document.getElementById('search-input').value.toLowerCase();
+  const rows = document.querySelectorAll('#all-time-rows .leaderboard-row');
+  rows.forEach(row => { row.style.display = row.textContent.toLowerCase().includes(search) ? 'grid' : 'none'; });
+}
+function adminFeatureCreator() { alert('Feature a creator in the spotlight.'); }
+function adminAwardBadge() { alert('Award a special badge to a creator.'); }
+function adminResetWeekly() { alert('Reset weekly rankings.'); }
+function adminResetMonthly() { alert('Reset monthly rankings.'); }
+function adminViewAnalytics() { alert('View detailed ecosystem analytics.'); }
+function adminRemoveFraud() { alert('Remove fraudulent activity.'); }
+function checkAdmin() {
+  const adminEmail = localStorage.getItem('adminEmail');
+  if (adminEmail === 'christie@christieruss.com') document.getElementById('admin-section').style.display = 'block';
+}
+  function animateCounters() {
+  document.querySelectorAll('.progress-metric[data-target]').forEach(el => {
+    const target = parseInt(el.dataset.target);
+    let current = 0;
+    const step = Math.max(1, target / 100);
+
+    const timer = setInterval(() => {
+      current += step;
+
+      if (current >= target) {
+        el.textContent = target.toLocaleString();
+        clearInterval(timer);
+      } else {
+        el.textContent = Math.floor(current).toLocaleString();
+      }
+    }, 16);
+  });
+}
+document.addEventListener('DOMContentLoaded', () => {
+  if (LEADERBOARD_BACKEND === "PASTE_RENDER_BACKEND_URL_HERE") {
+    console.warn('⚠️ Please set LEADERBOARD_BACKEND URL');
+  } else {
+    // 1. Load the most important info first (Top of the page)
+    fetchDashboard();
+    fetchSpotlight();
+    
+    // 2. Wait 300ms, then load middle content
+    setTimeout(() => {
+      fetchFounding100();
+      fetchWeeklyLeaderboard();
+      fetchActivityFeed();
+    }, 300);
+
+    // 3. Load the heavy "All Time" list last
+    setTimeout(() => {
+      fetchAllTimeLeaderboard();
+      fetchTopContent();
+    }, 800);
+
+    setInterval(() => { 
+      fetchActivityFeed(); 
+      fetchWeeklyLeaderboard(); 
+    }, 30000);
+  }
+  checkAdmin();
+});
+</script>
+
+</body>
+</html>
