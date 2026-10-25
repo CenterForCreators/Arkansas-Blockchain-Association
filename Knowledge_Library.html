@@ -1372,7 +1372,7 @@ ${nft.terms ? `
       </div>
       <div class="nft-buy-btns">
         ${soldOut ? '<span style="color:var(--text-dim);font-size:0.75rem;">Sold Out</span>' : `
-          ${nft.price_xrp ? `<button class="btn-buy-xrp" onclick="initBuy(${nft.id},'XRP')" title="Buy with XRP">Pay XRP</button>` : ''}
+          ${nft.price_rlusd ? `<button class="btn-buy-rlusd" onclick="initBuy(${nft.id},'RLUSD')" title="Buy with RLUSD">Pay RLUSD</button>` : ''}
         `}
       </div>
     </div>
@@ -1494,14 +1494,14 @@ document.querySelectorAll('.filter-tab').forEach(tab=>{
 
 // ── BUY FLOW ──
 let buyNFT = null;
-let buyCurrency = 'XRP';
+let buyCurrency = 'RLUSD';
 let xamanPollTimer = null;
 
 function initBuy(nftId, currency){
   if(!connectedWallet){ openWalletModal(); return; }
   buyNFT = allNFTs.find(n=>n.id===nftId);
   if(!buyNFT) return;
-  buyCurrency = currency || (buyNFT.price_xrp ? 'XRP' : 'RLUSD');
+  buyCurrency = 'RLUSD';
   showBuyStep1();
   openModal('buy-modal');
 }
@@ -1511,17 +1511,13 @@ function showBuyStep1(){
   const imgUrl = buyNFT.image_cid ? IPFS_GATEWAY+buyNFT.image_cid : '';
   const xrpPrice = buyNFT.price_xrp ? buyNFT.price_xrp+' XRP' : null;
   const rlusdPrice = buyNFT.price_rlusd ? buyNFT.price_rlusd+' RLUSD' : null;
-  const currentPrice = buyCurrency === 'XRP' ? xrpPrice : rlusdPrice;
+  const currentPrice = rlusdPrice;
   document.getElementById('buy-modal-content').innerHTML = `
     <div class="modal-title">Purchase NFT</div>
    ${imgUrl ? `<img src="${imgUrl}" class="buy-nft-img" alt="${buyNFT.name}" loading="lazy" decoding="async" onerror="this.style.display='none'"/>` : `<div style="height:140px;background:var(--bg4);border-radius:10px;margin-bottom:1rem;display:flex;align-items:center;justify-content:center;font-size:3rem;">${getCategoryEmoji(buyNFT.category)}</div>`}
     <div class="buy-nft-name">${buyNFT.name}</div>
     <div class="buy-nft-meta">${buyNFT.description?.substring(0,100) || ''}${buyNFT.description?.length > 100 ? '...' : ''}</div>
     <hr class="divider" />
-    ${(xrpPrice && rlusdPrice) ? `<div class="currency-toggle">
-      <button class="cur-btn xrp ${buyCurrency==='XRP'?'active':''}" onclick="setBuyCurrency('XRP')">XRP</button>
-      <button class="cur-btn rlusd ${buyCurrency==='RLUSD'?'active':''}" onclick="setBuyCurrency('RLUSD')">RLUSD</button>
-    </div>` : ''}
     <div class="price-row">
       <span class="price-label">Purchase Price</span>
       <span class="price-val" id="buy-price-display">${currentPrice || 'N/A'}</span>
@@ -1551,7 +1547,7 @@ async function confirmBuy(){
   btn.disabled = true; btn.textContent = 'Creating payment request...';
   errEl.style.display = 'none';
   try {
-    const endpoint = buyCurrency === 'XRP' ? '/api/market/pay-xrp' : '/api/market/pay-rlusd';
+    const endpoint = '/api/market/pay-rlusd';
    const r = await fetch(MARKET_API+endpoint, {
   method:'POST',
   headers:{'Content-Type':'application/json'},
