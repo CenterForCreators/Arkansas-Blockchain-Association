@@ -570,7 +570,7 @@ body.aba-membership-pending #aba-member-access{display:block}
 </div>
 <div>
 <h4 style="font-size: 0.9rem; color: var(--purple-light); text-transform: uppercase; margin-bottom: 0.5rem;">🚀 Post-Approval Process</h4>
-<p style="font-size: 0.82rem; color: var(--text-muted);"><strong>Mandatory:</strong> Once approved, you must follow the 2 buttons in your "My Submissions" dashboard to sign <strong>3 separate transactions</strong> in XAMAN. This is required to list your asset on the marketplace.</p>
+<p style="font-size: 0.82rem; color: var(--text-muted);"><strong>Mandatory:</strong> Once approved, complete the XAMAN signing flow from your "My Submissions" dashboard. Each edition requires its own mint signature and marketplace listing signature.</p>
 </div>
 <div style="margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid var(--border); font-size: 0.78rem; color: var(--text-dim);">
         Note: Admin review takes 24-48 hours. Once approved, you will return to pay the fee and mint.
@@ -775,7 +775,7 @@ Edit Profile
 </div>
 <div class="form-group">
 <label class="form-label">Quantity (editions) <span>*</span></label>
-<input class="form-input" id="nft-qty" max="1" min="1" readonly="" type="number" value="1"/>
+<input class="form-input" id="nft-qty" max="25" min="1" type="number" value="1"/>
 <div class="form-hint">Number of Digital Asset editions to mint.</div>
 </div>
 </div>
@@ -1449,7 +1449,7 @@ const priceXrp = Number(document.getElementById('nft-price-xrp').value);
 const err = document.getElementById('step3-error');
   if(!name){ err.textContent = 'NFT title is required.'; err.style.display='block'; return; }
   if(!desc){ err.textContent = 'Description is required.'; err.style.display='block'; return; }
-  if(qty < 1 || qty > 1000){ err.textContent = 'Quantity must be between 1 and 1000.'; err.style.display='block'; return; }
+  if(qty < 1 || qty > 25){ err.textContent = 'Quantity must be between 1 and 25.'; err.style.display='block'; return; }
   if(priceXrp < 0.1){ err.textContent = 'Minimum price is 0.1 XRP.'; err.style.display='block'; return; }
   err.style.display = 'none';
   goToStep(4);
@@ -1778,10 +1778,15 @@ async function startPayment(subId){
 }
 
 // ── MINT FLOW (STEP 2 OF 3) ──
-async function startMint(subId){
+async function startMint(subId, mintedCount = 0, targetQty = null){
+   const nextEdition = Number(mintedCount || 0) + 1;
+   const progressText = targetQty
+     ? `Mint edition ${nextEdition} of ${targetQty}`
+     : 'Creating mint request...';
+
    showXamanModal(
     'Step 1 of 2: Mint Content',
-    'Creating mint request...'
+    progressText
   );
   const wallet = creatorWallet || localStorage.getItem('cfcWallet');
   if(!wallet){ alert('Please connect your wallet first.'); return; }
@@ -1792,26 +1797,45 @@ async function startMint(subId){
     });
     const d = await r.json();
 
+if(d.already_minted){
+  updateSubmissionLocal(subId, {mint:'minted', status:'minted'});
+  await listOnMarketplace(subId, true);
+  return;
+}
+
 document.getElementById('xaman-title').textContent =
   'Step 1 of 2: Mint Content';
 
 document.getElementById('xaman-subtitle').textContent =
-  'Sign the mint transaction in XAMAN to create your NFT.';
+  targetQty
+    ? `Sign mint ${nextEdition} of ${targetQty} in XAMAN.`
+    : 'Sign the mint transaction in XAMAN to create your Digital Asset.';
 
 if(!r.ok || !d.link) throw new Error(d.error || 'Mint request failed');
 
 updateXamanModal(d.link, d.uuid, async()=>{
       try {
-        await fetch(CREATOR_API+'/api/mark-minted', {
+        const markRes = await fetch(CREATOR_API+'/api/mark-minted', {
           method:'POST', headers:{'Content-Type':'application/json'},
           body: JSON.stringify({id: subId, uuid: d.uuid})
         });
+        const mark = await markRes.json();
+
+        if(!markRes.ok) throw new Error(mark.error || 'Could not update mint status');
+
+        if(mark.complete === false){
+          await startMint(
+            subId,
+            Number(mark.minted_count || 0),
+            Number(mark.quantity || targetQty || 1)
+          );
+          return;
+        }
+
         updateSubmissionLocal(subId, {mint:'minted', status:'minted'});
-        
-        // Seamlessly continue to step 3: Marketplace Listing
         await listOnMarketplace(subId, true);
-      } catch(e){ 
-        console.warn('mark-minted err', e); 
+      } catch(e){
+        console.warn('mark-minted err', e);
         alert('Could not update mint status: ' + e.message);
       }
     });
@@ -1825,7 +1849,6 @@ updateXamanModal(d.link, d.uuid, async()=>{
 async function listOnMarketplace(subId, autoStart){
 
   try {
-    // Robustly fetch with retry to allow the backend database to index the new mint
     const row = await fetchMarketplaceNftWithRetry(subId);
 
     if(!row || !row.id){
@@ -1845,31 +1868,39 @@ async function listOnMarketplace(subId, autoStart){
     });
 const d = await r.json();
 
+if(d.complete){
+  closeModal('xaman-modal');
+
+  const doneBtn = document.querySelector('#success-modal .btn-full-outline');
+  if (doneBtn) {
+    doneBtn.setAttribute('onclick', "window.location.href='marketplace.html';");
+  }
+
+  showSuccess('&#127881; Digital Assets Listed!', 'All editions are listed on the marketplace. Redirecting...');
+  loadDashboard();
+
+  setTimeout(() => {
+    window.location.href = 'marketplace.html';
+  }, 2500);
+  return;
+}
+
+const nextListing = Number(d.listed_count || 0) + 1;
+const targetQty = Number(d.target_quantity || row.quantity || 1);
+
 document.getElementById('xaman-title').textContent =
   'Step 2 of 2: List on Marketplace';
 
 document.getElementById('xaman-subtitle').textContent =
-  'Sign the marketplace listing transaction in XAMAN.';
+  targetQty > 1
+    ? `Sign listing ${nextListing} of ${targetQty} in XAMAN.`
+    : 'Sign the marketplace listing transaction in XAMAN.';
 
-if(!r.ok || !d.link) throw new Error(d.error || 'Failed to create marketplace listing request');
+if(!r.ok || !d.link || !d.uuid) throw new Error(d.error || 'Failed to create marketplace listing request');
 
 updateXamanModal(d.link, d.uuid, async()=>{
-    
-      closeModal('xaman-modal');
-      
-      // Target the Done button in the success modal to navigate to marketplace
-      const doneBtn = document.querySelector('#success-modal .btn-full-outline');
-      if (doneBtn) {
-        doneBtn.setAttribute('onclick', "window.location.href='marketplace.html';");
-      }
-      
-      showSuccess('&#127881; NFT Listed!', 'Your sell offer has been signed. Redirecting to the marketplace...');
-      loadDashboard();
-      
-      // Auto-redirect to the marketplace
-      setTimeout(() => {
-        window.location.href = 'marketplace.html';
-      }, 2500);
+      await new Promise(resolve => setTimeout(resolve, 2500));
+      await listOnMarketplace(subId, true);
     });
   } catch(e){
     closeModal('xaman-modal');
