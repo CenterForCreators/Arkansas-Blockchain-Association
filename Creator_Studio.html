@@ -780,7 +780,7 @@ Edit Profile
 </div>
 </div>
 <div class="form-row">
-<div class="form-group">
+<div class="form-group" style="display:none;">
 <label class="form-label">Price in XRP</label>
 <input class="form-input" id="nft-price-xrp" min="0.1" placeholder="e.g. 10" step="0.01" type="number"/>
 </div>
@@ -1450,7 +1450,6 @@ const err = document.getElementById('step3-error');
   if(!name){ err.textContent = 'NFT title is required.'; err.style.display='block'; return; }
   if(!desc){ err.textContent = 'Description is required.'; err.style.display='block'; return; }
   if(qty < 1 || qty > 25){ err.textContent = 'Quantity must be between 1 and 25.'; err.style.display='block'; return; }
-  if(priceXrp < 0.1){ err.textContent = 'Minimum price is 0.1 XRP.'; err.style.display='block'; return; }
   err.style.display = 'none';
   goToStep(4);
 }
@@ -1863,7 +1862,7 @@ async function listOnMarketplace(subId, autoStart){
       headers:{'Content-Type':'application/json'},
       body: JSON.stringify({
         marketplace_nft_id: row.id,
-        currency: 'XRP'
+        currency: 'RLUSD'
       })
     });
 const d = await r.json();
