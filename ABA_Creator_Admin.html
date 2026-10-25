@@ -1626,6 +1626,7 @@ try {
   wallet: creatorWallet,
   name,
   description: desc,
+  tenant_id: &quot;aba&quot;,
 
   image_cid: imageCid || null,
   metadataCid: metadataCidFinal,
@@ -1839,7 +1840,7 @@ async function loadSubmissionById(){
 async function fetchMarketplaceNftWithRetry(subId, retries = 10, delayMs = 2500) {
   for (let i = 0; i &lt; retries; i++) {
     try {
-      const marketRes = await fetch(&#x27;https://cfc-nft-shared-mint-backend.onrender.com/api/market/all&#x27;);
+      const marketRes = await fetch(&#x27;https://cfc-nft-shared-mint-backend.onrender.com/api/market/all?tenant=aba&#x27;);
       if (marketRes.ok) {
         const all = await marketRes.json();
         const row = all.find(n =&gt; Number(n.submission_id) === Number(subId));
