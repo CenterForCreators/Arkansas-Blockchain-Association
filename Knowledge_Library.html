@@ -543,28 +543,138 @@ body.aba-membership-pending #aba-member-access{display:block;}
 @media(max-width:600px){#aba-member-access{padding-top:110px}.aba-member-access-card{padding:1.5rem}}
 </style>
 
+
+<style id="aba-home-shell">
+:root{
+  --aba-site-navy:#07162f;--aba-site-navy2:#0a2145;--aba-site-gold:#c89124;
+  --aba-site-gold2:#e4b452;--aba-site-white:#fff;--aba-site-max:1240px;
+}
+.site-header{position:fixed;top:0;left:0;right:0;z-index:5000;border-bottom:1px solid rgba(255,255,255,.1);transition:.35s;background:rgba(5,18,39,.97);backdrop-filter:blur(18px);box-shadow:0 10px 35px rgba(0,0,0,.16)}
+.site-header .nav-wrap{width:min(1370px,calc(100% - 40px));height:88px;margin:auto;display:flex;align-items:center;justify-content:space-between}
+.site-header .brand{display:flex;align-items:center;gap:12px;color:#fff;text-decoration:none}
+.site-header .brand img{width:auto;height:46px;max-width:none;object-fit:contain;object-position:center;border-radius:0;background:transparent}
+.site-header .brand span{display:grid;line-height:1;gap:4px;letter-spacing:.15em}
+.site-header .brand strong{font-size:.55rem;font-weight:600}
+.site-header .brand b{font-size:.78rem}
+.site-header .brand em{font-size:.49rem;font-style:normal;color:#68b4ff}
+.site-header .menu-toggle{display:none;background:none;border:0;padding:10px}
+.site-header .menu-toggle span{width:24px;height:2px;background:#fff;display:block;margin:5px}
+#aba-primary-nav{position:static;inset:auto;height:auto;padding:0;background:transparent;border:0;display:flex;align-items:center;gap:24px;color:#dce7f5;font-size:.78rem;font-weight:600;backdrop-filter:none}
+#aba-primary-nav>a{color:#dce7f5;text-decoration:none}
+#aba-primary-nav>a:not(.nav-join){position:relative}
+#aba-primary-nav>a:not(.nav-join):after{content:"";position:absolute;left:0;bottom:-9px;width:0;height:1px;background:var(--aba-site-gold2);transition:.25s}
+#aba-primary-nav>a:hover:after{width:100%}
+#aba-primary-nav .aba-nav-group{position:relative}
+#aba-primary-nav .aba-nav-trigger{display:flex;align-items:center;justify-content:space-between;gap:8px;border:0;background:transparent;color:inherit;font:inherit;padding:14px 0;cursor:pointer;text-align:left}
+#aba-primary-nav .aba-nav-trigger>span{color:var(--aba-site-gold2);transition:transform .2s}
+#aba-primary-nav .aba-nav-trigger[aria-expanded="true"]>span{transform:rotate(180deg)}
+#aba-primary-nav .aba-nav-trigger:hover,#aba-primary-nav .aba-nav-trigger[aria-expanded="true"]{color:#fff}
+#aba-primary-nav .aba-nav-submenu{position:absolute;top:100%;left:-18px;min-width:250px;max-width:320px;padding:10px;background:#071d3e;border:1px solid rgba(126,183,240,.28);border-radius:12px;box-shadow:0 18px 40px rgba(0,0,0,.3)}
+#aba-primary-nav .aba-nav-submenu[hidden]{display:none}
+#aba-primary-nav .aba-nav-submenu a{display:block;font-size:.78rem;line-height:1.5;padding:12px 14px;border-radius:6px;color:#dce7f5;white-space:normal;text-decoration:none}
+#aba-primary-nav .aba-nav-submenu a:hover,#aba-primary-nav .aba-nav-submenu a:focus-visible{background:#123760;color:#fff}
+#aba-primary-nav .nav-join{display:inline-flex;align-items:center;justify-content:center;background:#fff;color:#07162f!important;padding:11px 18px;border-radius:999px;text-decoration:none;font-size:.7rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase}
+#aba-primary-nav a:focus-visible,#aba-primary-nav button:focus-visible,.site-header .menu-toggle:focus-visible{outline:2px solid var(--aba-site-gold2);outline-offset:5px}
+
+.page-content{padding-top:118px!important}
+#aba-member-access{padding-top:150px!important}
+
+.site-footer{background:#041126!important;color:#fff!important;padding:65px 0 25px!important;border-top:1px solid rgba(255,255,255,.1)!important;position:relative!important;z-index:2!important}
+.site-footer .container{width:min(100% - 40px,1240px)!important;max-width:1240px!important;margin:auto!important;padding:0!important}
+.site-footer .footer-main{display:grid!important;grid-template-columns:1fr .7fr!important;gap:100px!important;padding-bottom:55px!important}
+.site-footer .footer-brand{display:flex!important;gap:22px!important;align-items:center!important}
+.site-footer .footer-brand img{width:82px!important;height:82px!important;object-fit:contain!important;background:transparent!important;border-radius:0!important}
+.site-footer .footer-brand div{display:grid!important;gap:12px!important}
+.site-footer .footer-brand strong{font-size:1.05rem!important;letter-spacing:.09em!important}
+.site-footer .footer-brand span{font-size:.64rem!important;letter-spacing:.13em!important;color:#829ab3!important}
+.site-footer .footer-brand i{color:var(--aba-site-gold)!important;font-style:normal!important}
+.site-footer .footer-links{display:grid!important;grid-template-columns:1fr 1fr!important;gap:55px!important}
+.site-footer .footer-links div{display:flex!important;flex-direction:column!important;gap:9px!important}
+.site-footer .footer-links b{font-size:.68rem!important;text-transform:uppercase!important;letter-spacing:.15em!important;margin-bottom:10px!important;color:#6eb6fc!important}
+.site-footer .footer-links a{font-size:.78rem!important;color:#9eb1c7!important;text-decoration:none!important}
+.site-footer .footer-links a:hover{color:#fff!important}
+.site-footer .footer-bottom{border-top:1px solid rgba(255,255,255,.1)!important;padding-top:22px!important;display:flex!important;justify-content:space-between!important;color:#607a96!important;font-size:.63rem!important;letter-spacing:.06em!important}
+.site-footer .footer-linkedin{display:inline-flex!important;flex-direction:row!important;align-items:center!important;gap:8px!important}
+.site-footer .footer-linkedin svg{width:18px!important;height:18px!important;flex:0 0 18px!important;color:#6eb6fc!important}
+
+body.aba-membership-pending .site-footer{visibility:hidden!important}
+
+@media(max-width:960px){
+  .site-header .nav-wrap{height:88px}
+  .site-header .menu-toggle{display:block;position:relative;z-index:2}
+  body.menu-open{overflow:hidden}
+  #aba-primary-nav{position:fixed;inset:88px 0 0;height:auto;display:flex;flex-direction:column;align-items:stretch;justify-content:flex-start;gap:0;padding:18px 24px calc(30px + env(safe-area-inset-bottom));background:#06152f;overflow-y:auto;max-height:calc(100dvh - 88px);transform:translateX(100%);visibility:hidden;pointer-events:none;transition:transform .25s ease,visibility .25s}
+  #aba-primary-nav.open{transform:none;visibility:visible;pointer-events:auto}
+  #aba-primary-nav>a:not(.nav-join),#aba-primary-nav .aba-nav-trigger{font-size:1rem;padding:17px 0;width:100%;border-bottom:1px solid rgba(126,183,240,.18);border-radius:0}
+  #aba-primary-nav>a:after{display:none}
+  #aba-primary-nav .aba-nav-submenu{position:static;min-width:0;max-width:none;padding:0 0 8px 14px;border:0;border-left:1px solid rgba(126,183,240,.28);border-radius:0;box-shadow:none;background:transparent;margin:0 0 8px 6px}
+  #aba-primary-nav .aba-nav-submenu a{font-size:.9rem;padding:12px 14px}
+  #aba-primary-nav>.nav-join{font-size:.78rem;justify-content:center;align-self:flex-start;margin-top:22px;padding:12px 22px}
+  .site-footer .footer-main{grid-template-columns:1fr!important;gap:50px!important}
+}
+@media(max-width:600px){
+  .site-header .nav-wrap{width:calc(100% - 26px);height:74px}
+  .site-header .brand img{height:43px}
+  #aba-primary-nav{top:74px;max-height:calc(100dvh - 74px);padding-left:20px;padding-right:20px}
+  .page-content{padding-top:96px!important}
+  #aba-member-access{padding-top:110px!important}
+  .site-footer .footer-brand{align-items:flex-start!important}
+  .site-footer .footer-brand img{width:72px!important;height:72px!important}
+  .site-footer .footer-links{gap:30px!important}
+  .site-footer .footer-bottom{flex-direction:column!important;gap:8px!important}
+}
+</style>
+
 </head>
 <body class="aba-membership-pending">
 
 <canvas id="canvas"></canvas>
 
 <!-- NAV -->
-<nav class="aba-nav">
-  <a class="aba-wordmark" href="https://arkansasblockchainassociation.com/" aria-label="Arkansas Blockchain Association home">
-    <span class="aba-mark">ABA</span>
-    <span class="aba-wordmark-text"><strong>ARKANSAS BLOCKCHAIN</strong><span>ASSOCIATION</span></span>
-  </a>
-  <ul class="nav-links">
-    <li><a href="https://arkansasblockchainassociation.com/">Home</a></li>
-    <li><a href="https://arkansasblockchainassociation.com/masterclasses" class="active">Masterclasses</a></li>
-    <li><a href="leaderboard.html">Leaderboard</a></li>
-    <li><a href="https://arkansasblockchainassociation.com/member-network">Member Network</a></li>
-  </ul>
-  <div class="nav-ctas">
-    <a href="https://arkansasblockchainassociation.com/join" class="btn-gold">Join ABA</a>
+<header class="site-header" id="top">
+    <div class="nav-wrap">
+      <a class="brand" href="/" aria-label="Arkansas Blockchain Association home">
+        <img src="ABA-Banner.png" alt="Arkansas Blockchain Association logo">
+        <span><strong>ARKANSAS</strong><b>BLOCKCHAIN</b><em>ASSOCIATION</em></span>
+      </a>
+      <button class="menu-toggle" type="button" aria-label="Open navigation" aria-expanded="false" aria-controls="aba-primary-nav"><span></span><span></span><span></span></button>
+   <nav class="main-nav" id="aba-primary-nav" aria-label="Primary navigation">
+  <a href="/">Home</a>
+  <div class="aba-nav-group">
+    <button class="aba-nav-trigger" type="button" aria-expanded="false" aria-controls="aba-nav-about">About ABA <span aria-hidden="true">⌄</span></button>
+    <div class="aba-nav-submenu" id="aba-nav-about" hidden>
+      <a href="/team">Team</a>
+      <a href="/partnerships">Partnerships</a>
+    </div>
   </div>
-  <button class="mobile-menu-btn" aria-label="Open menu">☰</button>
+  <div class="aba-nav-group">
+    <button class="aba-nav-trigger" type="button" aria-expanded="false" aria-controls="aba-nav-community">Community <span aria-hidden="true">⌄</span></button>
+    <div class="aba-nav-submenu" id="aba-nav-community" hidden>
+      <a href="/member-network">Member Network</a>
+      <a href="/global-student-network">Global Student Network</a>
+      <a href="/ambassadors">Ambassadors</a>
+      <a href="/#involved">Get Involved <span aria-hidden="true">↗</span></a>
+    </div>
+  </div>
+  <div class="aba-nav-group">
+    <button class="aba-nav-trigger" type="button" aria-expanded="false" aria-controls="aba-nav-initiatives">Initiatives <span aria-hidden="true">⌄</span></button>
+    <div class="aba-nav-submenu" id="aba-nav-initiatives" hidden>
+      <a href="/DASC">DASC</a>
+    </div>
+  </div>
+  <div class="aba-nav-group">
+    <button class="aba-nav-trigger" type="button" aria-expanded="false" aria-controls="aba-nav-tik">Tokenized Interactive Knowledge <span aria-hidden="true">⌄</span></button>
+    <div class="aba-nav-submenu" id="aba-nav-tik" hidden>
+      <a href="TIK_Overview.html">TIK Overview</a>
+      <a href="Knowledge_Library.html">Knowledge Library</a>
+      <a href="Leaderboard.html">Leaderboard</a>
+      <a href="Creator_Studio.html">Creator Studio</a>
+    </div>
+  </div>
+  <a class="nav-join" href="/join">Join ABA</a>
 </nav>
+    </div>
+  </header>
 
 <section id="aba-member-access" aria-labelledby="aba-member-signin-title">
   <div class="aba-member-access-card">
@@ -699,33 +809,40 @@ body.aba-membership-pending #aba-member-access{display:block;}
 </div><!-- end page-content -->
 
 <!-- FOOTER -->
-<footer class="aba-footer">
-  <div class="footer-inner">
-    <div class="footer-top">
-      <div class="footer-brand">
-        <div class="aba-footer-lockup"><span class="aba-mark">ABA</span><div><strong>ARKANSAS BLOCKCHAIN ASSOCIATION</strong><span>EDUCATE • CONNECT • INNOVATE • ADVANCE</span></div></div>
-        <p>Advancing blockchain, digital assets, emerging technology, education, and innovation across Arkansas and beyond.</p>
-      </div>
-      <div class="footer-col"><h5>Explore</h5><ul>
-        <li><a href="https://arkansasblockchainassociation.com/about">About</a></li>
-        <li><a href="https://arkansasblockchainassociation.com/masterclasses">Masterclasses</a></li>
-        <li><a href="https://arkansasblockchainassociation.com/partnerships">Partnerships</a></li>
-      </ul></div>
-      <div class="footer-col"><h5>Community</h5><ul>
-        <li><a href="https://arkansasblockchainassociation.com/member-network">Member Network</a></li>
-        <li><a href="https://arkansasblockchainassociation.com/join">Join ABA</a></li>
-        <li><a href="leaderboard.html">Leaderboard</a></li>
-      </ul></div>
-      <div class="footer-col"><h5>Technology</h5><ul>
-        <li><a href="https://centerforcreators.com/" target="_blank" rel="noopener">Powered by Center for Creators</a></li>
-      </ul></div>
-    </div>
-    <div class="footer-bottom">
-      <span>&copy; 2026 Arkansas Blockchain Association.</span>
-      <span>Tokenized Interactive Knowledge • Powered by Center for Creators</span>
-    </div>
+<footer class="site-footer">
+    <div class="container footer-main">
+      <div class="footer-brand"><img src="ABA.png" alt="Arkansas Blockchain Association logo"><div><strong>ARKANSAS BLOCKCHAIN ASSOCIATION</strong><span>EDUCATE <i>•</i> CONNECT <i>•</i> INNOVATE <i>•</i> ADVANCE</span></div></div>
+     <div class="footer-links">
+ <div> 
+  <b>Explore</b> 
+  <a href="/#about">About</a> 
+  <a href="/#focus">Focus Areas</a> 
+  <a href="/masterclasses">Masterclasses</a> 
+  <a href="/#education">Education</a> 
+  <a href="/#innovation">Industry &amp; Innovation</a> 
+</div>
+  <div>
+    <b>Connect</b>
+    <a href="/#partnerships">Partnerships</a>
+    <a href="/#involved">Get Involved</a>
+    <a href="/join">Join ABA</a>
+    <a href="mailto:info@arkansasblockchainassociation.com">Contact Us</a>
+
+    <a class="footer-linkedin"
+       href="https://www.linkedin.com/company/arkansas-blockchain-association"
+       target="_blank"
+       rel="noopener noreferrer"
+       aria-label="Arkansas Blockchain Association on LinkedIn">
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path fill="currentColor" d="M20.45 20.45h-3.56v-5.57c0-1.33-.03-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.34V8.98h3.42v1.57h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.29zM5.32 7.41a2.06 2.06 0 1 1 0-4.12 2.06 2.06 0 0 1 0 4.12zM7.1 20.45H3.54V8.98H7.1v11.47z"/>
+      </svg>
+      LinkedIn
+    </a>
   </div>
-</footer>
+</div>
+    </div>
+    <div class="container footer-bottom"><span>© <span id="year"></span> Arkansas Blockchain Association</span><a href="https://arkansasblockchainassociation.com/">ArkansasBlockchainAssociation.com</a><span>Arkansas-Based • National and Global Reach</span></div>
+  </footer>
 
 <!-- BUY MODAL -->
 <div class="modal-overlay" id="buy-modal">
@@ -1828,5 +1945,25 @@ document.querySelector('.mobile-menu-btn').addEventListener('click', () => {
   document.querySelector('.nav-links').classList.toggle('mobile-open');
 });
 </script>
+
+<script id="aba-site-nav-script">
+(() => {
+  const header=document.querySelector('.site-header');
+  const toggle=document.querySelector('.menu-toggle');
+  const nav=document.getElementById('aba-primary-nav');
+  if(!header||!toggle||!nav)return;
+  const groups=[...nav.querySelectorAll('.aba-nav-group')];
+  const triggers=groups.map(g=>g.querySelector('.aba-nav-trigger'));
+  const closeGroups=(except)=>triggers.forEach(b=>{if(b!==except){b.setAttribute('aria-expanded','false');const s=document.getElementById(b.getAttribute('aria-controls'));if(s)s.hidden=true;}});
+  const setMenu=open=>{nav.classList.toggle('open',open);document.body.classList.toggle('menu-open',open);toggle.setAttribute('aria-expanded',String(open));if(!open)closeGroups()};
+  toggle.addEventListener('click',()=>setMenu(!nav.classList.contains('open')));
+  triggers.forEach(b=>b.addEventListener('click',()=>{const open=b.getAttribute('aria-expanded')!=='true';closeGroups(b);b.setAttribute('aria-expanded',String(open));const s=document.getElementById(b.getAttribute('aria-controls'));if(s)s.hidden=!open;}));
+  nav.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>setMenu(false)));
+  document.addEventListener('click',e=>{if(!header.contains(e.target)){closeGroups();if(innerWidth<=960)setMenu(false);}});
+  addEventListener('resize',()=>{if(innerWidth>960)setMenu(false)});
+  const y=document.getElementById('year');if(y)y.textContent=new Date().getFullYear();
+})();
+</script>
+
 </body>
 </html>
