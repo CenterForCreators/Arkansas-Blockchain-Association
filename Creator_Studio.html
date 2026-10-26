@@ -1667,6 +1667,9 @@ console.log(mine[0]);
   .map(sub => renderDashCard(sub))
   .join('');
 
+  mine.filter(sub => (sub.mint_status || sub.mint) === 'minted')
+    .forEach(sub => refreshSellOfferStatus(sub.id));
+
   } catch(err){
 
     console.error(err);
@@ -1698,6 +1701,12 @@ const statusLabel = {
 }[normalizedStatus] || 'Pending';
  const paymentDone = (sub.payment_status || sub.payment) === 'paid';
 const mintDone = (sub.mint_status || sub.mint) === 'minted';
+let mintedIds = [];
+try {
+  mintedIds = Array.isArray(sub.nftoken_ids) ? sub.nftoken_ids : JSON.parse(sub.nftoken_ids || '[]');
+} catch { mintedIds = []; }
+const mintedCount = [...new Set(mintedIds.map(String))].length;
+const targetQty = Number(sub.batch_qty || sub.quantity || sub.qty || mintedCount || 1);
   return `<div class="dash-card">
     <div class="dash-card-title">${sub.name}</div>
    <div class="dash-card-id">Submission #${sub.id} &middot; ${sub.category} &middot; ${sub.quantity || sub.qty} edition${(sub.quantity || sub.qty)>1?'s':''}</div>
@@ -1706,12 +1715,14 @@ const mintDone = (sub.mint_status || sub.mint) === 'minted';
       <span class="progress-step ps-done">&#10003; Submitted</span>
       <span class="progress-step ${normalizedStatus==='approved'||paymentDone||mintDone?'ps-done':'ps-pending'}">Admin Review</span>
       <span class="progress-step ${paymentDone||mintDone?'ps-done':normalizedStatus==='approved'?'ps-current':'ps-pending'}">Mint Fee</span>
-      <span class="progress-step ${mintDone?'ps-done':paymentDone?'ps-current':'ps-pending'}">Mint NFT</span>
+      <span class="progress-step ${mintDone?'ps-done':paymentDone?'ps-current':'ps-pending'}">Mint NFT ${mintedCount}/${targetQty}</span>
+      <span class="progress-step ${mintDone?'ps-current':'ps-pending'}" id="sell-offer-status-${sub.id}">Sell Offers checking...</span>
     </div>
     <div class="dash-actions">
       ${normalizedStatus==='approved' && !mintDone ? `<button class="btn-sm-gold" onclick="startPayment(${sub.id})">Mint & Publish Your Content</button>` : ''}
             ${paymentDone && !mintDone ? `<button class="btn-sm-purple" onclick="startMint(${sub.id})">&#9889; Mint NFT</button>` : ''}
      
+      ${mintDone ? `<button class="btn-sm-purple" id="sell-offer-btn-${sub.id}" onclick="listOnMarketplace(${sub.id}, false)">Create / Resume Sell Offers</button>` : ''}
       ${mintDone ? `<a href="marketplace.html" class="btn-sm-outline" style="text-decoration:none;display:inline-block;">View Marketplace</a>` : ''}
       <button class="btn-sm-outline" onclick="removeSubmission(${sub.id})">Remove</button>
     </div>
@@ -1846,6 +1857,43 @@ updateXamanModal(d.link, d.uuid, async()=>{
   }
 }
 
+async function getSellOfferStatus(row){
+  const r = await fetch(`https://cfc-nft-shared-mint-backend.onrender.com/api/market/listing-status/${row.id}?currency=RLUSD`);
+  const d = await r.json();
+  if(!r.ok) throw new Error(d.error || 'Unable to load sell offer status');
+  return d;
+}
+
+async function refreshSellOfferStatus(subId){
+  try {
+    const row = await fetchMarketplaceNftWithRetry(subId, 2, 500);
+    if(!row) return;
+    const status = await getSellOfferStatus(row);
+    const el = document.getElementById(`sell-offer-status-${subId}`);
+    const btn = document.getElementById(`sell-offer-btn-${subId}`);
+    if(el){
+      el.textContent = `Sell Offers ${status.listed_count}/${status.target_quantity}`;
+      el.className = `progress-step ${status.complete ? 'ps-done' : 'ps-current'}`;
+    }
+    if(btn){
+      btn.style.display = status.complete ? 'none' : '';
+    }
+  } catch(e){
+    console.warn('sell offer status error', e);
+  }
+}
+
+async function waitForSellOfferCount(row, expectedCount, attempts = 20, delayMs = 1000){
+  for(let i=0; i<attempts; i++){
+    const status = await getSellOfferStatus(row);
+    if(Number(status.listed_count || 0) >= expectedCount || status.complete){
+      return status;
+    }
+    await new Promise(resolve => setTimeout(resolve, delayMs));
+  }
+  throw new Error('Sell offer was signed but has not been confirmed yet. Use Create / Resume Sell Offers to continue.');
+}
+
 // ── MARKETPLACE LISTING FLOW (STEP 3 OF 3) ──
 async function listOnMarketplace(subId, autoStart){
 
@@ -1871,18 +1919,9 @@ const d = await r.json();
 
 if(d.complete){
   closeModal('xaman-modal');
-
-  const doneBtn = document.querySelector('#success-modal .btn-full-outline');
-  if (doneBtn) {
-    doneBtn.setAttribute('onclick', "window.location.href='marketplace.html';");
-  }
-
-  showSuccess('&#127881; Digital Assets Listed!', 'All editions are listed on the marketplace. Redirecting...');
+  await refreshSellOfferStatus(subId);
+  showSuccess('&#127881; Digital Assets Listed!', `Sell Offers ${d.listed_count}/${d.target_quantity} confirmed. Your content is ready for purchase.`);
   loadDashboard();
-
-  setTimeout(() => {
-    window.location.href = 'marketplace.html';
-  }, 2500);
   return;
 }
 
@@ -1900,7 +1939,14 @@ document.getElementById('xaman-subtitle').textContent =
 if(!r.ok || !d.link || !d.uuid) throw new Error(d.error || 'Failed to create marketplace listing request');
 
 updateXamanModal(d.link, d.uuid, async()=>{
-      await new Promise(resolve => setTimeout(resolve, 2500));
+      const confirmed = await waitForSellOfferCount(row, nextListing);
+      await refreshSellOfferStatus(subId);
+      if(confirmed.complete){
+        closeModal('xaman-modal');
+        showSuccess('&#127881; Digital Assets Listed!', `Sell Offers ${confirmed.listed_count}/${confirmed.target_quantity} confirmed. Your content is ready for purchase.`);
+        loadDashboard();
+        return;
+      }
       await listOnMarketplace(subId, true);
     });
   } catch(e){
