@@ -1898,6 +1898,13 @@ async function waitForSellOfferCount(row, expectedCount, attempts = 20, delayMs 
 async function listOnMarketplace(subId, autoStart){
 
   try {
+    if(!document.getElementById('xaman-title')){
+      showXamanModal(
+        'Step 2 of 2: List on Marketplace',
+        'Creating the next RLUSD sell offer signing request...'
+      );
+    }
+
     const row = await fetchMarketplaceNftWithRetry(subId);
 
     if(!row || !row.id){
