@@ -872,7 +872,7 @@ Edit Profile
 </div>
 <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;">
 <button class="btn-green" onclick="scrollToDashboard()">View My Submissions ↓</button>
-<a class="btn-back" href="marketplace.html" style="text-decoration:none;display:inline-block;">View Marketplace</a>
+<a class="btn-back" href="Knowledge_Library.html" style="text-decoration:none;display:inline-block;">View Marketplace</a>
 </div>
 </div>
 </div>
@@ -1723,7 +1723,7 @@ const targetQty = Number(sub.batch_qty || sub.quantity || sub.qty || mintedCount
             ${paymentDone && !mintDone ? `<button class="btn-sm-purple" onclick="startMint(${sub.id})">&#9889; Mint NFT</button>` : ''}
      
       ${mintDone ? `<button class="btn-sm-purple" id="sell-offer-btn-${sub.id}" onclick="listOnMarketplace(${sub.id}, false)">Create / Resume Sell Offers</button>` : ''}
-      ${mintDone ? `<a href="marketplace.html" class="btn-sm-outline" style="text-decoration:none;display:inline-block;">View Marketplace</a>` : ''}
+      ${mintDone ? `<a href="Knowledge_Library.html" class="btn-sm-outline" style="text-decoration:none;display:inline-block;">View Marketplace</a>` : ''}
       <button class="btn-sm-outline" onclick="removeSubmission(${sub.id})">Remove</button>
     </div>
     ${normalizedStatus==='rejected' && sub.rejectionReason ? `<div class="alert alert-error" style="margin-top:1rem;font-size:0.78rem;">${sub.rejectionReason}</div>` : ''}
