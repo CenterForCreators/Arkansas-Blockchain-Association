@@ -1568,14 +1568,11 @@ async function confirmBuy(){
 }
 
 function showXamanStep(payload){
-  const successTitle =
-  payload.successTitle || "Purchase Initiated!";
-
-const successMessage =
-  payload.successMessage ||
-  "Your XAMAN signing request has been sent. Complete the signature in your XAMAN app to finalize the purchase.";
   const link = payload.link || payload.next?.always || '#';
-  const uuid = payload.uuid;
+  const uuidMatch = String(link).match(/[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}/i);
+  const uuid = payload.uuid || (uuidMatch ? uuidMatch[0] : null);
+  const startingQuantity = Number(buyNFT?.quantity_remaining ?? buyNFT?.quantity ?? 0);
+
   document.getElementById('buy-modal-content').innerHTML = `
     <div class="modal-title">Sign in XAMAN</div>
     <p class="modal-sub">Scan the QR code with XAMAN or tap the button below to open XAMAN and sign your transaction.</p>
@@ -1589,7 +1586,7 @@ const successMessage =
     <div class="status-text" id="xaman-status">Waiting for your signature in XAMAN...</div>
     <button class="btn-full-outline" style="margin-top:1rem;" onclick="closeModal('buy-modal')">Cancel</button>
   `;
-  // Generate QR
+
   setTimeout(()=>{
     const qrCanvas = document.getElementById('qr-canvas');
     if(qrCanvas && typeof QRCode !== 'undefined'){
@@ -1598,29 +1595,72 @@ const successMessage =
       });
     }
   }, 100);
-  // Poll for completion
+
+  if(!uuid){
+    const statusEl = document.getElementById('xaman-status');
+    if(statusEl) statusEl.textContent = 'Complete the purchase in XAMAN. This page will update after confirmation.';
+    return;
+  }
+
   if(xamanPollTimer) clearInterval(xamanPollTimer);
+
   let pollCount = 0;
   xamanPollTimer = setInterval(async()=>{
     pollCount++;
-    if(pollCount > 60){ clearInterval(xamanPollTimer); return; } // 5 min timeout
+
+    if(pollCount > 60){
+      clearInterval(xamanPollTimer);
+      return;
+    }
+
     try {
       const pr = await fetch(MARKET_API+'/api/xaman/poll/'+uuid).catch(()=>null);
-      if(pr && pr.ok){
-        const pd = await pr.json();
-        if(pd.signed){
-          clearInterval(xamanPollTimer);
-          closeModal("buy-modal");
+      if(!pr || !pr.ok) return;
 
-document.getElementById("success-title").innerText =
-  successTitle;
+      const pd = await pr.json();
 
-document.getElementById("success-message").innerText =
-  successMessage;
+      if(pd.signed){
+        clearInterval(xamanPollTimer);
 
-openModal("success-modal");
-          setTimeout(()=>loadOrders(), 3000);
-          return;
+        const statusEl = document.getElementById('xaman-status');
+        if(statusEl) statusEl.textContent = 'Payment signed. Confirming purchase...';
+
+        let confirmed = false;
+
+        for(let i=0; i<30; i++){
+          try {
+            const mr = await fetch(MARKET_API+'/api/market/all?tenant=aba');
+            if(mr.ok){
+              const items = await mr.json();
+              const updated = items.find(n => Number(n.id) === Number(buyNFT.id));
+              const newQuantity = Number(updated?.quantity_remaining ?? updated?.quantity ?? startingQuantity);
+
+              if(newQuantity < startingQuantity){
+                confirmed = true;
+                break;
+              }
+            }
+          } catch(e){}
+
+          await new Promise(resolve => setTimeout(resolve, 2000));
+        }
+
+        if(confirmed){
+          closeModal('buy-modal');
+
+          document.getElementById('success-title').innerText = 'Purchase Complete';
+          document.getElementById('success-message').innerText =
+            'Your RLUSD purchase was confirmed and the item has been added to your library.';
+
+          openModal('success-modal');
+
+          await loadNFTs();
+          setTimeout(()=>loadOrders(), 1000);
+        } else {
+          if(statusEl){
+            statusEl.textContent =
+              'Your XAMAN transaction was signed. The marketplace is still confirming the purchase. You can safely refresh if needed.';
+          }
         }
       }
     } catch(e){ /* keep polling */ }
