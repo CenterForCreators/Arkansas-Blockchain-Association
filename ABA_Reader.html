@@ -437,30 +437,38 @@ footer{background:#06101c;border-top:1px solid var(--aba-line);color:#7892a4;mar
 @media(max-width:900px){.aba-wordmark-text{display:none}.aba-wordmark{min-width:auto}.nav-links{gap:1rem}.nav-links li:nth-child(3){display:none}.reader-shell{padding-left:1rem;padding-right:1rem}}
 @media(max-width:700px){nav{padding:0 1rem}.nav-links{display:none}.nav-pills{display:none}.reader-shell{margin-top:122px!important}.nft-header{flex-direction:column}.nft-thumb{width:72px;height:72px}#content{column-width:calc(100vw - 70px);column-gap:35px;padding:1.4rem 1.2rem}#pageViewport{height:calc(100vh - 245px)}}
 
+
+/* ===== CURRENT ABA SITE NAV ===== */
+.site-header{position:fixed;top:0;left:0;right:0;z-index:5000;border-bottom:1px solid rgba(255,255,255,.1);background:rgba(5,18,39,.97);backdrop-filter:blur(18px);box-shadow:0 10px 35px rgba(0,0,0,.16)}
+.site-header .nav-wrap{width:min(1370px,calc(100% - 40px));height:88px;margin:auto;display:flex;align-items:center;justify-content:space-between}
+.site-header .brand{display:flex;align-items:center;gap:12px;color:#fff;text-decoration:none}.site-header .brand img{width:auto;height:46px;max-width:none;object-fit:contain;border-radius:0;background:transparent}.site-header .brand span{display:grid;line-height:1;gap:4px;letter-spacing:.15em}.site-header .brand strong{font-size:.55rem;font-weight:600}.site-header .brand b{font-size:.78rem}.site-header .brand em{font-size:.49rem;font-style:normal;color:#68b4ff}.site-header .menu-toggle{display:none;background:none;border:0;padding:10px}.site-header .menu-toggle span{width:24px;height:2px;background:#fff;display:block;margin:5px}
+#aba-primary-nav{position:static;inset:auto;height:auto;padding:0;background:transparent;border:0;display:flex;align-items:center;gap:24px;color:#dce7f5;font-size:.78rem;font-weight:600;backdrop-filter:none}#aba-primary-nav>a{color:#dce7f5;text-decoration:none}#aba-primary-nav>a:not(.nav-join){position:relative}#aba-primary-nav>a:not(.nav-join):after{content:"";position:absolute;left:0;bottom:-9px;width:0;height:1px;background:#e4b452;transition:.25s}#aba-primary-nav>a:hover:after{width:100%}#aba-primary-nav .aba-nav-group{position:relative}#aba-primary-nav .aba-nav-trigger{display:flex;align-items:center;justify-content:space-between;gap:8px;border:0;background:transparent;color:inherit;font:inherit;padding:14px 0;cursor:pointer;text-align:left}#aba-primary-nav .aba-nav-trigger>span{color:#e4b452;transition:transform .2s}#aba-primary-nav .aba-nav-trigger[aria-expanded="true"]>span{transform:rotate(180deg)}#aba-primary-nav .aba-nav-trigger:hover,#aba-primary-nav .aba-nav-trigger[aria-expanded="true"]{color:#fff}#aba-primary-nav .aba-nav-submenu{position:absolute;top:100%;left:-18px;min-width:250px;max-width:320px;padding:10px;background:#071d3e;border:1px solid rgba(126,183,240,.28);border-radius:12px;box-shadow:0 18px 40px rgba(0,0,0,.3)}#aba-primary-nav .aba-nav-submenu[hidden]{display:none}#aba-primary-nav .aba-nav-submenu a{display:block;font-size:.78rem;line-height:1.5;padding:12px 14px;border-radius:6px;color:#dce7f5;white-space:normal;text-decoration:none}#aba-primary-nav .aba-nav-submenu a:hover,#aba-primary-nav .aba-nav-submenu a:focus-visible{background:#123760;color:#fff}#aba-primary-nav .nav-join{display:inline-flex;align-items:center;justify-content:center;background:#fff;color:#07162f!important;padding:11px 18px;border-radius:999px;text-decoration:none;font-size:.7rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase}
+.reader-wallet-tools{position:fixed;top:96px;right:20px;z-index:4999;display:flex;align-items:center;gap:.65rem}#ticker-banner{top:88px}.read-progress{top:126px}.reader-shell{margin-top:148px!important}
+@media(max-width:960px){.site-header .menu-toggle{display:block;position:relative;z-index:2}body.menu-open{overflow:hidden}#aba-primary-nav{position:fixed;inset:88px 0 0;height:auto;display:flex;flex-direction:column;align-items:stretch;justify-content:flex-start;gap:0;padding:18px 24px calc(30px + env(safe-area-inset-bottom));background:#06152f;overflow-y:auto;max-height:calc(100dvh - 88px);transform:translateX(100%);visibility:hidden;pointer-events:none;transition:transform .25s ease,visibility .25s}#aba-primary-nav.open{transform:none;visibility:visible;pointer-events:auto}#aba-primary-nav>a:not(.nav-join),#aba-primary-nav .aba-nav-trigger{font-size:1rem;padding:17px 0;width:100%;border-bottom:1px solid rgba(126,183,240,.18);border-radius:0}#aba-primary-nav>a:after{display:none}#aba-primary-nav .aba-nav-submenu{position:static;min-width:0;max-width:none;padding:0 0 8px 14px;border:0;border-left:1px solid rgba(126,183,240,.28);border-radius:0;box-shadow:none;background:transparent;margin:0 0 8px 6px}#aba-primary-nav .aba-nav-submenu a{font-size:.9rem;padding:12px 14px}#aba-primary-nav>.nav-join{font-size:.78rem;justify-content:center;align-self:flex-start;margin-top:22px;padding:12px 22px}}
+@media(max-width:700px){.site-header .nav-wrap{width:calc(100% - 26px);height:74px}.site-header .brand img{height:43px}#aba-primary-nav{top:74px;max-height:calc(100dvh - 74px);padding-left:20px;padding-right:20px}.reader-wallet-tools{top:81px;right:10px}.reader-wallet-tools .nav-pills{display:none}#ticker-banner{top:74px}.read-progress{top:112px}.reader-shell{margin-top:136px!important}}
 </style>
 </head>
 <body>
 
 <!-- NAV -->
-<nav>
-  <a class="aba-wordmark" href="https://arkansasblockchainassociation.com/" aria-label="Arkansas Blockchain Association home">
-    <span class="aba-mark">ABA</span>
-    <span class="aba-wordmark-text"><strong>ARKANSAS BLOCKCHAIN</strong><span>ASSOCIATION</span></span>
-  </a>
-  <ul class="nav-links">
-    <li><a href="https://arkansasblockchainassociation.com/">Home</a></li>
-    <li><a href="ABA_Masterclasses_Marketplace.html">Masterclasses</a></li>
-    <li><a href="ABA_Reader.html" class="active">Reader</a></li>
-    <li><a href="leaderboard.html">Leaderboard</a></li>
-  </ul>
-  <div style="display:flex;align-items:center;gap:0.65rem;">
-    <div class="nav-pills">
-      <div class="pill pill-xrp" id="xrp-pill" style="display:none">XRP <span id="xrp-bal">0.00</span></div>
-      <div class="pill pill-cfc" id="cfc-pill" style="display:none">CFC <span id="cfc-bal">0.00</span></div>
-    </div>
-    <button class="btn-wallet" id="walletBtn" onclick="connectWallet()">Connect Wallet</button>
+<header class="site-header" id="top">
+  <div class="nav-wrap">
+    <a class="brand" href="/" aria-label="Arkansas Blockchain Association home">
+      <img src="ABA-Banner.png" alt="Arkansas Blockchain Association logo">
+      <span><strong>ARKANSAS</strong><b>BLOCKCHAIN</b><em>ASSOCIATION</em></span>
+    </a>
+    <button class="menu-toggle" type="button" aria-label="Open navigation" aria-expanded="false" aria-controls="aba-primary-nav"><span></span><span></span><span></span></button>
+    <nav class="main-nav" id="aba-primary-nav" aria-label="Primary navigation">
+      <a href="/">Home</a>
+      <div class="aba-nav-group"><button class="aba-nav-trigger" type="button" aria-expanded="false" aria-controls="aba-nav-about">About ABA <span aria-hidden="true">⌄</span></button><div class="aba-nav-submenu" id="aba-nav-about" hidden><a href="/team">Team</a><a href="/partnerships">Partnerships</a></div></div>
+      <div class="aba-nav-group"><button class="aba-nav-trigger" type="button" aria-expanded="false" aria-controls="aba-nav-community">Community <span aria-hidden="true">⌄</span></button><div class="aba-nav-submenu" id="aba-nav-community" hidden><a href="/member-network">Member Network</a><a href="/global-student-network">Global Student Network</a><a href="/ambassadors">Ambassadors</a><a href="/#involved">Get Involved <span aria-hidden="true">↗</span></a></div></div>
+      <div class="aba-nav-group"><button class="aba-nav-trigger" type="button" aria-expanded="false" aria-controls="aba-nav-initiatives">Initiatives <span aria-hidden="true">⌄</span></button><div class="aba-nav-submenu" id="aba-nav-initiatives" hidden><a href="/DASC">DASC</a></div></div>
+      <div class="aba-nav-group"><button class="aba-nav-trigger" type="button" aria-expanded="false" aria-controls="aba-nav-tik">Tokenized Interactive Knowledge <span aria-hidden="true">⌄</span></button><div class="aba-nav-submenu" id="aba-nav-tik" hidden><a href="/TIK-Overview">TIK Overview</a><a href="/Knowledge-Library">Knowledge Library</a><a href="/Leaderboard">Leaderboard</a><a href="/Creator-Studio">Creator Studio</a></div></div>
+      <a class="nav-join" href="/join">Join ABA</a>
+    </nav>
   </div>
-</nav>
+</header>
+<div class="reader-wallet-tools" aria-label="Reader wallet controls"><div class="nav-pills"><div class="pill pill-xrp" id="xrp-pill" style="display:none">XRP <span id="xrp-bal">0.00</span></div><div class="pill pill-cfc" id="cfc-pill" style="display:none">CFC <span id="cfc-bal">0.00</span></div></div><button class="btn-wallet" id="walletBtn" onclick="connectWallet()">Connect Wallet</button></div>
 
 <!-- LEARNING EXPERIENCE STRIP -->
 <div id="ticker-banner">
@@ -913,15 +921,6 @@ async function sendAI(){
   }
 }
 </script>
-  <script>
-  const links = document.querySelectorAll(".nav-links a");
-  const current = window.location.pathname.split("/").pop();
-
-  links.forEach(link => {
-    if (link.getAttribute("href") === current) {
-      link.classList.add("active");
-    }
-  });
-</script>
+  <script>(function(){const nav=document.getElementById('aba-primary-nav'),toggle=document.querySelector('.site-header .menu-toggle'),groups=[...document.querySelectorAll('#aba-primary-nav .aba-nav-group')];function closeGroups(except){groups.forEach(g=>{if(g===except)return;const t=g.querySelector('.aba-nav-trigger'),m=g.querySelector('.aba-nav-submenu');if(t)t.setAttribute('aria-expanded','false');if(m)m.hidden=true;});}groups.forEach(g=>{const t=g.querySelector('.aba-nav-trigger'),m=g.querySelector('.aba-nav-submenu');if(!t||!m)return;t.addEventListener('click',()=>{const opening=t.getAttribute('aria-expanded')!=='true';closeGroups(g);t.setAttribute('aria-expanded',opening?'true':'false');m.hidden=!opening;});});if(toggle&&nav){toggle.addEventListener('click',()=>{const opening=!nav.classList.contains('open');nav.classList.toggle('open',opening);document.body.classList.toggle('menu-open',opening);toggle.setAttribute('aria-expanded',opening?'true':'false');if(!opening)closeGroups();});}document.addEventListener('click',e=>{if(!e.target.closest('#aba-primary-nav'))closeGroups();});document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeGroups();if(nav)nav.classList.remove('open');document.body.classList.remove('menu-open');if(toggle)toggle.setAttribute('aria-expanded','false');}});})();</script>
 </body>
 </html>
