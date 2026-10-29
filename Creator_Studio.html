@@ -1072,6 +1072,7 @@ async function navConnectWallet(){
     updateNavWallet(addr);
     fetchBalances(addr);
     checkCreatorTrustlines(addr);
+    loadCreatorProfile().catch(e => console.error('Creator profile load error:', e));
 
   }catch(e){
 
@@ -1087,15 +1088,20 @@ async function navConnectWallet(){
 }
 
 function updateNavWallet(addr){
-  const btn = document.getElementById('wallet-btn');
-  if(addr){
-    btn.textContent = addr.slice(0,8)+'...'+addr.slice(-4);
-    btn.style.borderColor = 'rgba(16,185,129,0.4)';
-    btn.style.color = 'var(--green)';
-  } else {
-    btn.textContent = 'Connect Wallet';
-    btn.style.borderColor = '';
-    btn.style.color = '';
+  // Keep the header and the Creator Studio wizard in sync.
+  for(const id of ['wallet-btn', 'wallet-connect-btn']){
+    const btn = document.getElementById(id);
+    if(!btn) continue;
+    btn.disabled = false;
+    if(addr){
+      btn.textContent = addr.slice(0,8)+'...'+addr.slice(-4);
+      btn.style.borderColor = 'rgba(16,185,129,0.4)';
+      btn.style.color = 'var(--green)';
+    } else {
+      btn.textContent = 'Connect Wallet';
+      btn.style.borderColor = '';
+      btn.style.color = '';
+    }
   }
 }
 
@@ -2397,7 +2403,7 @@ const abaMemberApi=async(path,options={})=>{const r=await fetch(ABA_MEMBER_API+p
 function abaMemberStatus(msg,bad=false){const e=document.getElementById('aba-member-auth-status');if(!e)return;e.textContent=msg||'';e.classList.toggle('error',bad)}
 function abaShowCreatorStudio(){document.body.classList.remove('aba-membership-pending')}
 function abaShowMemberSignIn(){document.body.classList.add('aba-membership-pending');document.getElementById('aba-member-request-form').classList.remove('aba-member-hidden');document.getElementById('aba-member-verify-form').classList.add('aba-member-hidden');abaMemberStatus('')}
-async function abaConfirmMember(){const d=await abaMemberApi('/api/student-network/me');abaRememberMember(d.profile);abaShowCreatorStudio();return d.profile}
+async function abaConfirmMember(){const d=await abaMemberApi('/api/student-network/me');abaRememberMember(d.profile);abaShowCreatorStudio();if(creatorWallet){updateNavWallet(creatorWallet);loadCreatorProfile().catch(e=>console.error('Creator profile load error:',e));}return d.profile}
 const abaRequestForm=document.getElementById('aba-member-request-form');
 const abaVerifyForm=document.getElementById('aba-member-verify-form');
 abaRequestForm.onsubmit=async e=>{e.preventDefault();const button=abaRequestForm.querySelector('button[type="submit"]');abaMemberEmail=document.getElementById('aba-member-email').value;button.disabled=true;button.textContent='Sending Verification Code...';abaMemberStatus('Please wait while we send your verification code.');try{await abaMemberApi('/api/student-auth/request-code',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:abaMemberEmail})});abaRequestForm.classList.add('aba-member-hidden');abaVerifyForm.classList.remove('aba-member-hidden');abaMemberStatus('If this address is eligible, a verification code has been sent.')}catch(x){abaMemberStatus(x.message,true)}finally{button.disabled=false;button.textContent='Send Verification Code'}};
