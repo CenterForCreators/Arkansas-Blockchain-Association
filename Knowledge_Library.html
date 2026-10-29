@@ -747,6 +747,12 @@ body.aba-membership-pending .site-footer{visibility:hidden!important}
   </div>
 </div>
 
+<!-- ABA trustline status; no change to existing wallet sign-in -->
+<div id="aba-trustline-panel" style="display:none;padding:.9rem 1.4rem;background:#081522;border-bottom:1px solid rgba(155,216,239,.17);text-align:center;color:#bdd3e1;font-size:.83rem;position:relative;z-index:2">
+  <div id="aba-trustline-status" role="status">Checking wallet trustlines...</div>
+  <div id="aba-trustline-buttons" style="display:flex;flex-wrap:wrap;gap:.6rem;justify-content:center;margin-top:.65rem"></div>
+</div>
+
 <!-- OPTIONAL CFC REWARDS -->
 <div id="faucet-section" class="aba-rewards-strip">
   <div>
@@ -850,7 +856,7 @@ body.aba-membership-pending .site-footer{visibility:hidden!important}
 <!-- BUY MODAL -->
 <div class="modal-overlay" id="buy-modal">
   <div class="modal-box">
-    <button class="modal-close" onclick="closeModal('buy-modal')">&times;</button>
+    <button class="modal-close" onclick="closeModal(&quot;buy-modal&quot;)">&times;</button>
     <div id="buy-modal-content">
       <!-- Dynamically populated -->
     </div>
@@ -948,6 +954,7 @@ function loadWallet(){
     updateWalletUI();
     fetchBalances(saved);
     loadOrders();
+    abaCheckTrustlines(saved);
   }
 }
 
@@ -1036,6 +1043,7 @@ async function disconnectWallet(){
   if(cfcEl) cfcEl.textContent = '--';
 
   updateWalletUI();
+  abaClearTrustlinePanel();
 
   const orders = document.getElementById('my-orders');
   if(orders) orders.style.display = 'none';
@@ -1062,8 +1070,8 @@ function setConnected(acc){
 
   updateWalletUI();
 
-// NEW
-checkCFCTrustline(acc);
+// Show non-intrusive trustline status; do not automatically request a signing transaction.
+abaCheckTrustlines(acc);
 }
 function updateWalletUI(){
   const connected = document.getElementById('banner-connected');
@@ -1080,6 +1088,70 @@ function updateWalletUI(){
     document.getElementById('my-orders').style.display = 'none';
   }
 }
+// ABA wallet trustline readiness; uses existing shared trustline endpoints.
+const ABA_TRUSTLINE_API = 'https://cfc-nft-shared-mint-backend.onrender.com';
+let abaTrustlineRequestActive = false;
+function abaClearTrustlinePanel(){
+  const panel=document.getElementById('aba-trustline-panel');
+  if(panel) panel.style.display='none';
+}
+async function abaCheckTrustlines(wallet){
+  const panel=document.getElementById('aba-trustline-panel');
+  const status=document.getElementById('aba-trustline-status');
+  const buttons=document.getElementById('aba-trustline-buttons');
+  if(!wallet || connectedWallet!==wallet){abaClearTrustlinePanel();return;}
+  panel.style.display='block'; status.textContent='Checking CFC and RLUSD trustlines...';buttons.replaceChildren();
+  try{
+    const response=await fetch(ABA_TRUSTLINE_API+'/api/creator-trustlines/'+encodeURIComponent(wallet),{cache:'no-store'});
+    const data=await response.json();
+    if(!response.ok||data.success!==true) throw Error(data.error||'Unable to verify trustlines');
+    if(connectedWallet!==wallet) return;
+    status.textContent='CFC: '+(data.cfc?'Connected':'Setup required')+'   |   RLUSD: '+(data.rlusd?'Connected':'Setup required');
+    for(const [kind,exists] of [['cfc',data.cfc],['rlusd',data.rlusd]]){
+      if(exists) continue;
+      const btn=document.createElement('button');btn.type='button';btn.className='btn-faucet';
+      btn.textContent='Set up '+kind.toUpperCase()+' trustline';
+      btn.onclick=()=>abaOpenTrustlineRequest(wallet,kind);
+      buttons.appendChild(btn);
+    }
+  }catch(e){
+    if(connectedWallet!==wallet)return;
+    status.textContent='Trustline status unavailable. Wallet connection is unaffected.';
+    const btn=document.createElement('button');btn.type='button';btn.className='btn-faucet';btn.textContent='Retry check';btn.onclick=()=>abaCheckTrustlines(wallet);buttons.appendChild(btn);
+  }
+}
+async function abaOpenTrustlineRequest(wallet,kind){
+  if(abaTrustlineRequestActive||connectedWallet!==wallet)return;
+  abaTrustlineRequestActive=true;
+  const status=document.getElementById('aba-trustline-status');
+  try{
+    status.textContent='Preparing Xaman '+kind.toUpperCase()+' trustline request...';
+    const endpoint=kind==='cfc'?'/api/create-cfc-trustline':'/api/create-rlusd-trustline';
+    const response=await fetch(ABA_TRUSTLINE_API+endpoint,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({wallet})});
+    const payload=await response.json();
+    if(!response.ok||!payload.link||!payload.uuid)throw Error(payload.error||'Could not create signing request');
+    const modal=document.getElementById('buy-modal-content');
+    if(!modal)throw Error('Xaman dialog unavailable');
+    // Dedicated trustline signing display: do not call purchase confirmation routines.
+    modal.innerHTML='<div class="modal-title">Set up '+kind.toUpperCase()+' trustline</div><p class="modal-sub">Scan this QR code with Xaman, or open Xaman to approve. This is not a purchase.</p><div class="xaman-section"><canvas id="aba-trustline-qr"></canvas><div><a class="xaman-link-btn" id="aba-trustline-open" target="_blank" rel="noopener noreferrer">Open in XAMAN App</a></div></div><div class="status-text" id="aba-trustline-sign-status">Waiting for Xaman approval...</div><button class="btn-full-outline" onclick="closeModal(&quot;buy-modal&quot;)">Close</button>';
+    document.getElementById('aba-trustline-open').href=payload.link;
+    openModal('buy-modal');
+    if(typeof QRCode!=='undefined')QRCode.toCanvas(document.getElementById('aba-trustline-qr'),payload.link,{width:180},()=>{});
+    let confirmed=false;
+    for(let i=0;i<48;i++){
+      if(connectedWallet!==wallet)break;
+      await new Promise(r=>setTimeout(r,2500));
+      const pr=await fetch(ABA_TRUSTLINE_API+'/api/xaman/poll/'+encodeURIComponent(payload.uuid)).then(r=>r.json()).catch(()=>null);
+      if(pr?.cancelled||pr?.expired)break;
+      if(pr?.signed===true||pr?.resolved===true){confirmed=true;break;}
+    }
+    const message=document.getElementById('aba-trustline-sign-status');
+    if(message)message.textContent=confirmed?'Xaman request approved. Verifying on the XRP Ledger...':'Approval not yet confirmed. You can refresh the trustline status.';
+    if(connectedWallet===wallet)await abaCheckTrustlines(wallet);
+  }catch(e){status.textContent='Trustline setup could not start: '+e.message;}
+  finally{abaTrustlineRequestActive=false;}
+}
+
 async function checkCFCTrustline(wallet){
 
   try{
@@ -1531,7 +1603,7 @@ function showBuyStep1(){
     <button class="btn-full-gold" id="confirm-buy-btn" onclick="confirmBuy()">
       Confirm Purchase with ${buyCurrency} &rarr;
     </button>
-    <button class="btn-full-outline" onclick="closeModal('buy-modal')">Cancel</button>
+    <button class="btn-full-outline" onclick="closeModal(&quot;buy-modal&quot;)">Cancel</button>
   `;
 }
 
@@ -1584,7 +1656,7 @@ function showXamanStep(payload){
     <hr class="divider" />
     <div class="spinner"></div>
     <div class="status-text" id="xaman-status">Waiting for your signature in XAMAN...</div>
-    <button class="btn-full-outline" style="margin-top:1rem;" onclick="closeModal('buy-modal')">Cancel</button>
+    <button class="btn-full-outline" style="margin-top:1rem;" onclick="closeModal(&quot;buy-modal&quot;)">Cancel</button>
   `;
 
   setTimeout(()=>{
