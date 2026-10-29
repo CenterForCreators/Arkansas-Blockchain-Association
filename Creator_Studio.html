@@ -417,6 +417,24 @@ body.aba-membership-pending #aba-member-access{display:block}
   .aba-member-access-card{padding:1.5rem}
 }
 </style>
+<style id="aba-button-contrast-update">
+/* Readable solid blue Continue and wallet connection buttons */
+.btn-next,
+#wallet-connect-btn,
+#wallet-btn {
+  background: #1678B0 !important;
+  background-image: none !important;
+  color: #FFFFFF !important;
+  border-color: #1678B0 !important;
+  text-shadow: none !important;
+}
+.btn-next:hover,
+#wallet-connect-btn:hover,
+#wallet-btn:hover {
+  background: #126795 !important;
+  border-color: #126795 !important;
+}
+</style>
 </head>
 <body class="aba-membership-pending">
 <canvas id="canvas"></canvas>
@@ -1096,7 +1114,7 @@ function updateNavWallet(addr){
     if(addr){
       btn.textContent = 'Connected';
       btn.style.borderColor = 'rgba(16,185,129,0.4)';
-      btn.style.color = '#07131f';
+      btn.style.color = '#ffffff';
     } else {
       btn.textContent = 'Connect Wallet';
       btn.style.borderColor = '';
