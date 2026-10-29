@@ -456,9 +456,9 @@ body.aba-membership-pending #aba-member-access{display:block}
     <button class="aba-nav-trigger" type="button" aria-expanded="false" aria-controls="aba-nav-tik">Tokenized Interactive Knowledge <span aria-hidden="true">⌄</span></button>
     <div class="aba-nav-submenu" id="aba-nav-tik" hidden>
       <a href="/TIK_Overview">TIK Overview</a>
-      <a href="/Knowledge-Library">Knowledge Library</a>
+      <a href="/Knowledge_Library">Knowledge Library</a>
       <a href="/Leaderboard">Leaderboard</a>
-      <a href="/Creator-Studio">Creator Studio</a>
+      <a href="/Creator_Studio">Creator Studio</a>
     </div>
   </div>
   <a class="nav-join" href="/join">Join ABA</a>
@@ -879,7 +879,7 @@ Edit Profile
 </div>
 <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;">
 <button class="btn-green" onclick="scrollToDashboard()">View My Submissions ↓</button>
-<a class="btn-back" href="/Knowledge-Library" style="text-decoration:none;display:inline-block;">View Marketplace</a>
+<a class="btn-back" href="/Knowledge_Library" style="text-decoration:none;display:inline-block;">View Marketplace</a>
 </div>
 </div>
 </div>
@@ -1807,7 +1807,7 @@ const targetQty = Number(sub.batch_qty || sub.quantity || sub.qty || mintedCount
             ${paymentDone && !mintDone ? `<button class="btn-sm-purple" onclick="startMint(${sub.id})">&#9889; Mint NFT</button>` : ''}
      
       ${mintDone ? `<button class="btn-sm-purple" id="sell-offer-btn-${sub.id}" onclick="listOnMarketplace(${sub.id}, false)">Create / Resume Sell Offers</button>` : ''}
-      ${mintDone ? `<a href="/Knowledge-Library" class="btn-sm-outline" style="text-decoration:none;display:inline-block;">View Marketplace</a>` : ''}
+      ${mintDone ? `<a href="/Knowledge_Library" class="btn-sm-outline" style="text-decoration:none;display:inline-block;">View Marketplace</a>` : ''}
       <button class="btn-sm-outline" onclick="removeSubmission(${sub.id})">Remove</button>
     </div>
     ${normalizedStatus==='rejected' && sub.rejectionReason ? `<div class="alert alert-error" style="margin-top:1rem;font-size:0.78rem;">${sub.rejectionReason}</div>` : ''}
