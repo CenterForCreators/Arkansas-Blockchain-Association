@@ -639,6 +639,13 @@ Edit Profile
     Your connected XRPL wallet will automatically receive the Digital Asset and all proceeds from your sales.
   </div>
 </div>
+<div id="creator-trustlines" class="alert alert-info" style="margin-top:0.8rem;" aria-live="polite">
+  <div style="font-weight:700;margin-bottom:.5rem;">Wallet Trustlines</div>
+  <div id="trustline-cfc-status">CFC: Connect wallet to check</div>
+  <div id="trustline-rlusd-status" style="margin-top:.3rem;">RLUSD: Connect wallet to check</div>
+  <div id="trustline-actions" style="display:flex;flex-wrap:wrap;gap:.6rem;margin-top:.8rem;"></div>
+  <div id="trustline-message" style="font-size:.8rem;margin-top:.6rem;" role="status"></div>
+</div>
 <div id="creator-profile-form">
 <div class="form-group">
 <label class="form-label">Contact Email <span>*</span></label>
@@ -1064,6 +1071,7 @@ async function navConnectWallet(){
 
     updateNavWallet(addr);
     fetchBalances(addr);
+    checkCreatorTrustlines(addr);
 
   }catch(e){
 
@@ -1110,6 +1118,80 @@ async function fetchBalances(wallet){
   } catch(e){ console.warn('Balance fetch failed',e); }
 }
 
+// ── CREATOR TRUSTLINE READINESS ──
+const TRUSTLINE_API = 'https://cfc-nft-shared-mint-backend.onrender.com';
+let creatorTrustlines = { wallet:'', cfc:false, rlusd:false, verified:false };
+let trustlineBusy = false;
+
+function updateTrustlineUI(){
+  const wallet=document.getElementById('creator-wallet').value.trim();
+  const current=creatorTrustlines.verified && creatorTrustlines.wallet===wallet;
+  document.getElementById('trustline-cfc-status').textContent = 'CFC: ' + (current ? (creatorTrustlines.cfc?'✓ Connected':'Setup required'):'Not verified');
+  document.getElementById('trustline-rlusd-status').textContent = 'RLUSD: ' + (current ? (creatorTrustlines.rlusd?'✓ Connected':'Setup required'):'Not verified');
+  const actions=document.getElementById('trustline-actions');
+  actions.replaceChildren();
+  if(!current || trustlineBusy) return;
+  for(const currency of ['cfc','rlusd']){
+    if(creatorTrustlines[currency]) continue;
+    const btn=document.createElement('button');
+    btn.type='button';btn.className='btn-back';btn.style.marginRight='0';
+    btn.textContent='Set up '+currency.toUpperCase()+' trustline';
+    btn.addEventListener('click',()=>createCreatorTrustline(currency));
+    actions.appendChild(btn);
+  }
+}
+
+async function checkCreatorTrustlines(wallet){
+  if(!wallet) return false;
+  creatorTrustlines={wallet,cfc:false,rlusd:false,verified:false};
+  const msg=document.getElementById('trustline-message');
+  msg.textContent='Checking CFC and RLUSD trustlines...';
+  updateTrustlineUI();
+  try{
+    const r=await fetch(TRUSTLINE_API+'/api/creator-trustlines/'+encodeURIComponent(wallet),{cache:'no-store'});
+    const d=await r.json();
+    if(!r.ok || !d.success) throw new Error(d.error||'Trustline check failed');
+    if(document.getElementById('creator-wallet').value.trim()!==wallet) return false;
+    creatorTrustlines={wallet,cfc:d.cfc===true,rlusd:d.rlusd===true,verified:true};
+    msg.textContent=creatorTrustlines.cfc && creatorTrustlines.rlusd?'Both trustlines verified.':'Set up any missing trustlines in Xaman to receive CFC rewards and RLUSD sales.';
+    updateTrustlineUI();
+    return creatorTrustlines.cfc && creatorTrustlines.rlusd;
+  }catch(e){
+    msg.textContent='Unable to verify trustlines: '+e.message;
+    updateTrustlineUI();
+    return false;
+  }
+}
+
+async function createCreatorTrustline(currency){
+  if(trustlineBusy) return;
+  const wallet=document.getElementById('creator-wallet').value.trim();
+  if(!wallet || wallet!==creatorWallet){document.getElementById('trustline-message').textContent='Connect your wallet first.';return;}
+  trustlineBusy=true;updateTrustlineUI();
+  const msg=document.getElementById('trustline-message');
+  try{
+    const path=currency==='cfc'?'/api/create-cfc-trustline':'/api/create-rlusd-trustline';
+    const r=await fetch(TRUSTLINE_API+path,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({wallet})});
+    const d=await r.json();
+    if(!r.ok||!d.link||!d.uuid) throw new Error(d.error||'Unable to open Xaman');
+    showXamanModal('Set up '+currency.toUpperCase()+' trustline','Scan the QR code with Xaman or open Xaman to approve this trustline.');
+    const qr=document.getElementById('xaman-qr-canvas');
+    if(qr && typeof QRCode!=='undefined') QRCode.toCanvas(qr,d.link,{width:180},()=>{});
+    const link=document.createElement('a');link.href=d.link;link.target='_blank';link.rel='noopener noreferrer';link.className='xaman-link-btn';link.textContent='Open in XAMAN App';
+    document.getElementById('xaman-qr').appendChild(link);
+    msg.textContent='Approve the '+currency.toUpperCase()+' trustline in Xaman.';
+    let done=false;
+    for(let i=0;i<45;i++){
+      await new Promise(resolve=>setTimeout(resolve,2500));
+      const s=await fetch(TRUSTLINE_API+'/api/xaman/poll/'+encodeURIComponent(d.uuid)).then(res=>res.json());
+      if(s.cancelled||s.expired){msg.textContent='Trustline approval cancelled or expired.';done=true;break;}
+      if(s.resolved){done=true;break;}
+    }
+    if(!done) msg.textContent='Approval not yet confirmed. Use Refresh trustline status after approving.';
+  }catch(e){msg.textContent='Trustline setup error: '+e.message;}
+  finally{trustlineBusy=false;await checkCreatorTrustlines(wallet);}
+}
+
 // ── WIZARD NAVIGATION ──
 function goToStep(n){
   document.getElementById('step-'+currentStep).classList.remove('active');
@@ -1123,7 +1205,7 @@ function goToStep(n){
 }
 
 // ── STEP 0 ──
-function step0Next(){
+async function step0Next(){
   const wallet = document.getElementById('creator-wallet').value.trim();
   const email = document.getElementById('creator-email').value.trim();
   const err = document.getElementById('step0-error');
@@ -1157,6 +1239,8 @@ if(
   err.style.display = "block";
   return;
 }
+  // Trustlines are checked and offered without blocking the existing submission flow.
+  checkCreatorTrustlines(wallet);
   creatorWallet = wallet;
   creatorEmail = email;
   localStorage.setItem('cfcWallet', wallet);
@@ -2283,10 +2367,11 @@ if(savedWallet){
   document.getElementById('creator-wallet').value = savedWallet;
   document.getElementById('wallet-heading').style.display='none';
   document.getElementById('wallet-desc').style.display='none';
-  document.getElementById('wallet-connect-btn').style.display='none';
+  // Keep the Xaman Connect Wallet option available here, even for a remembered wallet.
 
   updateNavWallet(savedWallet);
   fetchBalances(savedWallet);
+  checkCreatorTrustlines(savedWallet);
   loadCreatorProfile();
 }
    function toggleSpecs() {
