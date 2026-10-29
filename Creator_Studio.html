@@ -1094,9 +1094,9 @@ function updateNavWallet(addr){
     if(!btn) continue;
     btn.disabled = false;
     if(addr){
-      btn.textContent = addr.slice(0,8)+'...'+addr.slice(-4);
+      btn.textContent = 'Connected';
       btn.style.borderColor = 'rgba(16,185,129,0.4)';
-      btn.style.color = 'var(--green)';
+      btn.style.color = '#07131f';
     } else {
       btn.textContent = 'Connect Wallet';
       btn.style.borderColor = '';
