@@ -228,19 +228,23 @@ body{color:#d7e3f1;background:var(--navy)}
 .s-hero-kinetic .s-kinetic-mark img{width:69px;height:69px}
 @media(max-width:760px){.sclta-page .s-hero-kinetic #s-hero-title{font-size:clamp(1.3rem,5.2vw,2.7rem)}.s-hero-kinetic .s-kinetic-mark{width:68px;height:68px}.s-hero-kinetic .s-kinetic-mark img{width:54px;height:54px}}
 
-/* Refined SCLTA logo integration — preserves all other page content */
+/* Circular animated SCLTA endpoint — localized hero-only styling */
 .s-hero-kinetic:after{display:none}
-.s-hero-kinetic .s-kinetic-visual{transform:translateX(-18px)}
-.s-hero-kinetic .s-network-card-top{right:8%;top:17%}
-.s-hero-kinetic .s-network-card-bottom{left:2%;bottom:14%}
-.s-hero-kinetic .s-logo-flow{position:absolute;right:1%;top:53%;transform:translateY(-50%);width:min(40%,230px);aspect-ratio:1;display:grid;place-items:center;pointer-events:none;z-index:3}
-.s-hero-kinetic .s-logo-flow:before{content:"";position:absolute;right:78%;top:49%;width:148px;height:4px;border-radius:999px;background:linear-gradient(90deg,rgba(69,183,239,0),rgba(69,183,239,.85) 36%,rgba(32,185,155,.95) 100%);box-shadow:0 0 18px rgba(69,183,239,.4)}
-.s-hero-kinetic .s-logo-flow:after{content:"";position:absolute;right:calc(78% + 138px);top:calc(49% - 4px);width:12px;height:12px;border-radius:50%;background:#49b9ef;box-shadow:0 0 0 6px rgba(73,185,239,.14),0 0 18px rgba(73,185,239,.55)}
-.s-hero-kinetic .s-logo-flow-orb{position:absolute;inset:10%;border-radius:50%;background:radial-gradient(circle,rgba(59,169,236,.24) 0%,rgba(59,169,236,.08) 45%,rgba(59,169,236,0) 72%);filter:blur(2px);animation:s-breathe 7s ease-in-out infinite}
-.s-hero-kinetic .s-logo-flow-ring{position:absolute;inset:7%;border-radius:50%;border:1px solid rgba(98,181,233,.24);box-shadow:0 0 0 1px rgba(18,126,195,.08) inset;animation:s-rotate 28s linear infinite reverse}
-.s-hero-kinetic .s-logo-flow img{position:relative;z-index:2;width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 16px 35px rgba(0,0,0,.34)) saturate(1.12) brightness(1.08) contrast(1.04);mix-blend-mode:multiply}
-@media(max-width:760px){.s-hero-kinetic .s-kinetic-visual{transform:none}.s-hero-kinetic .s-logo-flow{right:6%;top:57%;width:min(38%,160px)}.s-hero-kinetic .s-logo-flow:before{width:90px;right:70%}.s-hero-kinetic .s-logo-flow:after{right:calc(70% + 82px)}}
-@media(max-width:440px){.s-hero-kinetic .s-logo-flow{right:3%;top:60%;width:120px}.s-hero-kinetic .s-logo-flow:before{width:64px;right:68%}.s-hero-kinetic .s-logo-flow:after{right:calc(68% + 56px);width:10px;height:10px}}
+.s-hero-kinetic .s-kinetic-visual{transform:translateX(-22px)}
+.s-hero-kinetic .s-network-card-top{right:20%;top:11%}
+.s-hero-kinetic .s-network-card-bottom{left:1%;bottom:12%}
+.s-hero-kinetic .s-logo-flow{position:absolute;right:-12%;top:53%;width:174px;height:174px;aspect-ratio:1;border-radius:50%;display:grid;place-items:center;pointer-events:none;z-index:3;transform:translateY(-50%);animation:s-logo-sync 9s ease-in-out infinite}
+.s-hero-kinetic .s-logo-flow:before{content:"";position:absolute;inset:-10px;border-radius:50%;border:1px solid rgba(78,190,255,.65);box-shadow:0 0 20px rgba(50,155,233,.27),inset 0 0 22px rgba(50,155,233,.12);background:radial-gradient(circle,rgba(20,84,143,.3),rgba(7,28,55,.16) 72%);z-index:0}
+.s-hero-kinetic .s-logo-flow:after{content:"";position:absolute;inset:-17px;border-radius:50%;border:2px dashed rgba(66,198,226,.38);animation:s-rotate 30s linear infinite}
+.s-hero-kinetic .s-logo-flow-orb{position:absolute;inset:-25%;border-radius:50%;background:radial-gradient(circle,rgba(45,162,231,.23),rgba(45,162,231,0) 70%);animation:s-breathe 7s ease-in-out infinite}
+.s-hero-kinetic .s-logo-flow-ring{position:absolute;inset:-6px;border-radius:50%;border:2px solid transparent;border-top-color:#62d6ff;border-bottom-color:#21bba5;animation:s-rotate 13s linear infinite}
+.s-hero-kinetic .s-logo-flow img{position:relative;z-index:2;width:100%;height:100%;border-radius:50%;clip-path:circle(49.5% at 50% 50%);object-fit:cover;object-position:center;opacity:1;mix-blend-mode:normal;filter:saturate(1.12) contrast(1.07);background:#061d38}
+.s-hero-kinetic .s-graph-to-logo{stroke-dasharray:10 9;animation:s-flowline 8s linear infinite;filter:drop-shadow(0 0 6px rgba(56,190,255,.5))}
+@keyframes s-logo-sync{0%,100%{transform:translateY(-50%)}50%{transform:translateY(calc(-50% - 13px))}}
+@media(max-width:1000px){.s-hero-kinetic .s-logo-flow{right:-7%;width:135px;height:135px}}
+@media(max-width:760px){.s-hero-kinetic .s-kinetic-visual{transform:none}.s-hero-kinetic .s-logo-flow{right:-1%;top:53%;width:122px;height:122px}.s-hero-kinetic .s-network-card-top{right:21%;top:9%}}
+@media(max-width:440px){.s-hero-kinetic .s-logo-flow{right:-2%;top:53%;width:101px;height:101px}.s-hero-kinetic .s-network-card-top{right:20%;top:4%}}
+@media(prefers-reduced-motion:reduce){.s-hero-kinetic .s-logo-flow,.s-hero-kinetic .s-logo-flow:after,.s-hero-kinetic .s-logo-flow-ring,.s-hero-kinetic .s-logo-flow-orb,.s-hero-kinetic .s-graph-to-logo{animation:none!important}}
 
 </style>
 <style>
@@ -384,6 +388,9 @@ body{color:#d7e3f1;background:var(--navy)}
         <g class="s-nodes"><circle cx="84" cy="269" r="9" fill="#0878C4" stroke="white" stroke-width="4"/><circle cx="207" cy="161" r="9" fill="#0878C4" stroke="white" stroke-width="4"/><circle cx="350" cy="222" r="11" fill="#075AA8" stroke="white" stroke-width="4"/><circle cx="492" cy="147" r="8" fill="#12AA96" stroke="white" stroke-width="4"/><circle cx="105" cy="368" r="8" fill="#0878C4" stroke="white" stroke-width="4"/><circle cx="342" cy="373" r="9" fill="#0878C4" stroke="white" stroke-width="4"/><circle cx="504" cy="311" r="9" fill="#12AA96" stroke="white" stroke-width="4"/><circle cx="430" cy="434" r="8" fill="#0878C4" stroke="white" stroke-width="4"/></g>
         <circle class="s-node-ripple" cx="350" cy="222" r="20" stroke="#167CD2" stroke-width="2"/>
         <circle class="s-node-ripple s-ripple-delay" cx="504" cy="311" r="20" stroke="#14AE9C" stroke-width="2"/>
+        <path class="s-graph-to-logo" d="M492 147Q547 170 571 247" stroke="#48B9EF" stroke-width="2.6" stroke-linecap="round"/>
+        <path class="s-graph-to-logo" d="M504 311Q546 299 571 247" stroke="#21BBA5" stroke-width="2.6" stroke-linecap="round"/>
+        <circle cx="571" cy="247" r="6" fill="#45D7BF" stroke="#E5FAFF" stroke-width="2"/>
       </svg>
       <div class="s-network-card s-network-card-top"><span class="s-card-dot"></span><span>GLOBAL TRADE NETWORK</span><strong>Interoperability</strong></div>
       <div class="s-network-card s-network-card-bottom"><span class="s-card-dot s-card-dot-teal"></span><span>FROM RESEARCH TO IMPACT</span><strong>Build · Validate · Scale</strong></div>
