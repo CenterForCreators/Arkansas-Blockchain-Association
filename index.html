@@ -263,6 +263,21 @@ body{color:#d7e3f1;background:var(--navy)}
 }
 @media(prefers-reduced-motion:reduce){.aba-hero-svg{animation:none!important}}
 
+
+/* Center logo now follows the existing network's three-dimensional breathing. */
+.hero-visual .aba-hero-logo{
+  animation:aba-hero-logo-fluid 13s ease-in-out infinite;
+  transform-origin:center center;
+  will-change:transform;
+}
+@keyframes aba-hero-logo-fluid{
+  0%,100%{transform:translate(-50%,-50%) perspective(850px) rotateY(-5deg) rotateX(2deg) scale(.985)}
+  50%{transform:translate(-50%,-50%) perspective(850px) rotateY(6deg) rotateX(-3deg) scale(1.035)}
+}
+@media(prefers-reduced-motion:reduce){
+  .hero-visual .aba-hero-logo{animation:none!important}
+}
+
 </style>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"Organization","name":"Arkansas Blockchain Association","alternateName":"ABA","url":"https://arkansasblockchainassociation.com/","email":"info@arkansasblockchainassociation.com","description":"An Arkansas-based organization advancing blockchain technology, tokenization, digital assets, and emerging digital infrastructure nationally and globally."}</script>
 </head>
