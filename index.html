@@ -241,6 +241,28 @@ body{color:#d7e3f1;background:var(--navy)}
 @media(max-width:560px){.aba-initiatives-section{padding-top:55px;padding-bottom:55px}.aba-ecosystem-visual{height:370px}.aba-ecosystem-connections{top:-22px;transform:translateX(-50%) scale(.78)}.aba-ecosystem-node{width:92px;min-height:54px;font-size:.57rem}.aba-ecosystem-center{width:98px}.aba-ecosystem-center img{width:55px;height:55px}.aba-ecosystem-center span{font-size:.47rem}.node-supply,.node-dasc{top:26%}.node-gsn,.node-tik{top:73%}.aba-ecosystem-foot{font-size:.6rem}.aba-initiative-panel{padding-left:20px}.aba-hero-actions .btn{flex:1;padding:12px 10px;font-size:.78rem}}
 @media(prefers-reduced-motion:reduce){.aba-web-point{animation:none}.aba-hero-web animateMotion,.aba-ecosystem-visual animateMotion{display:none}.aba-hero-actions .btn,.aba-ecosystem-node{transition:none}}
 
+
+/* Existing home hero network: subtle dimensional movement without altering geometry or logo */
+.aba-hero-web{perspective:1000px}
+.aba-hero-svg{
+  transform-origin:50% 50%;
+  backface-visibility:hidden;
+  animation:aba-network-sway 13s ease-in-out infinite alternate;
+}
+@keyframes aba-network-sway{
+  0%{transform:translate3d(-4px,2px,0) rotateY(-3deg) rotateX(2deg)}
+  100%{transform:translate3d(4px,-3px,0) rotateY(3deg) rotateX(-2deg)}
+}
+@media(prefers-reduced-motion:reduce){.aba-hero-svg{animation:none!important}}
+
+/* Existing homepage network: flowing depth motion; no layout or logo changes. */
+.aba-hero-svg{animation:aba-network-fluid-tilt 13s ease-in-out infinite;transform-origin:50% 50%;}
+@keyframes aba-network-fluid-tilt{
+  0%,100%{transform:perspective(850px) rotateY(-5deg) rotateX(2deg) scale(.985)}
+  50%{transform:perspective(850px) rotateY(6deg) rotateX(-3deg) scale(1.035)}
+}
+@media(prefers-reduced-motion:reduce){.aba-hero-svg{animation:none!important}}
+
 </style>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"Organization","name":"Arkansas Blockchain Association","alternateName":"ABA","url":"https://arkansasblockchainassociation.com/","email":"info@arkansasblockchainassociation.com","description":"An Arkansas-based organization advancing blockchain technology, tokenization, digital assets, and emerging digital infrastructure nationally and globally."}</script>
 </head>
@@ -812,5 +834,55 @@ body{color:#d7e3f1;background:var(--navy)}
  nav.querySelectorAll('.aba-nav-submenu a').forEach(link=>link.addEventListener('click',()=>closeAll()));
 })();
 </script>
+
+<script>
+/* Animate the existing network geometry as a smooth, flowing 3D surface.
+   The same nodes/edges remain connected; center logo, copy and layout are untouched. */
+(()=>{
+  const svg=document.querySelector('.hero-visual .aba-hero-svg');
+  if(!svg || window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+  const lines=[...svg.querySelectorAll('.aba-web-lines line')];
+  const nodes=[...svg.querySelectorAll('circle.aba-web-point')];
+  const lineEndpoints=lines.map(el=>[
+    [Number(el.getAttribute('x1')),Number(el.getAttribute('y1'))],
+    [Number(el.getAttribute('x2')),Number(el.getAttribute('y2'))]
+  ]);
+  const bases=nodes.map(el=>[Number(el.getAttribute('cx')),Number(el.getAttribute('cy'))]);
+  // A single coherent flowing surface makes neighboring nodes move together.
+  const displacement=(x,y,t)=>{
+    const nx=(x-230)/230, ny=(y-200)/200;
+    const edge=.18 + .82*Math.min(1,Math.hypot(nx,ny));
+    const phase=nx*2.3+ny*1.5;
+    const slow=t*.00047, wave=t*.00074;
+    const xWave=(Math.sin(slow+phase)*9 + Math.sin(wave*1.36-ny*2.8)*5.5)*edge;
+    const yWave=(Math.cos(wave+phase*.85)*7 + Math.sin(slow*1.5+nx*3.2)*5)*edge;
+    // Perspective-like breathing: outward/inward motion follows radial depth.
+    const depth=Math.sin(wave+nx*2.7-ny*1.9)*.035*edge;
+    return [x+xWave+nx*depth*100,y+yWave+ny*depth*85];
+  };
+  let frame=0, visible=true;
+  const observer=new IntersectionObserver(entries=>{visible=entries[0].isIntersecting;},{threshold:0});
+  observer.observe(svg);
+  const update=(t)=>{
+    // 30 fps cap for efficient mobile rendering.
+    if(visible && t-frame>32){
+      frame=t;
+      for(let i=0;i<lines.length;i++){
+        const e=lines[i],a=lineEndpoints[i];
+        const p=displacement(a[0][0],a[0][1],t),q=displacement(a[1][0],a[1][1],t);
+        e.setAttribute('x1',p[0].toFixed(2));e.setAttribute('y1',p[1].toFixed(2));
+        e.setAttribute('x2',q[0].toFixed(2));e.setAttribute('y2',q[1].toFixed(2));
+      }
+      for(let i=0;i<nodes.length;i++){
+        const p=displacement(bases[i][0],bases[i][1],t);
+        nodes[i].setAttribute('cx',p[0].toFixed(2));nodes[i].setAttribute('cy',p[1].toFixed(2));
+      }
+    }
+    requestAnimationFrame(update);
+  };
+  requestAnimationFrame(update);
+})();
+</script>
+
 </body>
 </html>
