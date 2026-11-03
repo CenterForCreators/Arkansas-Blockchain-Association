@@ -271,8 +271,8 @@ body{color:#d7e3f1;background:var(--navy)}
   will-change:transform;
 }
 @keyframes aba-hero-logo-fluid{
-  0%,100%{transform:translate(-50%,-50%) perspective(850px) rotateY(-5deg) rotateX(2deg) scale(.985)}
-  50%{transform:translate(-50%,-50%) perspective(850px) rotateY(6deg) rotateX(-3deg) scale(1.035)}
+  0%,100%{transform:translate(calc(-50% - 12px),calc(-50% + 5px)) perspective(850px) rotateY(-12deg) rotateX(5deg) rotateZ(-1.5deg) scale(.985)}
+  50%{transform:translate(calc(-50% + 12px),calc(-50% - 5px)) perspective(850px) rotateY(12deg) rotateX(-5deg) rotateZ(1.5deg) scale(1.035)}
 }
 @media(prefers-reduced-motion:reduce){
   .hero-visual .aba-hero-logo{animation:none!important}
