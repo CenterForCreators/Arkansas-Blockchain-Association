@@ -158,7 +158,15 @@ body{color:#d7e3f1;background:var(--navy)}
 @keyframes aba-partner-scroll{to{transform:translateX(-50%)}}
 @media(max-width:600px){.aba-partner-banner{padding:36px 0}.aba-partner-logo{width:180px;height:110px}.aba-partner-group{gap:18px;padding-right:18px}}
 @media(prefers-reduced-motion:reduce){.aba-partner-track{animation:none;width:100%}.aba-partner-group{flex-wrap:wrap;justify-content:center;padding-right:0;width:100%}.aba-partner-group[aria-hidden="true"]{display:none}}
-  </style>
+  
+/* Global Student Network Ambassador opportunities: scoped to the new section */
+.ambassador-opportunity-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
+.ambassador-opportunity-card{border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.018);padding:30px;min-width:0}
+.ambassador-opportunity-number{display:block;color:var(--gold2);font-size:.67rem;letter-spacing:.12em;font-weight:800;margin-bottom:14px}
+.ambassador-opportunity-card h3{color:#fff;font-size:1.23rem;line-height:1.3;margin:0 0 13px}
+.ambassador-opportunity-card p{color:#b9cce0;line-height:1.7;margin:0}
+@media(max-width:700px){.ambassador-opportunity-grid{grid-template-columns:1fr}.ambassador-opportunity-card{padding:24px}}
+</style>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"Organization","name":"Arkansas Blockchain Association","alternateName":"ABA","url":"https://arkansasblockchainassociation.com/","email":"info@arkansasblockchainassociation.com","description":"An Arkansas-based organization advancing blockchain technology, tokenization, digital assets, and emerging digital infrastructure nationally and globally."}</script>
 
 <style>
@@ -290,7 +298,7 @@ body{color:#d7e3f1;background:var(--navy)}
       <div class="container">
         <span class="kicker kicker-light">ABA GLOBAL STUDENT NETWORK</span>
         <h1 id="ambassador-title">Become a Global Student Network Ambassador</h1>
-        <p class="lead">Help connect students at your university with a global community exploring emerging technologies. We’re looking for thoughtful, reliable student representatives who want to welcome others, share opportunities, and encourage meaningful participation.</p>
+        <p class="lead">Connect students at your university with industry professionals, emerging technologies, and opportunities to work on real-world challenges. As an Ambassador, you can participate in research, hackathons, Mastermind Conversations, and global projects while helping other students discover these opportunities.</p>
         <p class="ambassador-role">Volunteer role · Approximately 2–4 hours per month · One brief monthly meeting</p>
         <a class="button button-primary" href="mailto:info@arkansasblockchainassociation.com?subject=ABA%20Global%20Student%20Network%20Ambassador%20Application">Apply to Be an Ambassador</a>
       </div>
@@ -325,20 +333,56 @@ body{color:#d7e3f1;background:var(--navy)}
         </div>
       </div>
     </section>
-    <section class="section section-dark" aria-labelledby="ambassador-expectations-title">
+    <section class="section section-dark ambassador-opportunities" aria-labelledby="ambassador-opportunities-title">
+    <div class="container">
+      <div class="ambassador-intro">
+        <span class="kicker">WHAT YOU CAN BE PART OF</span>
+        <h2 id="ambassador-opportunities-title">Opportunities to Learn, Build and Lead</h2>
+        <p>Ambassadors can participate in the Global Student Network beyond campus outreach. Explore industry challenges, work with peers across the world, and help shape initiatives that interest you.</p>
+      </div>
+      <div class="ambassador-opportunity-grid">
+        <article class="ambassador-opportunity-card">
+          <span class="ambassador-opportunity-number">01 / RESEARCH</span>
+          <h3>Applied Research and Real-World Projects</h3>
+          <p>Work with students and industry professionals on practical challenges, including opportunities connected to the Supply Chain, Logistics &amp; Trade Alliance and DASC policy discussions.</p>
+        </article>
+        <article class="ambassador-opportunity-card">
+          <span class="ambassador-opportunity-number">02 / DEVELOPMENT</span>
+          <h3>Hackathons and Hands-On Development</h3>
+          <p>Participate in hackathons, workshops, and collaborative technology projects involving blockchain, AI, and other emerging technologies. Help turn ideas into working solutions.</p>
+        </article>
+        <article class="ambassador-opportunity-card">
+          <span class="ambassador-opportunity-number">03 / CONVERSATIONS</span>
+          <h3>Mastermind Conversations</h3>
+          <p>Join discussions with industry professionals and fellow students. Ambassadors receive priority registration for in-person Mastermind Conversations and have their own monthly virtual Ambassador Mastermind sessions.</p>
+        </article>
+        <article class="ambassador-opportunity-card">
+          <span class="ambassador-opportunity-number">04 / LEADERSHIP</span>
+          <h3>Global Collaboration and Leadership</h3>
+          <p>Collaborate across countries and disciplines. Take initiative in working groups, research, technology development, student events, and projects that match your skills and interests.</p>
+        </article>
+        <article class="ambassador-opportunity-card">
+          <span class="ambassador-opportunity-number">05 / KNOWLEDGE</span>
+          <h3>Tokenized Interactive Knowledge</h3>
+          <p>Contribute research, articles, educational content, and projects through ABA’s Tokenized Interactive Knowledge ecosystem, with interactive learning and opportunities for recognition and engagement.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+  <section class="section section-dark" aria-labelledby="ambassador-expectations-title">
       <div class="container">
         <div class="ambassador-intro">
           <span class="kicker">YOUR INVOLVEMENT</span>
-          <h2 id="ambassador-expectations-title">Connect. Welcome. Engage.</h2>
-          <p>ABA Global Student Network Ambassadors are volunteer representatives who support outreach, engagement, and events. Your role is to help students discover the network, feel welcome, and find meaningful ways to get involved.</p>
+          <h2 id="ambassador-expectations-title">Connect. Collaborate. Lead.</h2>
+          <p>Ambassadors help bring the Global Student Network to their universities and connect students with people, projects, and opportunities. You can also contribute to research, technology development, events, and leadership initiatives based on your interests.</p>
         </div>
         <ul class="ambassador-expectations">
           <li><span aria-hidden="true">01</span><div>Represent ABA professionally at your university and within your network.</div></li>
           <li><span aria-hidden="true">02</span><div>Introduce students and student organizations to the Global Student Network.</div></li>
-          <li><span aria-hidden="true">03</span><div>Share ABA opportunities, events, and committee activities.</div></li>
-          <li><span aria-hidden="true">04</span><div>Welcome new student members and encourage participation.</div></li>
-          <li><span aria-hidden="true">05</span><div>Attend one brief monthly ambassador meeting.</div></li>
-          <li><span aria-hidden="true">06</span><div>Provide feedback about student interests and emerging-technology priorities.</div></li>
+          <li><span aria-hidden="true">03</span><div>Share research opportunities, hackathons, workshops, Mastermind Conversations, and other ABA activities.</div></li>
+          <li><span aria-hidden="true">04</span><div>Welcome new members and help them find projects and working groups that match their interests.</div></li>
+          <li><span aria-hidden="true">05</span><div>Participate in one brief monthly Ambassador meeting.</div></li>
+          <li><span aria-hidden="true">06</span><div>Share student interests, ideas, and feedback to help shape network activities.</div></li>
           <li><span aria-hidden="true">07</span><div>Follow ABA’s conduct and communications guidelines.</div></li>
           <li><span aria-hidden="true">08</span><div>Commit approximately 2–4 hours per month.</div></li>
         </ul>
@@ -349,8 +393,8 @@ body{color:#d7e3f1;background:var(--navy)}
     <section class="ambassador-apply section" aria-labelledby="ambassador-apply-title">
       <div class="container">
         <span class="kicker">TAKE THE NEXT STEP</span>
-        <h2 id="ambassador-apply-title">Help build connections at your university.</h2>
-        <p>If you can commit approximately 2–4 hours each month and would enjoy helping students connect and participate, we’d love to hear from you.</p>
+        <h2 id="ambassador-apply-title">Bring new opportunities to your university.</h2>
+        <p>If you want to connect students with industry, research, technology projects, and a global community—and can contribute approximately 2–4 hours each month—we’d love to hear from you.</p>
         <p>To apply, email your name, university, country, LinkedIn profile, and a brief note about why you’d like to become an ambassador and how you hope to contribute.</p>
         <a class="button button-primary" href="mailto:info@arkansasblockchainassociation.com?subject=ABA%20Global%20Student%20Network%20Ambassador%20Application">Apply to Be an Ambassador</a>
         <p class="ambassador-email"><a href="mailto:info@arkansasblockchainassociation.com">info@arkansasblockchainassociation.com</a></p>
