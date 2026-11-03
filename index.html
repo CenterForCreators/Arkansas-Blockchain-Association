@@ -158,9 +158,8 @@ body{color:#d7e3f1;background:var(--navy)}
 @keyframes aba-partner-scroll{to{transform:translateX(-50%)}}
 @media(max-width:600px){.aba-partner-banner{padding:36px 0}.aba-partner-logo{width:180px;height:110px}.aba-partner-group{gap:18px;padding-right:18px}}
 @media(prefers-reduced-motion:reduce){.aba-partner-track{animation:none;width:100%}.aba-partner-group{flex-wrap:wrap;justify-content:center;padding-right:0;width:100%}.aba-partner-group[aria-hidden="true"]{display:none}}
-  </style>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"Organization","name":"Arkansas Blockchain Association","alternateName":"ABA","url":"https://arkansasblockchainassociation.com/","email":"info@arkansasblockchainassociation.com","description":"An Arkansas-based organization advancing blockchain technology, tokenization, digital assets, and emerging digital infrastructure nationally and globally."}</script>
-<style id="aba-grouped-navigation-styles">
+  
+
 /* Shared ABA grouped navigation */
 #aba-primary-nav{display:flex;align-items:center;gap:24px;color:#dce7f5;font-size:.78rem;font-weight:600}
 #aba-primary-nav .aba-nav-group{position:relative}
@@ -199,7 +198,51 @@ body{color:#d7e3f1;background:var(--navy)}
  .site-header.scrolled #aba-primary-nav{top:70px;max-height:calc(100dvh - 70px)}
 }
 @media(prefers-reduced-motion:reduce){#aba-primary-nav,#aba-primary-nav .aba-nav-trigger>span{transition:none}}
+
+
+/* HOMEPAGE ENHANCEMENTS — preserves shared header/footer markup */
+.aba-hero-actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:26px}
+.aba-hero-actions .btn{display:inline-flex;align-items:center;justify-content:center;gap:9px;text-decoration:none;padding:13px 20px;border:1px solid #65bff6;border-radius:8px;font-size:.86rem;font-weight:800;transition:transform .22s,background .22s;color:#071b31;background:#99dcff}
+.aba-hero-actions .btn:hover{transform:translateY(-3px);background:#c2edff}
+.aba-hero-actions .btn-outline{background:rgba(7,28,57,.55);color:#e3f4ff;border-color:rgba(132,199,249,.46)}
+.aba-hero-web{position:relative;width:100%;aspect-ratio:1.14;max-width:530px;margin:auto;filter:drop-shadow(0 0 22px rgba(41,140,227,.18))}
+.aba-hero-svg{position:absolute;inset:0;width:100%;height:100%}
+.aba-web-point{animation:aba-spark 3s ease-in-out infinite;animation-delay:var(--delay)}
+@keyframes aba-spark{0%,100%{opacity:.22}50%{opacity:1}}
+.aba-hero-logo{position:absolute;width:42%;aspect-ratio:1/1;height:auto;left:50%;top:50%;transform:translate(-50%,-50%);display:flex;align-items:center;justify-content:center;border-radius:50%;background:radial-gradient(circle,rgba(41,119,192,.24),rgba(7,22,47,.04) 72%);box-shadow:0 0 55px rgba(54,134,210,.17);overflow:hidden;z-index:2}
+.aba-hero-logo img{display:block;width:100%;height:100%;aspect-ratio:1;object-fit:contain;object-position:center;border-radius:50%;clip-path:circle(50% at 50% 50%);filter:drop-shadow(0 0 13px rgba(109,187,252,.15))}
+.aba-initiatives-section{background:linear-gradient(135deg,#071b35,#0b2a50 56%,#06152d);color:#e7f0fb;position:relative;overflow:hidden;padding-top:82px;padding-bottom:82px}
+.aba-initiatives-section:before{content:"";position:absolute;width:650px;height:650px;border-radius:50%;background:radial-gradient(circle,rgba(42,129,210,.13),transparent 70%);right:-150px;top:-100px;pointer-events:none}
+.aba-initiatives-section .section-heading{max-width:850px;margin-bottom:35px}
+.aba-initiatives-section .section-kicker{font-size:.75rem;font-weight:800;letter-spacing:.16em;color:#9cd9ff}
+.aba-initiatives-section h2{font-size:clamp(2rem,3.3vw,3.25rem);line-height:1.16;color:#f5f9ff;margin:11px 0 15px}
+.aba-initiatives-section .section-heading p{color:#b9cee4;max-width:780px;line-height:1.75}
+.aba-initiatives-layout{display:grid;grid-template-columns:minmax(0,.98fr) minmax(0,1.02fr);gap:30px;align-items:center}
+.aba-ecosystem-visual{height:475px;background:linear-gradient(145deg,rgba(22,62,110,.37),rgba(5,24,49,.34));border:1px solid rgba(105,170,236,.2);border-radius:18px;position:relative;overflow:hidden;box-shadow:inset 0 0 70px rgba(5,32,65,.25)}
+.aba-ecosystem-topline{position:absolute;top:20px;left:22px;color:#8bc5f4;font-size:.69rem;font-weight:800;letter-spacing:.15em}
+.aba-ecosystem-connections{position:absolute;left:50%;top:10px;width:min(100%,480px);height:450px;transform:translateX(-50%)}
+.aba-ecosystem-center{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);display:flex;align-items:center;flex-direction:column;gap:2px;z-index:1;width:130px;text-align:center}
+.aba-ecosystem-center img{width:73px;height:73px;object-fit:contain}
+.aba-ecosystem-center span{color:#c6e5ff;font-size:.57rem;letter-spacing:.05em;line-height:1.45;font-weight:800}
+.aba-ecosystem-node{position:absolute;z-index:2;transform:translate(-50%,-50%);width:119px;min-height:61px;border:1px solid rgba(113,188,249,.43);border-radius:12px;background:#102c52;color:#edf7ff;font:inherit;font-size:.69rem;font-weight:800;line-height:1.42;letter-spacing:.035em;cursor:pointer;transition:background .2s,border .2s,box-shadow .2s,transform .2s}
+.aba-ecosystem-node:hover,.aba-ecosystem-node.active{background:#185087;border-color:#92d8ff;box-shadow:0 0 22px rgba(76,169,242,.26);transform:translate(-50%,-50%) scale(1.045)}
+.node-supply{left:25%;top:26%}.node-dasc{left:75%;top:26%}.node-gsn{left:25%;top:75%}.node-tik{left:75%;top:75%}
+.aba-ecosystem-foot{position:absolute;bottom:13px;text-align:center;width:100%;padding:0 14px;font-size:.7rem;color:#9bbbdc}
+.aba-initiatives-list{display:flex;flex-direction:column;gap:11px}
+.aba-initiative{border-radius:13px;border:1px solid rgba(112,165,220,.23);background:rgba(12,38,72,.64);transition:border .2s,background .2s}
+.aba-initiative:has(.aba-initiative-toggle[aria-expanded="true"]){border-color:rgba(122,199,255,.65);background:rgba(16,54,96,.78)}
+.aba-initiative-toggle{font:inherit;cursor:pointer;color:#eff8ff;padding:19px 20px;display:flex;width:100%;gap:15px;align-items:center;border:0;background:transparent;text-align:left}
+.aba-initiative-num{font-size:.77rem;color:#89c8f6;font-weight:800}
+.aba-initiative-heading{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px}.aba-initiative-heading small{font-size:.63rem;color:#8fbce3;letter-spacing:.1em;font-weight:800}.aba-initiative-heading strong{font-size:clamp(.96rem,1.2vw,1.12rem);line-height:1.4;color:#f2f8ff}
+.aba-initiative-chevron{font-size:1.35rem;color:#93cbf5;transition:transform .2s}.aba-initiative-toggle[aria-expanded="true"] .aba-initiative-chevron{transform:rotate(180deg)}
+.aba-initiative-panel{padding:0 20px 20px 55px}.aba-initiative-panel[hidden]{display:none}.aba-initiative-panel p{color:#c1d2e4;line-height:1.65;margin:0 0 15px;font-size:.9rem}
+.aba-initiative-link{display:inline-flex;gap:7px;align-items:center;color:#9dddff!important;text-decoration:none;font-weight:800;font-size:.84rem;border:1px solid rgba(132,198,240,.36);padding:10px 14px;border-radius:7px}.aba-initiative-link:hover{background:rgba(78,160,227,.18)}
+@media(max-width:880px){.aba-initiatives-layout{grid-template-columns:1fr}.aba-ecosystem-visual{max-width:550px;width:100%;margin:0 auto}.aba-hero-web{max-width:440px}}
+@media(max-width:560px){.aba-initiatives-section{padding-top:55px;padding-bottom:55px}.aba-ecosystem-visual{height:370px}.aba-ecosystem-connections{top:-22px;transform:translateX(-50%) scale(.78)}.aba-ecosystem-node{width:92px;min-height:54px;font-size:.57rem}.aba-ecosystem-center{width:98px}.aba-ecosystem-center img{width:55px;height:55px}.aba-ecosystem-center span{font-size:.47rem}.node-supply,.node-dasc{top:26%}.node-gsn,.node-tik{top:73%}.aba-ecosystem-foot{font-size:.6rem}.aba-initiative-panel{padding-left:20px}.aba-hero-actions .btn{flex:1;padding:12px 10px;font-size:.78rem}}
+@media(prefers-reduced-motion:reduce){.aba-web-point{animation:none}.aba-hero-web animateMotion,.aba-ecosystem-visual animateMotion{display:none}.aba-hero-actions .btn,.aba-ecosystem-node{transition:none}}
+
 </style>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"Organization","name":"Arkansas Blockchain Association","alternateName":"ABA","url":"https://arkansasblockchainassociation.com/","email":"info@arkansasblockchainassociation.com","description":"An Arkansas-based organization advancing blockchain technology, tokenization, digital assets, and emerging digital infrastructure nationally and globally."}</script>
 </head>
 <body>
   
@@ -256,13 +299,145 @@ body{color:#d7e3f1;background:var(--navy)}
       <div class="container hero-grid">
         <div class="hero-copy reveal">
           <div class="eyebrow"><span></span> ARKANSAS-BASED • NATIONAL AND GLOBAL REACH</div>
-          <h1 id="hero-title">Advancing <span>blockchain</span> and emerging technologies</h1>
-          <p>Arkansas Blockchain Association brings together business, government, universities, technology leaders, and communities to strengthen practical adoption, ethical leadership, responsible innovation, workforce development, research, informed policy, and economic opportunity.</p>
-          <div class="hero-proof"><span>Built for practical adoption</span><span>Cross-sector collaboration</span><span>Business-oriented</span></div>
+          <h1 id="hero-title">Connecting <span>emerging technologies</span> with real-world innovation</h1>
+          <p>Arkansas Blockchain Association connects industry leaders, technology experts, policymakers, researchers, and students to advance emerging technologies through practical applications, research and development, global collaboration, and responsible innovation.</p>
+          <div class="hero-proof"><span>Industry &amp; innovation</span><span>Applied research</span><span>National &amp; global collaboration</span></div><div class="aba-hero-actions"><a class="btn btn-primary" href="#aba-initiatives">Explore Our Initiatives <span aria-hidden="true">↗</span></a><a class="btn btn-outline" href="/join">Join ABA <span aria-hidden="true">↗</span></a></div>
         </div>
-        <div class="hero-visual reveal" aria-label="Abstract Arkansas digital infrastructure visual">
-          <div class="arkansas-network"><img class="replacement-infrastructure-logo" src="ABA.png" alt="Arkansas Blockchain Association logo"></div>
-        </div>
+        <div class="hero-visual reveal" aria-label="Animated connections surrounding the Arkansas Blockchain Association logo">
+  <div class="aba-hero-web" aria-hidden="true">
+   <svg viewBox="0 0 460 400" class="aba-hero-svg" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+    <defs>
+      <linearGradient id="aba-flow" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2866a8" stop-opacity=".22"/><stop offset=".5" stop-color="#7ed5ff" stop-opacity=".85"/><stop offset="1" stop-color="#2866a8" stop-opacity=".22"/></linearGradient>
+      <radialGradient id="aba-node-glow"><stop offset="0" stop-color="#d9f6ff"/><stop offset="1" stop-color="#5ec5ff" stop-opacity="0"/></radialGradient>
+    </defs>
+    <g class="aba-web-lines" fill="none" stroke="url(#aba-flow)" stroke-width=".85" opacity=".62">
+     <line x1="14" y1="42" x2="63" y2="21"/>
+     <line x1="14" y1="42" x2="23" y2="115"/>
+     <line x1="14" y1="42" x2="89" y2="102"/>
+     <line x1="63" y1="21" x2="118" y2="47"/>
+     <line x1="63" y1="21" x2="89" y2="102"/>
+     <line x1="118" y1="47" x2="174" y2="19"/>
+     <line x1="118" y1="47" x2="89" y2="102"/>
+     <line x1="118" y1="47" x2="146" y2="121"/>
+     <line x1="174" y1="19" x2="231" y2="37"/>
+     <line x1="174" y1="19" x2="210" y2="92"/>
+     <line x1="231" y1="37" x2="292" y2="16"/>
+     <line x1="231" y1="37" x2="210" y2="92"/>
+     <line x1="231" y1="37" x2="270" y2="111"/>
+     <line x1="292" y1="16" x2="350" y2="42"/>
+     <line x1="292" y1="16" x2="333" y2="103"/>
+     <line x1="350" y1="42" x2="418" y2="20"/>
+     <line x1="350" y1="42" x2="333" y2="103"/>
+     <line x1="350" y1="42" x2="399" y2="115"/>
+     <line x1="418" y1="20" x2="451" y2="70"/>
+     <line x1="418" y1="20" x2="399" y2="115"/>
+     <line x1="451" y1="70" x2="399" y2="115"/>
+     <line x1="451" y1="70" x2="450" y2="145"/>
+     <line x1="23" y1="115" x2="89" y2="102"/>
+     <line x1="23" y1="115" x2="9" y2="187"/>
+     <line x1="23" y1="115" x2="68" y2="176"/>
+     <line x1="89" y1="102" x2="146" y2="121"/>
+     <line x1="146" y1="121" x2="210" y2="92"/>
+     <line x1="146" y1="121" x2="121" y2="198"/>
+     <line x1="210" y1="92" x2="270" y2="111"/>
+     <line x1="270" y1="111" x2="333" y2="103"/>
+     <line x1="333" y1="103" x2="399" y2="115"/>
+     <line x1="333" y1="103" x2="337" y2="193"/>
+     <line x1="399" y1="115" x2="450" y2="145"/>
+     <line x1="399" y1="115" x2="397" y2="181"/>
+     <line x1="450" y1="145" x2="397" y2="181"/>
+     <line x1="450" y1="145" x2="455" y2="211"/>
+     <line x1="9" y1="187" x2="68" y2="176"/>
+     <line x1="9" y1="187" x2="17" y2="259"/>
+     <line x1="9" y1="187" x2="85" y2="274"/>
+     <line x1="68" y1="176" x2="121" y2="198"/>
+     <line x1="121" y1="198" x2="137" y2="246"/>
+     <line x1="337" y1="193" x2="397" y2="181"/>
+     <line x1="337" y1="193" x2="327" y2="257"/>
+     <line x1="397" y1="181" x2="455" y2="211"/>
+     <line x1="455" y1="211" x2="449" y2="285"/>
+     <line x1="17" y1="259" x2="85" y2="274"/>
+     <line x1="17" y1="259" x2="36" y2="341"/>
+     <line x1="17" y1="259" x2="105" y2="322"/>
+     <line x1="85" y1="274" x2="137" y2="246"/>
+     <line x1="85" y1="274" x2="36" y2="341"/>
+     <line x1="85" y1="274" x2="105" y2="322"/>
+     <line x1="85" y1="274" x2="169" y2="354"/>
+     <line x1="137" y1="246" x2="105" y2="322"/>
+     <line x1="327" y1="257" x2="392" y2="266"/>
+     <line x1="327" y1="257" x2="235" y2="330"/>
+     <line x1="327" y1="257" x2="302" y2="353"/>
+     <line x1="327" y1="257" x2="366" y2="326"/>
+     <line x1="392" y1="266" x2="449" y2="285"/>
+     <line x1="392" y1="266" x2="366" y2="326"/>
+     <line x1="449" y1="285" x2="428" y2="363"/>
+     <line x1="36" y1="341" x2="105" y2="322"/>
+     <line x1="36" y1="341" x2="428" y2="363"/>
+     <line x1="36" y1="341" x2="71" y2="386"/>
+     <line x1="105" y1="322" x2="169" y2="354"/>
+     <line x1="105" y1="322" x2="71" y2="386"/>
+     <line x1="169" y1="354" x2="235" y2="330"/>
+     <line x1="169" y1="354" x2="71" y2="386"/>
+     <line x1="235" y1="330" x2="302" y2="353"/>
+     <line x1="235" y1="330" x2="71" y2="386"/>
+     <line x1="302" y1="353" x2="366" y2="326"/>
+     <line x1="302" y1="353" x2="398" y2="386"/>
+     <line x1="366" y1="326" x2="428" y2="363"/>
+     <line x1="366" y1="326" x2="398" y2="386"/>
+     <line x1="428" y1="363" x2="398" y2="386"/>
+    </g>
+    <g fill="#79d4ff">
+     <circle cx="14" cy="42" r="3" class="aba-web-point" style="--delay:0.00s"/>
+     <circle cx="63" cy="21" r="2.1" class="aba-web-point" style="--delay:0.17s"/>
+     <circle cx="118" cy="47" r="2.1" class="aba-web-point" style="--delay:0.34s"/>
+     <circle cx="174" cy="19" r="3" class="aba-web-point" style="--delay:0.51s"/>
+     <circle cx="231" cy="37" r="2.1" class="aba-web-point" style="--delay:0.68s"/>
+     <circle cx="292" cy="16" r="2.1" class="aba-web-point" style="--delay:0.85s"/>
+     <circle cx="350" cy="42" r="3" class="aba-web-point" style="--delay:1.02s"/>
+     <circle cx="418" cy="20" r="2.1" class="aba-web-point" style="--delay:1.19s"/>
+     <circle cx="451" cy="70" r="2.1" class="aba-web-point" style="--delay:1.36s"/>
+     <circle cx="23" cy="115" r="3" class="aba-web-point" style="--delay:1.53s"/>
+     <circle cx="89" cy="102" r="2.1" class="aba-web-point" style="--delay:1.70s"/>
+     <circle cx="146" cy="121" r="2.1" class="aba-web-point" style="--delay:1.87s"/>
+     <circle cx="210" cy="92" r="3" class="aba-web-point" style="--delay:2.04s"/>
+     <circle cx="270" cy="111" r="2.1" class="aba-web-point" style="--delay:2.21s"/>
+     <circle cx="333" cy="103" r="2.1" class="aba-web-point" style="--delay:2.38s"/>
+     <circle cx="399" cy="115" r="3" class="aba-web-point" style="--delay:2.55s"/>
+     <circle cx="450" cy="145" r="2.1" class="aba-web-point" style="--delay:2.72s"/>
+     <circle cx="9" cy="187" r="2.1" class="aba-web-point" style="--delay:2.89s"/>
+     <circle cx="68" cy="176" r="3" class="aba-web-point" style="--delay:3.06s"/>
+     <circle cx="121" cy="198" r="2.1" class="aba-web-point" style="--delay:3.23s"/>
+     <circle cx="337" cy="193" r="2.1" class="aba-web-point" style="--delay:3.40s"/>
+     <circle cx="397" cy="181" r="3" class="aba-web-point" style="--delay:3.57s"/>
+     <circle cx="455" cy="211" r="2.1" class="aba-web-point" style="--delay:3.74s"/>
+     <circle cx="17" cy="259" r="2.1" class="aba-web-point" style="--delay:3.91s"/>
+     <circle cx="85" cy="274" r="3" class="aba-web-point" style="--delay:4.08s"/>
+     <circle cx="137" cy="246" r="2.1" class="aba-web-point" style="--delay:4.25s"/>
+     <circle cx="327" cy="257" r="2.1" class="aba-web-point" style="--delay:4.42s"/>
+     <circle cx="392" cy="266" r="3" class="aba-web-point" style="--delay:4.59s"/>
+     <circle cx="449" cy="285" r="2.1" class="aba-web-point" style="--delay:4.76s"/>
+     <circle cx="36" cy="341" r="2.1" class="aba-web-point" style="--delay:4.93s"/>
+     <circle cx="105" cy="322" r="3" class="aba-web-point" style="--delay:5.10s"/>
+     <circle cx="169" cy="354" r="2.1" class="aba-web-point" style="--delay:5.27s"/>
+     <circle cx="235" cy="330" r="2.1" class="aba-web-point" style="--delay:5.44s"/>
+     <circle cx="302" cy="353" r="3" class="aba-web-point" style="--delay:5.61s"/>
+     <circle cx="366" cy="326" r="2.1" class="aba-web-point" style="--delay:5.78s"/>
+     <circle cx="428" cy="363" r="2.1" class="aba-web-point" style="--delay:5.95s"/>
+     <circle cx="71" cy="386" r="3" class="aba-web-point" style="--delay:6.12s"/>
+     <circle cx="398" cy="386" r="2.1" class="aba-web-point" style="--delay:6.29s"/>
+    </g>
+    <circle r="3.5" fill="#bdeeff" class="aba-travel-dot"><animateMotion dur="6.70s" begin="-0.00s" repeatCount="indefinite" path="M14 42 L63 21 L118 47 L174 19 L231 37 L292 16 L350 42 L418 20 L451 70"/></circle>
+    <circle r="2.7" fill="#bdeeff" class="aba-travel-dot"><animateMotion dur="7.85s" begin="-0.91s" repeatCount="indefinite" path="M9 187 L23 115 L89 102 L146 121 L210 92 L270 111 L333 103 L399 115 L450 145"/></circle>
+    <circle r="3.5" fill="#bdeeff" class="aba-travel-dot"><animateMotion dur="9.00s" begin="-1.82s" repeatCount="indefinite" path="M17 259 L85 274 L137 246 L121 198 L68 176 L9 187"/></circle>
+    <circle r="2.7" fill="#bdeeff" class="aba-travel-dot"><animateMotion dur="10.15s" begin="-2.73s" repeatCount="indefinite" path="M449 285 L392 266 L327 257 L337 193 L397 181 L455 211"/></circle>
+    <circle r="3.5" fill="#bdeeff" class="aba-travel-dot"><animateMotion dur="6.70s" begin="-3.64s" repeatCount="indefinite" path="M36 341 L105 322 L169 354 L235 330 L302 353 L366 326 L428 363"/></circle>
+    <circle r="2.7" fill="#bdeeff" class="aba-travel-dot"><animateMotion dur="7.85s" begin="-4.55s" repeatCount="indefinite" path="M71 386 L105 322 L85 274 L17 259 L9 187"/></circle>
+    <circle r="3.5" fill="#bdeeff" class="aba-travel-dot"><animateMotion dur="9.00s" begin="-5.46s" repeatCount="indefinite" path="M398 386 L366 326 L392 266 L449 285 L455 211"/></circle>
+    <circle r="2.7" fill="#bdeeff" class="aba-travel-dot"><animateMotion dur="10.15s" begin="-6.37s" repeatCount="indefinite" path="M118 47 L146 121 L121 198 L137 246 L105 322 L169 354"/></circle>
+   </svg>
+   <div class="aba-hero-logo"><img src="ABA.png" alt=""/></div>
+  </div>
+ </div>
       </div>
       <div class="hero-band"><div class="container"><span>ARKANSAS</span><i></i><span>BLOCKCHAIN</span><i></i><span>BUSINESS</span><i></i><span>INNOVATION</span><i></i><span>ECONOMIC OPPORTUNITY</span></div></div>
     </section>
@@ -299,7 +474,58 @@ body{color:#d7e3f1;background:var(--navy)}
       </div>
     </section>
 
-    <section class="focus section" id="focus" aria-labelledby="focus-title">
+    
+<section id="aba-initiatives" class="aba-initiatives-section section" aria-labelledby="aba-initiatives-heading">
+ <div class="container">
+  <div class="section-heading reveal"><span class="section-kicker">OUR INITIATIVES</span><h2 id="aba-initiatives-heading">Where Innovation Takes Shape</h2><p>Independent initiatives with distinct missions, connected by opportunities to collaborate. Together, they help bring industry, research, policy, and technology into productive conversation.</p></div>
+  <div class="aba-initiatives-layout">
+   <div class="aba-ecosystem-visual reveal" aria-label="Four independent ABA initiatives connected through shared opportunities for collaboration">
+    <div class="aba-ecosystem-topline">A CONNECTED ECOSYSTEM</div>
+    <svg class="aba-ecosystem-connections" viewBox="0 0 480 450" aria-hidden="true">
+     <defs><linearGradient id="aba-connections-gradient" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#4aa8eb" stop-opacity=".25"/><stop offset=".5" stop-color="#8edaff" stop-opacity=".9"/><stop offset="1" stop-color="#4aa8eb" stop-opacity=".25"/></linearGradient></defs>
+     <path d="M120 116 L360 116 L360 336 L120 336 Z M120 116 L360 336 M360 116 L120 336" stroke="url(#aba-connections-gradient)" fill="none" stroke-width="1.5" stroke-dasharray="5 6"/>
+     <path id="aba-circuit" d="M120 116 L360 116 L360 336 L120 336 L120 116" stroke="transparent" fill="none"/>
+     <circle r="5" fill="#bdeeff"><animateMotion dur="11s" repeatCount="indefinite"><mpath href="#aba-circuit"/></animateMotion></circle>
+     <circle r="3" fill="#bdeeff"><animateMotion dur="11s" begin="-5.5s" repeatCount="indefinite"><mpath href="#aba-circuit"/></animateMotion></circle>
+     <circle cx="240" cy="225" r="76" stroke="#318bc9" stroke-opacity=".32" fill="#0b2446"/>
+     <circle cx="240" cy="225" r="57" stroke="#84cfff" stroke-opacity=".35" fill="#091a35"/>
+    </svg>
+    <div class="aba-ecosystem-center"><img src="ABA.png" alt="Arkansas Blockchain Association logo"/><span>CONNECTED THROUGH<br/>COLLABORATION</span></div>
+    <button class="aba-ecosystem-node node-supply active" type="button" data-aba-index="0" aria-label="Explore Supply Chain, Logistics and Trade Alliance">INDUSTRY<br/>ALLIANCE</button>
+    <button class="aba-ecosystem-node node-dasc" type="button" data-aba-index="1" aria-label="Explore DASC">POLICY &amp;<br/>STANDARDS</button>
+    <button class="aba-ecosystem-node node-gsn" type="button" data-aba-index="2" aria-label="Explore Global Student Network">STUDENT<br/>RESEARCH</button>
+    <button class="aba-ecosystem-node node-tik" type="button" data-aba-index="3" aria-label="Explore Tokenized Interactive Knowledge">INTERACTIVE<br/>KNOWLEDGE</button>
+    <p class="aba-ecosystem-foot">Each initiative stands on its own and collaborates where opportunities align.</p>
+   </div>
+   <div class="aba-initiatives-list reveal"><article class="aba-initiative" id="aba-initiative-supply" data-aba-index="0">
+ <button type="button" class="aba-initiative-toggle" aria-expanded="true" aria-controls="aba-initiative-panel-supply">
+  <span class="aba-initiative-num">01</span><span class="aba-initiative-heading"><small>INDUSTRY &amp; APPLIED TECHNOLOGY</small><strong>Supply Chain, Logistics &amp; Trade Alliance</strong></span><span class="aba-initiative-chevron" aria-hidden="true">⌄</span>
+ </button>
+ <div class="aba-initiative-panel" id="aba-initiative-panel-supply"  >
+ <p>Connects industry challenges with emerging technologies, applied research, development, and potential pilots.</p><a class="aba-initiative-link" href="/supply-chain-logistics-trade-alliance">Explore this initiative <span aria-hidden="true">↗</span></a>
+ </div></article><article class="aba-initiative" id="aba-initiative-dasc" data-aba-index="1">
+ <button type="button" class="aba-initiative-toggle" aria-expanded="false" aria-controls="aba-initiative-panel-dasc">
+  <span class="aba-initiative-num">02</span><span class="aba-initiative-heading"><small>POLICY &amp; STANDARDS</small><strong>Digital Asset Strategic Council (DASC)</strong></span><span class="aba-initiative-chevron" aria-hidden="true">⌄</span>
+ </button>
+ <div class="aba-initiative-panel" id="aba-initiative-panel-dasc" hidden>
+ <p>Brings together perspectives on digital asset policy, regulatory developments, interoperability, and national and global standards.</p><a class="aba-initiative-link" href="/DASC">Explore this initiative <span aria-hidden="true">↗</span></a>
+ </div></article><article class="aba-initiative" id="aba-initiative-gsn" data-aba-index="2">
+ <button type="button" class="aba-initiative-toggle" aria-expanded="false" aria-controls="aba-initiative-panel-gsn">
+  <span class="aba-initiative-num">03</span><span class="aba-initiative-heading"><small>RESEARCH &amp; FUTURE LEADERS</small><strong>Global Student Network</strong></span><span class="aba-initiative-chevron" aria-hidden="true">⌄</span>
+ </button>
+ <div class="aba-initiative-panel" id="aba-initiative-panel-gsn" hidden>
+ <p>Connects students internationally with industry conversations, applied research, development opportunities, and collaborative innovation.</p><a class="aba-initiative-link" href="/global-student-network">Explore this initiative <span aria-hidden="true">↗</span></a>
+ </div></article><article class="aba-initiative" id="aba-initiative-tik" data-aba-index="3">
+ <button type="button" class="aba-initiative-toggle" aria-expanded="false" aria-controls="aba-initiative-panel-tik">
+  <span class="aba-initiative-num">04</span><span class="aba-initiative-heading"><small>KNOWLEDGE &amp; ENGAGEMENT</small><strong>Tokenized Interactive Knowledge (TIK)</strong></span><span class="aba-initiative-chevron" aria-hidden="true">⌄</span>
+ </button>
+ <div class="aba-initiative-panel" id="aba-initiative-panel-tik" hidden>
+ <p>A live ecosystem for tokenizing and sharing knowledge through embedded AI guidance, interactive reading, gamification, and CFC utility-token engagement.</p><a class="aba-initiative-link" href="/TIK_Overview">Explore this initiative <span aria-hidden="true">↗</span></a>
+ </div></article></div>
+  </div>
+ </div>
+</section>
+<section class="focus section" id="focus" aria-labelledby="focus-title">
       <div class="container">
         <div class="section-intro reveal"><div><span class="kicker">FOCUS AREAS</span><h2 id="focus-title">Technology understood through an Arkansas lens and connected to global opportunity.</h2></div><p>A focused portfolio of technologies and applications with relevance to business performance, public systems, workforce readiness, and responsible economic growth.</p></div>
         <div class="focus-layout">
@@ -355,7 +581,7 @@ body{color:#d7e3f1;background:var(--navy)}
         <div class="global-student-network__content">
           <span class="kicker">GLOBAL STUDENT NETWORK</span>
           <h2 id="global-student-network-title">Free Membership. Global Connection. Shared Innovation.</h2>
-          <p>Membership will always be free for currently enrolled university students worldwide. ABA is also developing a Global Virtual Student Exchange Network that will connect students across universities through international working groups, collaborative projects, industry conversations, and shared learning in blockchain and emerging technologies.</p>
+          <p>Membership will always be free for currently enrolled university students worldwide. The Global Student Network connects students internationally through research and development opportunities, collaborative projects, industry conversations, and shared learning across emerging technologies.</p>
           <div class="global-student-network__actions">
             <a class="btn btn-primary" href="/join">Join as a Student <span>→</span></a>
             <a class="btn global-student-network__secondary" href="mailto:info@arkansasblockchainassociation.com?subject=ABA%20University%20Partnership%20Inquiry">University Partnerships <span>→</span></a>
@@ -367,20 +593,20 @@ body{color:#d7e3f1;background:var(--navy)}
   <div class="executive-intro reveal">
     <span class="kicker">ABA MASTERCLASSES</span>
     <h2 id="executive-title">Interactive Knowledge Built for Practical Understanding</h2>
-    <p>ABA masterclasses will be delivered through the Center for Creators Tokenized Interactive Knowledge ecosystem, combining interactive learning, measurable participation, rewards, and Certificates of Completion.</p>
+    <p>ABA’s Tokenized Interactive Knowledge (TIK) ecosystem is live, with a Knowledge Library and Creator Studio that support tokenized content, embedded AI guidance, interactive participation, gamification, and CFC utility-token rewards.</p>
   </div>
 
   <div class="executive-grid">
     <article class="executive-card featured reveal">
       <span class="program-index">01</span>
       <h3>Tokenized Interactive Knowledge</h3>
-      <p>Masterclasses will transform traditional content into measurable, interactive learning experiences.</p>
+      <p>Members can tokenize research, articles, books, workshops, and other educational content for interactive engagement.</p>
     </article>
 
     <article class="executive-card featured reveal">
       <span class="program-index">02</span>
       <h3>AI-Guided Learning</h3>
-      <p>AI guidance may help participants explore concepts, ask questions, and strengthen understanding.</p>
+      <p>Embedded AI agents help readers explore content, ask questions, and strengthen understanding.</p>
     </article>
 
     <article class="executive-card reveal">
@@ -392,7 +618,7 @@ body{color:#d7e3f1;background:var(--navy)}
     <article class="executive-card reveal">
       <span class="program-index">04</span>
       <h3>Learn-and-Earn Rewards</h3>
-      <p>Participants may receive CFC utility-token rewards for eligible participation through Center for Creators.</p>
+      <p>Eligible participation can earn CFC utility tokens within the interactive knowledge ecosystem.</p>
     </article>
 
     <article class="executive-card reveal">
@@ -487,65 +713,21 @@ body{color:#d7e3f1;background:var(--navy)}
   </footer>
   <script>
 (() => {
-  // Shared ABA grouped navigation.
   const header = document.querySelector('.site-header');
   const toggle = document.querySelector('.menu-toggle');
-  const nav = document.getElementById('aba-primary-nav');
-  const mobile = matchMedia('(max-width:960px)');
-  const groups = [...nav.querySelectorAll('.aba-nav-group')];
-  const triggers = groups.map(group => group.querySelector('.aba-nav-trigger'));
-  const background = [document.querySelector('main'),document.querySelector('footer')].filter(Boolean);
-  const originalInert = background.map(el => el.inert);
-  function closeGroups(except) {
-    triggers.forEach(button => {
-      if(button !== except) {
-        button.setAttribute('aria-expanded','false');
-        document.getElementById(button.getAttribute('aria-controls')).hidden = true;
-      }
-    });
-  }
-  function setMenu(open, returnFocus = false) {
-    const active = mobile.matches && open;
-    nav.classList.toggle('open',active);
-    document.body.classList.toggle('menu-open',active);
-    toggle.setAttribute('aria-expanded',String(active));
-    toggle.setAttribute('aria-label',active ? 'Close navigation' : 'Open navigation');
-    nav.inert = mobile.matches && !active;
-    background.forEach((el,i) => { el.inert = active || originalInert[i]; });
-    if(!active) closeGroups();
-    if(returnFocus) toggle.focus();
-  }
-  const onScroll = () => header.classList.toggle('scrolled',scrollY > 24);
-  addEventListener('scroll',onScroll,{passive:true}); onScroll();
-  toggle.addEventListener('click',() => setMenu(!nav.classList.contains('open')));
-  triggers.forEach(button => button.addEventListener('click',() => {
-    const open = button.getAttribute('aria-expanded') !== 'true';
-    closeGroups(button);
-    button.setAttribute('aria-expanded',String(open));
-    document.getElementById(button.getAttribute('aria-controls')).hidden = !open;
+  const nav = document.querySelector('.main-nav');
+  const onScroll = () => header.classList.toggle('scrolled', scrollY > 24);
+  addEventListener('scroll', onScroll, { passive: true }); onScroll();
+  toggle.addEventListener('click', () => {
+    const open = nav.classList.toggle('open');
+    document.body.classList.toggle('menu-open', open);
+    toggle.setAttribute('aria-expanded', String(open));
+    toggle.setAttribute('aria-label', open ? 'Close navigation' : 'Open navigation');
+  });
+  nav.querySelectorAll('a').forEach(a => a.addEventListener('click', () => {
+    nav.classList.remove('open'); document.body.classList.remove('menu-open');
+    toggle.setAttribute('aria-expanded', 'false');
   }));
-  nav.querySelectorAll('a').forEach(link => link.addEventListener('click',() => setMenu(false)));
-  document.addEventListener('click',event => {
-    if(!header.contains(event.target)) { closeGroups(); if(mobile.matches) setMenu(false); }
-  });
-  header.addEventListener('focusout',event => {
-    if(!mobile.matches && !header.contains(event.relatedTarget)) closeGroups();
-  });
-  document.addEventListener('keydown',event => {
-    if(event.key === 'Escape') {
-      const expanded = triggers.find(button => button.getAttribute('aria-expanded') === 'true');
-      if(expanded) {closeGroups(); expanded.focus(); event.preventDefault();}
-      else if(mobile.matches && nav.classList.contains('open')) {setMenu(false,true); event.preventDefault();}
-    }
-    if(event.key === 'Tab' && mobile.matches && nav.classList.contains('open')) {
-      const focusable = [...header.querySelectorAll('a,button')].filter(el => el.getClientRects().length && !el.closest('[hidden]'));
-      const first = focusable[0], last = focusable[focusable.length-1];
-      if(event.shiftKey && document.activeElement === first) {event.preventDefault(); last.focus();}
-      else if(!event.shiftKey && document.activeElement === last) {event.preventDefault(); first.focus();}
-    }
-  });
-  mobile.addEventListener('change',() => setMenu(false));
-  setMenu(false);
 
   const revealObserver = new IntersectionObserver(entries => entries.forEach(entry => {
     if (entry.isIntersecting) { entry.target.classList.add('visible'); revealObserver.unobserve(entry.target); }
@@ -610,6 +792,25 @@ body{color:#d7e3f1;background:var(--navy)}
   size(); draw(); addEventListener('resize',()=>{cancelAnimationFrame(raf);size();draw();},{passive:true});
 })();
 
+</script>
+<script>
+/* Initiative interactions: click any network node or disclosure to display its matching content */
+(()=>{
+ const cards=[...document.querySelectorAll('.aba-initiative')];
+ const nodes=[...document.querySelectorAll('.aba-ecosystem-node')];
+ const select=i=>{cards.forEach((card,j)=>{const active=i===j;card.querySelector('.aba-initiative-toggle').setAttribute('aria-expanded',String(active));card.querySelector('.aba-initiative-panel').hidden=!active});nodes.forEach((node,j)=>node.classList.toggle('active',i===j));};
+ cards.forEach((card,i)=>card.querySelector('.aba-initiative-toggle').addEventListener('click',()=>select(i)));
+ nodes.forEach((node,i)=>node.addEventListener('click',()=>select(i)));
+})();
+/* Shared grouped menu interactions */
+(()=>{
+ const nav=document.getElementById('aba-primary-nav');if(!nav)return;
+ const triggers=[...nav.querySelectorAll('.aba-nav-trigger')];
+ const closeAll=except=>triggers.forEach(button=>{if(button===except)return;button.setAttribute('aria-expanded','false');const panel=document.getElementById(button.getAttribute('aria-controls'));if(panel)panel.hidden=true;});
+ triggers.forEach(button=>{button.addEventListener('click',e=>{e.stopPropagation();const open=button.getAttribute('aria-expanded')!=='true';closeAll(button);button.setAttribute('aria-expanded',String(open));const panel=document.getElementById(button.getAttribute('aria-controls'));if(panel)panel.hidden=!open;});button.addEventListener('keydown',e=>{if(e.key==='Escape'){closeAll();button.focus();}})});
+ document.addEventListener('click',e=>{if(!nav.contains(e.target))closeAll()});document.addEventListener('keydown',e=>{if(e.key==='Escape')closeAll()});
+ nav.querySelectorAll('.aba-nav-submenu a').forEach(link=>link.addEventListener('click',()=>closeAll()));
+})();
 </script>
 </body>
 </html>
