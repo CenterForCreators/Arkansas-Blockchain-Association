@@ -321,7 +321,9 @@ body{color:#d7e3f1;background:var(--navy)}
 
 /* Hero-only logo/network integration: keep the original art, dimensions and movement. */
 .hero-visual .aba-hero-web .aba-hero-logo-bridge{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:4;display:block}
-.hero-visual .aba-hero-web .aba-hero-logo{box-shadow:0 0 27px rgba(46,150,239,.14),0 0 65px rgba(22,111,206,.07)}
+.hero-visual .aba-hero-web .aba-hero-logo{box-shadow:0 0 10px rgba(46,150,239,.08);background:transparent;overflow:visible}
+.hero-visual .aba-hero-web .aba-hero-logo img{position:relative;z-index:1;filter:drop-shadow(0 0 8px rgba(109,187,252,.16))}
+.hero-visual .aba-hero-web .aba-hero-logo:after{content:"";position:absolute;inset:-3.5%;z-index:2;border-radius:50%;pointer-events:none;border:2px solid rgba(115,214,255,.57);box-shadow:0 0 17px rgba(74,192,255,.5),inset 0 0 19px rgba(59,165,248,.23);background:conic-gradient(from var(--aba-hub-light,0deg),transparent 0deg,rgba(114,224,255,.17) 29deg,transparent 74deg,transparent 178deg,rgba(130,214,255,.11) 209deg,transparent 250deg);mask-image:radial-gradient(circle,transparent 62%,#000 74%)}
 @media(prefers-reduced-motion:reduce){.hero-visual .aba-hero-web .aba-hero-logo-bridge{display:none!important}}
 </style>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"Organization","name":"Arkansas Blockchain Association","alternateName":"ABA","url":"https://arkansasblockchainassociation.com/","email":"info@arkansasblockchainassociation.com","description":"An Arkansas-based organization advancing blockchain technology, tokenization, digital assets, and emerging digital infrastructure nationally and globally."}</script>
@@ -1021,10 +1023,11 @@ body{color:#d7e3f1;background:var(--navy)}
       ctx.beginPath();ctx.arc(p.x-size*.16,p.y-size*.2,size*.35,0,TAU);ctx.fill();
     }
     // The original circular logo travels, tilts and breathes *with* the 3D network.
-    const breath=1+.028*Math.sin(t*.52+.3);
-    const xMove=Math.sin(t*.31)*9+pointerX*5;
-    const yMove=Math.sin(t*.24+.85)*6-pointerY*4;
-    logo.style.transform=`translate(calc(-50% + ${xMove.toFixed(2)}px),calc(-50% + ${yMove.toFixed(2)}px)) perspective(850px) rotateY(${(yaw*180/Math.PI*.75).toFixed(2)}deg) rotateX(${(-pitch*180/Math.PI*.85).toFixed(2)}deg) rotateZ(${(roll*180/Math.PI*.55).toFixed(2)}deg) scale(${breath.toFixed(4)})`;
+    const breath=1+.045*Math.sin(t*.52+.3);
+    const xMove=Math.sin(t*.31)*14+pointerX*7;
+    const yMove=Math.sin(t*.24+.85)*10-pointerY*6;
+    logo.style.transform=`translate(calc(-50% + ${xMove.toFixed(2)}px),calc(-50% + ${yMove.toFixed(2)}px)) perspective(850px) rotateY(${(yaw*180/Math.PI*1.12).toFixed(2)}deg) rotateX(${(-pitch*180/Math.PI*1.15).toFixed(2)}deg) rotateZ(${(roll*180/Math.PI*.8).toFixed(2)}deg) scale(${breath.toFixed(4)})`;
+    logo.style.setProperty('--aba-hub-light',(t*26).toFixed(2)+'deg');
     // Match the bridge to the very same yaw, pitch, sway and pulse as the logo.
     // The illuminated network connections visibly meet the logo's edge.
     const mx=w*.5+xMove,my=h*.5+yMove,rr=w*.21*breath;
@@ -1035,38 +1038,46 @@ body{color:#d7e3f1;background:var(--navy)}
     halo.addColorStop(.75,'rgba(52,143,228,.035)');
     halo.addColorStop(1,'rgba(27,95,186,0)');
     bx.fillStyle=halo;bx.beginPath();bx.arc(mx,my,rr*1.46,0,TAU);bx.fill();
-    // Match each spoke to a real node in the existing projected 3D network.
-    const directions=[-2.83,-2.32,-1.82,-1.30,-.77,-.24,.31,.82,1.36,1.90,2.42,2.94];
-    const candidates=projected.map(p=>({...p,angle:Math.atan2(p.y-my,p.x-mx),dist:Math.hypot(p.x-mx,p.y-my)})).filter(p=>p.dist>rr*1.22);
-    directions.forEach((a,k)=>{
+    // Visible, fully connected spokes terminate at actual moving network nodes.
+    // Because the paths use the same projected vertices as the network, they
+    // travel with its 3D surface rather than floating over a separate logo.
+    const angles=[-2.92,-2.47,-1.94,-1.48,-1.04,-.52,.03,.48,.99,1.51,2.02,2.51];
+    const outside=projected.map(p=>({...p,angle:Math.atan2(p.y-my,p.x-mx),dist:Math.hypot(p.x-mx,p.y-my)})).filter(p=>p.dist>rr*1.18&&p.dist<rr*2.35);
+    angles.forEach((angle,k)=>{
       let best=null,delta=10;
-      for(const p of candidates){const d=Math.abs(Math.atan2(Math.sin(p.angle-a),Math.cos(p.angle-a)));if(d<delta){best=p;delta=d;}}
-      if(!best||delta>.50)return;
-      const sx=mx+Math.cos(best.angle)*rr*.99,sy=my+Math.sin(best.angle)*rr*.99;
-      const ex=sx+(best.x-sx)*.60,ey=sy+(best.y-sy)*.60;
-      bx.beginPath();bx.moveTo(sx,sy);bx.lineTo(ex,ey);
-      const gradient=bx.createLinearGradient(sx,sy,ex,ey);
-      gradient.addColorStop(0,'rgba(130,226,255,.72)');gradient.addColorStop(.6,'rgba(64,166,247,.35)');gradient.addColorStop(1,'rgba(52,150,235,0)');
-      bx.strokeStyle=gradient;bx.lineWidth=k%3===0?1.5:1;bx.stroke();
-      if(k%2===0){
-        const u=(t*(.22+k*.012)+k*.137)%1;
-        const xx=sx+(ex-sx)*u,yy=sy+(ey-sy)*u;
-        const light=bx.createRadialGradient(xx,yy,0,xx,yy,5.5);
-        light.addColorStop(0,'rgba(225,249,255,.9)');light.addColorStop(.25,'rgba(74,201,255,.65)');light.addColorStop(1,'rgba(38,126,231,0)');
-        bx.fillStyle=light;bx.beginPath();bx.arc(xx,yy,5.5,0,TAU);bx.fill();
-      }
+      for(const p of outside){const d=Math.abs(Math.atan2(Math.sin(p.angle-angle),Math.cos(p.angle-angle)));if(d<delta){best=p;delta=d;}}
+      if(!best||delta>.56)return;
+      const ax=mx+Math.cos(best.angle)*rr*.94,ay=my+Math.sin(best.angle)*rr*.94;
+      const cx=(ax+best.x)/2+Math.sin(t*.4+k)*4,cy=(ay+best.y)/2+Math.cos(t*.38+k)*4;
+      bx.beginPath();bx.moveTo(ax,ay);bx.quadraticCurveTo(cx,cy,best.x,best.y);
+      bx.strokeStyle=k%3===0?'rgba(128,225,255,.83)':'rgba(91,188,252,.56)';
+      bx.lineWidth=k%3===0?2.3:1.35;bx.stroke();
+      const u=(t*(.19+(k%4)*.028)+k*.17)%1;
+      const xx=(1-u)*(1-u)*ax+2*(1-u)*u*cx+u*u*best.x;
+      const yy=(1-u)*(1-u)*ay+2*(1-u)*u*cy+u*u*best.y;
+      const glow=bx.createRadialGradient(xx,yy,0,xx,yy,10);
+      glow.addColorStop(0,'rgba(238,253,255,1)');glow.addColorStop(.22,'rgba(111,220,255,.8)');glow.addColorStop(1,'rgba(52,151,245,0)');
+      bx.fillStyle=glow;bx.beginPath();bx.arc(xx,yy,10,0,TAU);bx.fill();
+      bx.beginPath();bx.arc(best.x,best.y,k%3===0?3.2:2.4,0,TAU);
+      bx.fillStyle='rgba(165,231,255,.84)';bx.fill();
     });
-    // A single segmented perimeter: visually one hub embedded in the network,
-    // rather than a separate floating medallion above it.
-    bx.save();bx.translate(mx,my);
-    bx.rotate(roll*.55);
-    bx.scale(1-.045*Math.abs(Math.sin(yaw)),1-.035*Math.abs(Math.sin(pitch)));
-    for(let k=0;k<16;k++){
-      const a=k*TAU/16+t*.025;
-      const wave=.33+.22*Math.sin(t*.8+k*.79);
-      bx.beginPath();bx.arc(0,0,rr*1.022,a,a+TAU/16*.71);
-      bx.strokeStyle=`rgba(102,207,255,${wave.toFixed(3)})`;
-      bx.lineWidth=k%4===0?2:1.15;bx.stroke();
+    // The rotating luminous circumference is the point where the logo
+    // and the living network meet, not a second floating badge.
+    bx.save();bx.translate(mx,my);bx.rotate(roll*.8);
+    bx.scale(1-.08*Math.abs(Math.sin(yaw)),1-.06*Math.abs(Math.sin(pitch)));
+    for(let k=0;k<24;k++){
+      const a=k*TAU/24+t*.065;
+      const energy=.46+.23*Math.sin(t*1.05+k*.72);
+      bx.beginPath();bx.arc(0,0,rr*.985,a,a+TAU/24*.78);
+      bx.strokeStyle=`rgba(115,220,255,${energy.toFixed(3)})`;
+      bx.lineWidth=k%6===0?3.4:2.1;bx.stroke();
+    }
+    for(let i=0;i<3;i++){
+      const a=t*(.31+i*.09)+i*TAU/3;
+      const px=Math.cos(a)*rr*.985,py=Math.sin(a)*rr*.985;
+      const glow=bx.createRadialGradient(px,py,0,px,py,13);
+      glow.addColorStop(0,'rgba(239,253,255,.98)');glow.addColorStop(.2,'rgba(103,220,255,.72)');glow.addColorStop(1,'rgba(29,137,239,0)');
+      bx.fillStyle=glow;bx.beginPath();bx.arc(px,py,13,0,TAU);bx.fill();
     }
     bx.restore();
   };
