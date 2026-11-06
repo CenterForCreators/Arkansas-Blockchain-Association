@@ -314,6 +314,32 @@ body{color:#d7e3f1;background:var(--navy)}
 }
 @media (prefers-reduced-motion:reduce){.aba-stage-word{display:inline}}
 
+
+/* Ecosystem centerpiece: make the existing ABA mark a true circular hub, not a square overlay. */
+#aba-initiatives .aba-ecosystem-center{width:150px;height:150px;gap:0;align-items:center;justify-content:center;}
+#aba-initiatives .aba-ecosystem-center img{
+  display:block;width:110px;height:110px;flex:0 0 110px;object-fit:cover;
+  border-radius:50%;clip-path:circle(49.3% at 50% 50%);
+  background:#091a35;
+  box-shadow:0 0 0 2px rgba(137,207,255,.35),0 0 26px rgba(65,163,252,.27);
+}
+#aba-initiatives .aba-ecosystem-center span{
+  position:absolute;top:calc(50% + 71px);left:50%;width:175px;
+  transform:translateX(-50%);text-align:center;line-height:1.35;
+  text-shadow:0 1px 8px #081b36;pointer-events:none;
+}
+@media(max-width:620px){
+  #aba-initiatives .aba-ecosystem-center{width:114px;height:114px;}
+  #aba-initiatives .aba-ecosystem-center img{width:88px;height:88px;flex-basis:88px;}
+  #aba-initiatives .aba-ecosystem-center span{top:calc(50% + 54px);width:140px;}
+}
+/* Keep animation on the compositor where possible and avoid competing reveal transitions. */
+@media(prefers-reduced-motion:no-preference){
+  .aba-stage-heading,.aba-stage-card,.aba-stage-visual,.aba-stage-word,.aba-stage-content{
+    transition-property:none!important;
+  }
+}
+
 /* Two-line four-functions heading with the same blue used by the site's headers. */
 #pillars-title{font-size:clamp(2rem,3.1vw,3.15rem)}
 #pillars-title .aba-pillars-blue-line{display:block;color:var(--blue);white-space:nowrap}
@@ -325,8 +351,88 @@ body{color:#d7e3f1;background:var(--navy)}
 .hero-visual .aba-hero-web .aba-hero-logo img{position:relative;z-index:1;filter:drop-shadow(0 0 8px rgba(109,187,252,.16))}
 .hero-visual .aba-hero-web .aba-hero-logo:after{content:"";position:absolute;inset:-3.5%;z-index:2;border-radius:50%;pointer-events:none;border:2px solid rgba(115,214,255,.57);box-shadow:0 0 17px rgba(74,192,255,.5),inset 0 0 19px rgba(59,165,248,.23);background:conic-gradient(from var(--aba-hub-light,0deg),transparent 0deg,rgba(114,224,255,.17) 29deg,transparent 74deg,transparent 178deg,rgba(130,214,255,.11) 209deg,transparent 250deg);mask-image:radial-gradient(circle,transparent 62%,#000 74%)}
 @media(prefers-reduced-motion:reduce){.hero-visual .aba-hero-web .aba-hero-logo-bridge{display:none!important}}
+
+/* Iridescent chain-link border only the Member and Sponsor cards.
+   Uses recognizable linked-chain shapes with slower fluid motion. */
+#involved .participation-card .aba-border-chain{
+  position:absolute;inset:-18px;width:calc(100% + 36px);height:calc(100% + 36px);
+  display:block;overflow:visible;z-index:3;pointer-events:none;
+}
+#involved .participation-card .aba-border-chain .aba-chain-rail{
+  fill:none;stroke:rgba(110,191,244,.28);stroke-width:1.6;stroke-linecap:round;
+}
+#involved .participation-card .aba-border-chain .aba-chain-glow{
+  fill:none;stroke:rgba(124,214,255,.18);stroke-width:5.8;stroke-linecap:round;filter:blur(1.15px);
+}
+#involved .participation-card .aba-border-chain .aba-chain-signal{
+  fill:none;stroke:url(#aba-chain-signal-gradient);stroke-width:2.25;stroke-linecap:round;
+  stroke-dasharray:18 236;animation:aba-chain-signal 24s linear infinite;
+  filter:drop-shadow(0 0 4px rgba(112,213,255,.52));
+}
+#involved .participation-card:nth-child(2) .aba-border-chain .aba-chain-signal{animation-direction:reverse;animation-duration:26s;}
+#involved .participation-card .aba-border-chain .aba-chain-link-set{
+  filter:drop-shadow(0 0 5px rgba(113,214,255,.20)) drop-shadow(0 1px 3px rgba(8,56,112,.14));
+}
+#involved .participation-card .aba-border-chain .aba-link-ring{
+  fill:none;stroke-width:3.2;stroke-linecap:round;stroke-linejoin:round;opacity:.98;
+}
+#involved .participation-card .aba-border-chain .aba-link-ring.is-blue{stroke:url(#aba-chain-blue-gradient);}
+#involved .participation-card .aba-border-chain .aba-link-ring.is-white{stroke:url(#aba-chain-white-gradient);}
+#involved .participation-card .aba-border-chain .aba-link-core{
+  fill:none;stroke:rgba(255,255,255,.36);stroke-width:1.05;stroke-linecap:round;stroke-linejoin:round;
+}
+@keyframes aba-chain-signal{to{stroke-dashoffset:-620}}
+@media(prefers-reduced-motion:reduce){
+ #involved .participation-card .aba-border-chain .aba-chain-signal{animation:none!important}
+}
 </style>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"Organization","name":"Arkansas Blockchain Association","alternateName":"ABA","url":"https://arkansasblockchainassociation.com/","email":"info@arkansasblockchainassociation.com","description":"An Arkansas-based organization advancing blockchain technology, tokenization, digital assets, and emerging digital infrastructure nationally and globally."}</script>
+
+<!-- ABA final membership pathways: animation and card finish only -->
+<style id="aba-participation-animated-border">
+/* The two existing cards keep their content, dimensions, links and positions. */
+#involved .participation-card{
+  position:relative;
+  isolation:isolate;
+  border:1px solid rgba(77,153,234,.42);
+  border-radius:19px;
+  background:linear-gradient(143deg,#ffffff 12%,#f3f8ff 70%,#eaf4ff 100%);
+  box-shadow:0 14px 40px rgba(5,43,90,.10), inset 0 1px 0 rgba(255,255,255,.95);
+  transition:border-color .4s ease,box-shadow .4s ease;
+}
+#involved .participation-card::before{
+  content:"";position:absolute;inset:-3px;border-radius:21px;padding:3px;
+  background:conic-gradient(from var(--aba-edge-angle,0deg),
+    rgba(38,130,232,.20) 0deg,rgba(64,171,255,.9) 34deg,
+    rgba(213,241,255,1) 47deg,rgba(40,126,215,.28) 66deg,
+    rgba(49,146,239,.16) 143deg,rgba(31,120,223,.78) 213deg,
+    rgba(181,230,255,.95) 224deg,rgba(31,120,223,.20) 246deg,
+    rgba(38,130,232,.20) 360deg);
+  -webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);
+  -webkit-mask-composite:xor;mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);
+  mask-composite:exclude;pointer-events:none;z-index:1;
+  animation:aba-participation-trace 13s linear infinite;
+}
+#involved .participation-card:nth-child(2)::before{animation-direction:reverse;animation-duration:15s;}
+#involved .participation-card::after{
+  content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;z-index:0;
+  background:radial-gradient(ellipse 55% 25% at var(--aba-edge-glow-x,0%) 0%,rgba(92,184,255,.18),transparent 95%);
+  animation:aba-participation-glow 13s ease-in-out infinite alternate;
+}
+#involved .participation-card:nth-child(2)::after{animation-delay:-6s;}
+#involved .participation-card > *{position:relative;z-index:2;}
+#involved .participation-card:hover,
+#involved .participation-card:focus-within{
+  border-color:rgba(78,165,251,.68);
+  box-shadow:0 18px 48px rgba(12,85,170,.15),0 0 23px rgba(71,155,250,.13);
+}
+@property --aba-edge-angle{syntax:"<angle>";initial-value:0deg;inherits:false;}
+@keyframes aba-participation-trace{to{--aba-edge-angle:360deg;}}
+@keyframes aba-participation-glow{from{--aba-edge-glow-x:0%;}to{--aba-edge-glow-x:100%;}}
+@media(prefers-reduced-motion:reduce){
+  #involved .participation-card::before,#involved .participation-card::after{animation:none;}
+}
+</style>
 </head>
 <body>
   
@@ -651,7 +757,7 @@ body{color:#d7e3f1;background:var(--navy)}
 
     <section class="education section" id="education" aria-labelledby="education-title">
       <div class="container education-grid">
-        <div class="education-copy reveal"><span class="kicker">EDUCATION</span><h2 id="education-title">Beyond “What is blockchain?”</h2><p class="lead">Useful education starts with the decisions each audience needs to make—not with technology for technology’s sake.</p><p>ABA intends to build practical fluency around business outcomes, implementation, policy, risk, and workforce implications.</p></div>
+        <div class="education-copy reveal"><span class="kicker">EDUCATION</span><h2 id="education-title">Beyond What is blockchain?</h2><p class="lead">Useful education starts with the decisions each audience needs to make—not with technology for technology’s sake.</p><p>ABA intends to build practical fluency around business outcomes, implementation, policy, risk, and workforce implications.</p></div>
         <div class="audience-stack reveal">
           <article><div><span>01</span><h3>Executives &amp; Business Leaders</h3></div><p>Business outcomes, strategic readiness, and where new infrastructure may create value.</p></article>
           <article><div><span>02</span><h3>Policymakers &amp; Public Leaders</h3></div><p>Responsible policy, public value, and the implications of emerging infrastructure.</p></article>
@@ -1103,7 +1209,12 @@ body{color:#d7e3f1;background:var(--navy)}
  const smooth=t=>{t=clamp(t);return t*t*(3-2*t)};
  const sCurve=t=>{t=clamp(t);return t*t*t*(t*(6*t-15)+10)};
  const mix=(a,b,t)=>a+(b-a)*t;
- const set=(el,name,val)=>el.style.setProperty('--aba-'+name,val);
+ const written=new WeakMap();
+ const set=(el,name,val)=>{
+  let last=written.get(el);if(!last){last=new Map();written.set(el,last)}
+  if(last.get(name)===val)return;
+  last.set(name,val);el.style.setProperty('--aba-'+name,val);
+ };
  const pose=(el,{x=0,y=0,z=0,rx=0,ry=0,rz=0,scale=1,alpha=1})=>{
   if(!el)return;
   set(el,'x',x.toFixed(2)+'px');set(el,'y',y.toFixed(2)+'px');set(el,'z',z.toFixed(2)+'px');
@@ -1172,16 +1283,20 @@ body{color:#d7e3f1;background:var(--navy)}
   return {x:-105+side*30,y:95,z:-240,ry:23+side*6,rx:-16,rz:-3};
  }
  // A continuous entrance/exit curve, with a broad readable rest region in the center.
- function sceneProgress(r,h){return clamp((h*.92-r.top)/(h*.87));}
+ function sceneProgress(r,h){return clamp((h*1.10-r.top)/(h*1.20));}
  function phase(r,h){
   const enter=sCurve(sceneProgress(r,h));
   // A slight, linked exit motion when the entire section leaves the viewport.
   const exit=sCurve(clamp((-r.bottom+h*.17)/(h*.45)));
   return {enter,exit};
  }
- let raf=0;
+ let raf=0,lastFrame=0;
  function render(now){
   raf=0;
+  // Time-normalized interpolation keeps the motion fluid at varying refresh rates.
+  const dt=lastFrame?Math.min(.064,(now-lastFrame)/1000):1/60;
+  lastFrame=now;
+  const follow=1-Math.exp(-dt*5.2);
   const h=innerHeight||800;
   const t=(now-heroStart)/1000;
   // Hero opens in a staggered rotating wave, then tracks the same gentle camera move as scrolling.
@@ -1207,8 +1322,8 @@ body{color:#d7e3f1;background:var(--navy)}
    const r=scene.section.getBoundingClientRect();
    if(r.top>h*1.75||r.bottom<-h*.85)continue;
    const {enter,exit}=phase(r,h);
-   // Extremely light smoothing keeps transitions seamless even for wheel jumps.
-   scene.progress=mix(scene.progress,enter,.27);
+   // Shared camera ease, independent of browser frame rate and wheel step size.
+   scene.progress=mix(scene.progress,enter,follow);
    const p=scene.progress;
    scene.headers.forEach(({el,words},j)=>{
     const q=1-sCurve((p-j*.025)/(.92-j*.025));
@@ -1244,7 +1359,7 @@ body{color:#d7e3f1;background:var(--navy)}
   }
   // Animate only while an intro or scroll interpolation is in progress.
   const activeHero=t<3.4;
-  const activeScenes=scenes.some(sc=>{const r=sc.section.getBoundingClientRect();return r.top<h*1.75&&r.bottom>-h*.85&&Math.abs(sc.progress-sceneProgress(r,h))>.002});
+  const activeScenes=scenes.some(sc=>{const r=sc.section.getBoundingClientRect();return r.top<h*1.75&&r.bottom>-h*.85&&Math.abs(sc.progress-sCurve(sceneProgress(r,h)))>.001});
   if(activeHero||activeScenes)raf=requestAnimationFrame(render);
  }
  function schedule(){if(!raf)raf=requestAnimationFrame(render)}
@@ -1372,8 +1487,8 @@ body{color:#d7e3f1;background:var(--navy)}
    el.style.setProperty('--aba-learning',progress.toFixed(3));
   });
   if(visible&&w&&h){
-   // Keep every light-route physically attached as its labeled card travels in 3D.
-   layout();
+   // Refresh the moving paths at 30fps; avoids expensive SVG path measurements every paint.
+   if(!frame.lastRouteUpdate||now-frame.lastRouteUpdate>32){layout();frame.lastRouteUpdate=now;}
    const activeNode=nodes.findIndex(el=>el.classList.contains('active'));
    const b=section.getBoundingClientRect();const camera=ease((innerHeight-b.top)/(innerHeight+b.height));
    // The light begins at the hub and moves out to the initiatives, each at a different phase.
@@ -1747,6 +1862,44 @@ body{color:#d7e3f1;background:var(--navy)}
  if(window.matchMedia('(prefers-reduced-motion: reduce)').matches){
   document.querySelectorAll('.pillars .pillar-icon animateMotion').forEach(a=>a.remove());
  }
+})();
+</script>
+
+<script>
+/* Preserve the existing animated border lines on the Member and Sponsor cards,
+   without the moving clusters of chain links. */
+(()=>{
+ const ns='http://www.w3.org/2000/svg';
+ const cards=document.querySelectorAll('#involved .participation-card');
+ const svgEl=(tag,cls)=>{const el=document.createElementNS(ns,tag);if(cls)el.setAttribute('class',cls);return el};
+ cards.forEach(card=>{
+   const svg=svgEl('svg','aba-border-chain');
+   svg.setAttribute('aria-hidden','true');
+   svg.setAttribute('focusable','false');
+   const defs=svgEl('defs');
+   const grad=svgEl('linearGradient'); grad.id='aba-chain-signal-gradient';
+   grad.setAttribute('x1','0');grad.setAttribute('y1','0');grad.setAttribute('x2','1');grad.setAttribute('y2','1');
+   [['0%','#ffffff'],['35%','#d7f5ff'],['58%','#7bd7ff'],['82%','#2e96ec'],['100%','#ffffff']].forEach(([o,c])=>{
+     const stop=svgEl('stop');stop.setAttribute('offset',o);stop.setAttribute('stop-color',c);grad.appendChild(stop);
+   });
+   defs.appendChild(grad);
+   const railGlow=svgEl('path','aba-chain-glow');
+   const rail=svgEl('path','aba-chain-rail');
+   const signal=svgEl('path','aba-chain-signal');
+   svg.append(defs,railGlow,rail,signal);
+   card.appendChild(svg);
+   const update=()=>{
+     const box=svg.getBoundingClientRect();
+     const w=Math.max(box.width,150), h=Math.max(box.height,150);
+     const pad=12,rad=22,x=pad,y=pad,right=w-pad,bottom=h-pad;
+     const d=`M${x+rad} ${y} H${right-rad} Q${right} ${y} ${right} ${y+rad} V${bottom-rad} Q${right} ${bottom} ${right-rad} ${bottom} H${x+rad} Q${x} ${bottom} ${x} ${bottom-rad} V${y+rad} Q${x} ${y} ${x+rad} ${y}`;
+     svg.setAttribute('viewBox',`0 0 ${w} ${h}`);
+     railGlow.setAttribute('d',d);rail.setAttribute('d',d);signal.setAttribute('d',d);
+   };
+   update();
+   if('ResizeObserver' in window)new ResizeObserver(update).observe(card);
+   else window.addEventListener('resize',update,{passive:true});
+ });
 })();
 </script>
 </body>
