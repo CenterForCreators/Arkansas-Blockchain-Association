@@ -318,6 +318,11 @@ body{color:#d7e3f1;background:var(--navy)}
 #pillars-title{font-size:clamp(2rem,3.1vw,3.15rem)}
 #pillars-title .aba-pillars-blue-line{display:block;color:var(--blue);white-space:nowrap}
 @media(max-width:680px){#pillars-title .aba-pillars-blue-line{white-space:normal}}
+
+/* Hero-only logo/network integration: keep the original art, dimensions and movement. */
+.hero-visual .aba-hero-web .aba-hero-logo-bridge{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:4;display:block}
+.hero-visual .aba-hero-web .aba-hero-logo{box-shadow:0 0 27px rgba(46,150,239,.14),0 0 65px rgba(22,111,206,.07)}
+@media(prefers-reduced-motion:reduce){.hero-visual .aba-hero-web .aba-hero-logo-bridge{display:none!important}}
 </style>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"Organization","name":"Arkansas Blockchain Association","alternateName":"ABA","url":"https://arkansasblockchainassociation.com/","email":"info@arkansasblockchainassociation.com","description":"An Arkansas-based organization advancing blockchain technology, tokenization, digital assets, and emerging digital infrastructure nationally and globally."}</script>
 </head>
@@ -913,8 +918,15 @@ body{color:#d7e3f1;background:var(--navy)}
   canvas.className='aba-hero-depth-canvas';
   canvas.setAttribute('aria-hidden','true');
   host.insertBefore(canvas,logo);
+  // Transparent circuit bridge: visually ties the original logo to the existing network.
+  // It is part of the hero graphic only and never changes the logo image.
+  const bridge=document.createElement('canvas');
+  bridge.className='aba-hero-logo-bridge';
+  bridge.setAttribute('aria-hidden','true');
+  host.appendChild(bridge);
   const ctx=canvas.getContext('2d',{alpha:true,desynchronized:true});
-  if(!ctx){canvas.remove();return;}
+  const bx=bridge.getContext('2d',{alpha:true,desynchronized:true});
+  if(!ctx||!bx){canvas.remove();bridge.remove();return;}
   let w=0,h=0,dpr=1,frame=0,visible=true,raf=0;
   let pointerX=0,pointerY=0,aimX=0,aimY=0;
   const mouse=e=>{
@@ -930,7 +942,9 @@ body{color:#d7e3f1;background:var(--navy)}
     w=r.width;h=r.height;
     dpr=Math.min(window.devicePixelRatio||1,1.7);
     canvas.width=Math.round(w*dpr);canvas.height=Math.round(h*dpr);
+    bridge.width=canvas.width;bridge.height=canvas.height;
     ctx.setTransform(dpr,0,0,dpr,0,0);
+    bx.setTransform(dpr,0,0,dpr,0,0);
   };
   resize();
   const ro=('ResizeObserver' in window)?new ResizeObserver(resize):null;
@@ -1011,12 +1025,56 @@ body{color:#d7e3f1;background:var(--navy)}
     const xMove=Math.sin(t*.31)*9+pointerX*5;
     const yMove=Math.sin(t*.24+.85)*6-pointerY*4;
     logo.style.transform=`translate(calc(-50% + ${xMove.toFixed(2)}px),calc(-50% + ${yMove.toFixed(2)}px)) perspective(850px) rotateY(${(yaw*180/Math.PI*.75).toFixed(2)}deg) rotateX(${(-pitch*180/Math.PI*.85).toFixed(2)}deg) rotateZ(${(roll*180/Math.PI*.55).toFixed(2)}deg) scale(${breath.toFixed(4)})`;
+    // Match the bridge to the very same yaw, pitch, sway and pulse as the logo.
+    // The illuminated network connections visibly meet the logo's edge.
+    const mx=w*.5+xMove,my=h*.5+yMove,rr=w*.21*breath;
+    bx.clearRect(0,0,w,h);
+    const halo=bx.createRadialGradient(mx,my,rr*.72,mx,my,rr*1.46);
+    halo.addColorStop(0,'rgba(38,155,252,0)');
+    halo.addColorStop(.45,'rgba(56,167,252,.085)');
+    halo.addColorStop(.75,'rgba(52,143,228,.035)');
+    halo.addColorStop(1,'rgba(27,95,186,0)');
+    bx.fillStyle=halo;bx.beginPath();bx.arc(mx,my,rr*1.46,0,TAU);bx.fill();
+    // Match each spoke to a real node in the existing projected 3D network.
+    const directions=[-2.83,-2.32,-1.82,-1.30,-.77,-.24,.31,.82,1.36,1.90,2.42,2.94];
+    const candidates=projected.map(p=>({...p,angle:Math.atan2(p.y-my,p.x-mx),dist:Math.hypot(p.x-mx,p.y-my)})).filter(p=>p.dist>rr*1.22);
+    directions.forEach((a,k)=>{
+      let best=null,delta=10;
+      for(const p of candidates){const d=Math.abs(Math.atan2(Math.sin(p.angle-a),Math.cos(p.angle-a)));if(d<delta){best=p;delta=d;}}
+      if(!best||delta>.50)return;
+      const sx=mx+Math.cos(best.angle)*rr*.99,sy=my+Math.sin(best.angle)*rr*.99;
+      const ex=sx+(best.x-sx)*.60,ey=sy+(best.y-sy)*.60;
+      bx.beginPath();bx.moveTo(sx,sy);bx.lineTo(ex,ey);
+      const gradient=bx.createLinearGradient(sx,sy,ex,ey);
+      gradient.addColorStop(0,'rgba(130,226,255,.72)');gradient.addColorStop(.6,'rgba(64,166,247,.35)');gradient.addColorStop(1,'rgba(52,150,235,0)');
+      bx.strokeStyle=gradient;bx.lineWidth=k%3===0?1.5:1;bx.stroke();
+      if(k%2===0){
+        const u=(t*(.22+k*.012)+k*.137)%1;
+        const xx=sx+(ex-sx)*u,yy=sy+(ey-sy)*u;
+        const light=bx.createRadialGradient(xx,yy,0,xx,yy,5.5);
+        light.addColorStop(0,'rgba(225,249,255,.9)');light.addColorStop(.25,'rgba(74,201,255,.65)');light.addColorStop(1,'rgba(38,126,231,0)');
+        bx.fillStyle=light;bx.beginPath();bx.arc(xx,yy,5.5,0,TAU);bx.fill();
+      }
+    });
+    // A single segmented perimeter: visually one hub embedded in the network,
+    // rather than a separate floating medallion above it.
+    bx.save();bx.translate(mx,my);
+    bx.rotate(roll*.55);
+    bx.scale(1-.045*Math.abs(Math.sin(yaw)),1-.035*Math.abs(Math.sin(pitch)));
+    for(let k=0;k<16;k++){
+      const a=k*TAU/16+t*.025;
+      const wave=.33+.22*Math.sin(t*.8+k*.79);
+      bx.beginPath();bx.arc(0,0,rr*1.022,a,a+TAU/16*.71);
+      bx.strokeStyle=`rgba(102,207,255,${wave.toFixed(3)})`;
+      bx.lineWidth=k%4===0?2:1.15;bx.stroke();
+    }
+    bx.restore();
   };
   host.classList.add('aba-depth-ready');
   raf=requestAnimationFrame(draw);
   reduced.addEventListener?.('change',()=>{
-    if(reduced.matches){cancelAnimationFrame(raf);host.classList.remove('aba-depth-ready');canvas.style.display='none';logo.style.transform='';}
-    else{canvas.style.display='';host.classList.add('aba-depth-ready');raf=requestAnimationFrame(draw);}
+    if(reduced.matches){cancelAnimationFrame(raf);host.classList.remove('aba-depth-ready');canvas.style.display='none';bridge.style.display='none';logo.style.transform='';}
+    else{canvas.style.display='';bridge.style.display='';host.classList.add('aba-depth-ready');raf=requestAnimationFrame(draw);}
   });
 })();
 </script>
