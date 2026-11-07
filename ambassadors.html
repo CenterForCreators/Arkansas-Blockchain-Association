@@ -260,15 +260,17 @@ body{color:#d7e3f1;background:var(--navy)}
    56%{opacity:1;filter:blur(0);transform:perspective(1000px) translate3d(0,-13px,14px) rotateY(-3deg) rotateZ(0deg) scale(1.018)}
    100%{opacity:1;filter:blur(0);transform:perspective(1100px) translate3d(0,0,0) rotateY(0deg) rotateZ(0deg) scale(1)}
  }
- .ambassador-director-card.aba-card-entered:hover,.ambassador-director-card.aba-card-entered:focus-within{
-   animation:none;--aba-lift:-17px;border-color:rgba(164,219,255,.78);
-   box-shadow:0 30px 62px rgba(0,0,0,.31),0 0 28px rgba(78,178,255,.23);}
+ /* Hover starts only after the entrance animation has completed, preventing a jump or an adjacent portrait from sweeping across. */
+ .ambassador-director-card.aba-card-entered.aba-card-arrived{animation:none;}
+ .ambassador-director-card.aba-card-arrived:hover,.ambassador-director-card.aba-card-arrived:focus-within{
+   --aba-lift:-8px;border-color:rgba(164,219,255,.78);
+   box-shadow:0 24px 48px rgba(0,0,0,.25),0 0 18px rgba(78,178,255,.17);}
  .ambassador-director-card::after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;z-index:3;
    background:radial-gradient(ellipse 65% 75% at var(--aba-light-x) var(--aba-light-y),rgba(200,240,255,.36),transparent 72%);
    opacity:0;transition:opacity .3s ease;}
  .ambassador-director-card:hover::after,.ambassador-director-card:focus-within::after{opacity:1;}
- .ambassador-director-card > img{transform-origin:50% 40%;transition:transform .48s cubic-bezier(.16,.8,.25,1),filter .48s ease;}
- .ambassador-director-card:hover > img,.ambassador-director-card:focus-within > img{transform:scale(1.085) translateY(-5px);filter:saturate(1.12) contrast(1.06);}
+ /* Preserve each person's portrait in place while its own card moves. */
+ .ambassador-director-card > img{transform:none;filter:none;transition:none;}
  .ambassador-director-card .ambassador-director-body{position:relative;z-index:4;transition:transform .45s cubic-bezier(.16,.8,.25,1);}
  .ambassador-director-card:hover .ambassador-director-body,.ambassador-director-card:focus-within .ambassador-director-body{transform:translateY(-7px);}
 }
@@ -522,6 +524,9 @@ body{color:#d7e3f1;background:var(--navy)}
   cards.forEach((card,i)=>{
     card.style.setProperty('--aba-stagger',`${(i%3)*170}ms`);
     card.classList.add('aba-card-ready');
+    card.addEventListener('animationend',e=>{
+      if(e.target===card && e.animationName==='aba-profile-arrival')card.classList.add('aba-card-arrived');
+    });
     observer.observe(card);
     if(!hoverable)return;
     let frame=0,tx=0,ty=0,cx=0,cy=0,inside=false;
@@ -535,11 +540,11 @@ body{color:#d7e3f1;background:var(--navy)}
     const schedule=()=>{if(!frame)frame=requestAnimationFrame(tick);};
     card.addEventListener('pointerenter',()=>{inside=true;schedule();});
     card.addEventListener('pointermove',e=>{
-      if(!card.classList.contains('aba-card-entered'))return;
+      if(!card.classList.contains('aba-card-arrived'))return;
       const r=card.getBoundingClientRect();
       const x=Math.max(-1,Math.min(1,2*(e.clientX-r.left)/r.width-1));
       const y=Math.max(-1,Math.min(1,2*(e.clientY-r.top)/r.height-1));
-      tx=x*13;ty=-y*10;
+      tx=x*5;ty=-y*4;
       card.style.setProperty('--aba-light-x',`${50+x*48}%`);
       card.style.setProperty('--aba-light-y',`${50+y*48}%`);
       schedule();
