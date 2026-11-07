@@ -159,13 +159,8 @@ body{color:#d7e3f1;background:var(--navy)}
 @media(max-width:600px){.aba-partner-banner{padding:36px 0}.aba-partner-logo{width:180px;height:110px}.aba-partner-group{gap:18px;padding-right:18px}}
 @media(prefers-reduced-motion:reduce){.aba-partner-track{animation:none;width:100%}.aba-partner-group{flex-wrap:wrap;justify-content:center;padding-right:0;width:100%}.aba-partner-group[aria-hidden="true"]{display:none}}
   
-/* Global Student Network Ambassador opportunities: scoped to the new section */
-.ambassador-opportunity-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
-.ambassador-opportunity-card{border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.018);padding:30px;min-width:0}
-.ambassador-opportunity-number{display:block;color:var(--gold2);font-size:.67rem;letter-spacing:.12em;font-weight:800;margin-bottom:14px}
-.ambassador-opportunity-card h3{color:#fff;font-size:1.23rem;line-height:1.3;margin:0 0 13px}
-.ambassador-opportunity-card p{color:#b9cce0;line-height:1.7;margin:0}
-@media(max-width:700px){.ambassador-opportunity-grid{grid-template-columns:1fr}.ambassador-opportunity-card{padding:24px}}
+/* University affiliation under each ambassador role. */
+.ambassador-director-body .ambassador-university{display:block;margin:4px 0 11px;color:#9bc8f3;font-size:.83rem;font-weight:600;line-height:1.4;}
 </style>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"Organization","name":"Arkansas Blockchain Association","alternateName":"ABA","url":"https://arkansasblockchainassociation.com/","email":"info@arkansasblockchainassociation.com","description":"An Arkansas-based organization advancing blockchain technology, tokenization, digital assets, and emerging digital infrastructure nationally and globally."}</script>
 
@@ -246,6 +241,38 @@ body{color:#d7e3f1;background:var(--navy)}
 }
 @media(prefers-reduced-motion:reduce){#aba-primary-nav,#aba-primary-nav .aba-nav-trigger>span{transition:none}}
 </style>
+
+<!-- Ambassador profile motion enhancement: no structural/content changes -->
+<style id="aba-ambassador-card-motion">
+/* Profile-card movement only; the original grid, dimensions, content and styles stay intact. */
+@media (prefers-reduced-motion:no-preference){
+ .ambassador-director-card{position:relative;transform-style:preserve-3d;backface-visibility:hidden;
+   --aba-tilt-x:0deg;--aba-tilt-y:0deg;--aba-lift:0px;--aba-light-x:50%;--aba-light-y:35%;
+   transform:perspective(1100px) translate3d(0,var(--aba-lift),0) rotateX(var(--aba-tilt-x)) rotateY(var(--aba-tilt-y));
+   transition:transform 270ms ease-out,box-shadow 350ms ease,border-color 350ms ease;will-change:transform;}
+ .ambassador-director-card.aba-card-ready:not(.aba-card-entered){opacity:0;}
+ .ambassador-director-card.aba-card-entered{animation:aba-profile-arrival 1.45s cubic-bezier(.19,.76,.2,1) both;animation-delay:var(--aba-stagger,0ms);}
+ .ambassador-director-card:nth-child(3n+1){--aba-from-x:-125px;--aba-from-y:35px;--aba-from-ry:24deg;--aba-from-rz:-5deg;}
+ .ambassador-director-card:nth-child(3n+2){--aba-from-x:0px;--aba-from-y:120px;--aba-from-ry:-18deg;--aba-from-rz:0deg;}
+ .ambassador-director-card:nth-child(3n){--aba-from-x:125px;--aba-from-y:35px;--aba-from-ry:-24deg;--aba-from-rz:5deg;}
+ @keyframes aba-profile-arrival{
+   0%{opacity:0;filter:blur(6px);transform:perspective(1000px) translate3d(var(--aba-from-x,-80px),var(--aba-from-y,75px),-180px) rotateY(var(--aba-from-ry,20deg)) rotateZ(var(--aba-from-rz,-3deg)) scale(.88)}
+   56%{opacity:1;filter:blur(0);transform:perspective(1000px) translate3d(0,-13px,14px) rotateY(-3deg) rotateZ(0deg) scale(1.018)}
+   100%{opacity:1;filter:blur(0);transform:perspective(1100px) translate3d(0,0,0) rotateY(0deg) rotateZ(0deg) scale(1)}
+ }
+ .ambassador-director-card.aba-card-entered:hover,.ambassador-director-card.aba-card-entered:focus-within{
+   animation:none;--aba-lift:-17px;border-color:rgba(164,219,255,.78);
+   box-shadow:0 30px 62px rgba(0,0,0,.31),0 0 28px rgba(78,178,255,.23);}
+ .ambassador-director-card::after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;z-index:3;
+   background:radial-gradient(ellipse 65% 75% at var(--aba-light-x) var(--aba-light-y),rgba(200,240,255,.36),transparent 72%);
+   opacity:0;transition:opacity .3s ease;}
+ .ambassador-director-card:hover::after,.ambassador-director-card:focus-within::after{opacity:1;}
+ .ambassador-director-card > img{transform-origin:50% 40%;transition:transform .48s cubic-bezier(.16,.8,.25,1),filter .48s ease;}
+ .ambassador-director-card:hover > img,.ambassador-director-card:focus-within > img{transform:scale(1.085) translateY(-5px);filter:saturate(1.12) contrast(1.06);}
+ .ambassador-director-card .ambassador-director-body{position:relative;z-index:4;transition:transform .45s cubic-bezier(.16,.8,.25,1);}
+ .ambassador-director-card:hover .ambassador-director-body,.ambassador-director-card:focus-within .ambassador-director-body{transform:translateY(-7px);}
+}
+</style>
 </head>
 <body>
   <header class="site-header" id="top">
@@ -298,7 +325,7 @@ body{color:#d7e3f1;background:var(--navy)}
       <div class="container">
         <span class="kicker kicker-light">ABA GLOBAL STUDENT NETWORK</span>
         <h1 id="ambassador-title">Become a Global Student Network Ambassador</h1>
-        <p class="lead">Connect students at your university with industry professionals, emerging technologies, and opportunities to work on real-world challenges. As an Ambassador, you can participate in research, hackathons, Mastermind Conversations, and global projects while helping other students discover these opportunities.</p>
+        <p class="lead">Help connect students at your university with a global community exploring emerging technologies. We’re looking for thoughtful, reliable student representatives who want to welcome others, share opportunities, and encourage meaningful participation.</p>
         <p class="ambassador-role">Volunteer role · Approximately 2–4 hours per month · One brief monthly meeting</p>
         <a class="button button-primary" href="mailto:info@arkansasblockchainassociation.com?subject=ABA%20Global%20Student%20Network%20Ambassador%20Application">Apply to Be an Ambassador</a>
       </div>
@@ -307,82 +334,50 @@ body{color:#d7e3f1;background:var(--navy)}
       <div class="container">
         <article class="ambassador-director-card">
           <img src="image(20261014-225541).png" alt="Isaac Mccorry">
-          <div class="ambassador-director-body"><h2>ISAAC MCCORRY</h2><p>Director of Global Ambassadors</p><a href="https://www.linkedin.com/in/isaacmcorry/" target="_blank" rel="noopener noreferrer">LinkedIn</a></div>
+          <div class="ambassador-director-body"><h2>ISAAC MCCORRY</h2><p>Director of Global Ambassadors</p><span class="ambassador-university">University of Arkansas</span><a href="https://www.linkedin.com/in/isaacmcorry/" target="_blank" rel="noopener noreferrer">LinkedIn</a></div>
         </article>
         <div class="ambassador-grid">
           <article class="ambassador-director-card">
             <img src="abdurahman.jpeg" alt="Abdurahman Adesina">
-            <div class="ambassador-director-body"><h2>ABDURAHMAN ADESINA</h2><p>Global Ambassador Representing Nigeria</p><a href="https://www.linkedin.com/in/adesina-abdurahman-babatunde/" target="_blank" rel="noopener noreferrer">LinkedIn</a></div>
+            <div class="ambassador-director-body"><h2>ABDURAHMAN ADESINA</h2><p>Global Ambassador Representing Nigeria</p><span class="ambassador-university">Usmanu Danfodiyo University</span><a href="https://www.linkedin.com/in/adesina-abdurahman-babatunde/" target="_blank" rel="noopener noreferrer">LinkedIn</a></div>
           </article>
           <article class="ambassador-director-card">
             <img src="max_bassler.jpeg" alt="Max Bassler">
-            <div class="ambassador-director-body"><h2>MAX BASSLER</h2><p>Global Student Ambassador</p><a href="https://www.linkedin.com/in/maxbassler/" target="_blank" rel="noopener noreferrer">LinkedIn</a></div>
+            <div class="ambassador-director-body"><h2>MAX BASSLER</h2><p>Global Student Ambassador</p><span class="ambassador-university">University of Arkansas</span><a href="https://www.linkedin.com/in/maxbassler/" target="_blank" rel="noopener noreferrer">LinkedIn</a></div>
           </article>
           <article class="ambassador-director-card">
             <img src="jacksont.png" alt="Jackson Templeton">
-            <div class="ambassador-director-body"><h2>JACKSON TEMPLETON</h2><p>Global Student Ambassador</p><a href="https://www.linkedin.com/in/jacksontempleton/" target="_blank" rel="noopener noreferrer">LinkedIn</a></div>
+            <div class="ambassador-director-body"><h2>JACKSON TEMPLETON</h2><p>Global Student Ambassador</p><span class="ambassador-university">University of Arkansas</span><a href="https://www.linkedin.com/in/jacksontempleton/" target="_blank" rel="noopener noreferrer">LinkedIn</a></div>
           </article>
           <article class="ambassador-director-card">
             <img src="willow.jpeg" alt="Willow Lindholm">
-            <div class="ambassador-director-body"><h2>WILLOW LINDHOLM</h2><p>Global Student Ambassador</p><a href="https://www.linkedin.com/in/willow-lindholm-7358012b4/" target="_blank" rel="noopener noreferrer">LinkedIn</a></div>
+            <div class="ambassador-director-body"><h2>WILLOW LINDHOLM</h2><p>Global Student Ambassador</p><span class="ambassador-university">University of Wyoming</span><a href="https://www.linkedin.com/in/willow-lindholm-7358012b4/" target="_blank" rel="noopener noreferrer">LinkedIn</a></div>
+          </article>
+          <article class="ambassador-director-card">
+            <img src="layton-coney.png" alt="Layton Coney">
+            <div class="ambassador-director-body"><h2>LAYTON CONEY</h2><p>Global Student Ambassador</p><span class="ambassador-university">University of Arkansas</span><a href="https://www.linkedin.com/in/laytonconey/" target="_blank" rel="noopener noreferrer">LinkedIn</a></div>
           </article>
           <article class="ambassador-director-card">
             <img src="jonathan.jpeg" alt="Jonathan Aby">
-            <div class="ambassador-director-body"><h2>JONATHAN ABY</h2><p>Global Student Ambassador</p><a href="https://www.linkedin.com/in/jonathan-aby-0ba386296/" target="_blank" rel="noopener noreferrer">LinkedIn</a></div>
+            <div class="ambassador-director-body"><h2>JONATHAN ABY</h2><p>Global Student Ambassador</p><span class="ambassador-university">Georgetown University</span><a href="https://www.linkedin.com/in/jonathan-aby-0ba386296/" target="_blank" rel="noopener noreferrer">LinkedIn</a></div>
           </article>
         </div>
       </div>
     </section>
-    <section class="section section-dark ambassador-opportunities" aria-labelledby="ambassador-opportunities-title">
-    <div class="container">
-      <div class="ambassador-intro">
-        <span class="kicker">WHAT YOU CAN BE PART OF</span>
-        <h2 id="ambassador-opportunities-title">Opportunities to Learn, Build and Lead</h2>
-        <p>Ambassadors can participate in the Global Student Network beyond campus outreach. Explore industry challenges, work with peers across the world, and help shape initiatives that interest you.</p>
-      </div>
-      <div class="ambassador-opportunity-grid">
-        <article class="ambassador-opportunity-card">
-          <span class="ambassador-opportunity-number">01 / RESEARCH</span>
-          <h3>Applied Research and Real-World Projects</h3>
-          <p>Work with students and industry professionals on practical challenges, including opportunities connected to the Supply Chain, Logistics &amp; Trade Alliance and DASC policy discussions.</p>
-        </article>
-        <article class="ambassador-opportunity-card">
-          <span class="ambassador-opportunity-number">02 / DEVELOPMENT</span>
-          <h3>Hackathons and Hands-On Development</h3>
-          <p>Participate in hackathons, workshops, and collaborative technology projects involving blockchain, AI, and other emerging technologies. Help turn ideas into working solutions.</p>
-        </article>
-        <article class="ambassador-opportunity-card">
-          <span class="ambassador-opportunity-number">03 / CONVERSATIONS</span>
-          <h3>Mastermind Conversations</h3>
-          <p>Join discussions with industry professionals and fellow students. Ambassadors receive priority registration for in-person Mastermind Conversations and have their own monthly virtual Ambassador Mastermind sessions.</p>
-        </article>
-        <article class="ambassador-opportunity-card">
-          <span class="ambassador-opportunity-number">04 / LEADERSHIP</span>
-          <h3>Global Collaboration and Leadership</h3>
-          <p>Collaborate across countries and disciplines. Take initiative in working groups, research, technology development, student events, and projects that match your skills and interests.</p>
-        </article>
-        <article class="ambassador-opportunity-card">
-          <span class="ambassador-opportunity-number">05 / KNOWLEDGE</span>
-          <h3>Tokenized Interactive Knowledge</h3>
-          <p>Contribute research, articles, educational content, and projects through ABA’s Tokenized Interactive Knowledge ecosystem, with interactive learning and opportunities for recognition and engagement.</p>
-        </article>
-      </div>
-    </div>
-  </section>
-  <section class="section section-dark" aria-labelledby="ambassador-expectations-title">
+    <section class="section section-dark" aria-labelledby="ambassador-expectations-title">
       <div class="container">
         <div class="ambassador-intro">
           <span class="kicker">YOUR INVOLVEMENT</span>
-          <h2 id="ambassador-expectations-title">Connect. Collaborate. Lead.</h2>
-          <p>Ambassadors help bring the Global Student Network to their universities and connect students with people, projects, and opportunities. You can also contribute to research, technology development, events, and leadership initiatives based on your interests.</p>
+          <h2 id="ambassador-expectations-title">Connect. Welcome. Engage.</h2>
+          <p>ABA Global Student Network Ambassadors are volunteer representatives who support outreach, engagement, and events. Your role is to help students discover the network, feel welcome, and find meaningful ways to get involved.</p>
         </div>
         <ul class="ambassador-expectations">
           <li><span aria-hidden="true">01</span><div>Represent ABA professionally at your university and within your network.</div></li>
           <li><span aria-hidden="true">02</span><div>Introduce students and student organizations to the Global Student Network.</div></li>
-          <li><span aria-hidden="true">03</span><div>Share research opportunities, hackathons, workshops, Mastermind Conversations, and other ABA activities.</div></li>
-          <li><span aria-hidden="true">04</span><div>Welcome new members and help them find projects and working groups that match their interests.</div></li>
-          <li><span aria-hidden="true">05</span><div>Participate in one brief monthly Ambassador meeting.</div></li>
-          <li><span aria-hidden="true">06</span><div>Share student interests, ideas, and feedback to help shape network activities.</div></li>
+          <li><span aria-hidden="true">03</span><div>Share ABA opportunities, events, and committee activities.</div></li>
+          <li><span aria-hidden="true">04</span><div>Welcome new student members and encourage participation.</div></li>
+          <li><span aria-hidden="true">05</span><div>Attend one brief monthly ambassador meeting.</div></li>
+          <li><span aria-hidden="true">06</span><div>Provide feedback about student interests and emerging-technology priorities.</div></li>
           <li><span aria-hidden="true">07</span><div>Follow ABA’s conduct and communications guidelines.</div></li>
           <li><span aria-hidden="true">08</span><div>Commit approximately 2–4 hours per month.</div></li>
         </ul>
@@ -393,8 +388,8 @@ body{color:#d7e3f1;background:var(--navy)}
     <section class="ambassador-apply section" aria-labelledby="ambassador-apply-title">
       <div class="container">
         <span class="kicker">TAKE THE NEXT STEP</span>
-        <h2 id="ambassador-apply-title">Bring new opportunities to your university.</h2>
-        <p>If you want to connect students with industry, research, technology projects, and a global community—and can contribute approximately 2–4 hours each month—we’d love to hear from you.</p>
+        <h2 id="ambassador-apply-title">Help build connections at your university.</h2>
+        <p>If you can commit approximately 2–4 hours each month and would enjoy helping students connect and participate, we’d love to hear from you.</p>
         <p>To apply, email your name, university, country, LinkedIn profile, and a brief note about why you’d like to become an ambassador and how you hope to contribute.</p>
         <a class="button button-primary" href="mailto:info@arkansasblockchainassociation.com?subject=ABA%20Global%20Student%20Network%20Ambassador%20Application">Apply to Be an Ambassador</a>
         <p class="ambassador-email"><a href="mailto:info@arkansasblockchainassociation.com">info@arkansasblockchainassociation.com</a></p>
@@ -506,6 +501,51 @@ body{color:#d7e3f1;background:var(--navy)}
   });
 
   document.getElementById('year').textContent = new Date().getFullYear();
+})();
+</script>
+
+<script id="aba-ambassador-card-motion-script">
+(()=>{
+  'use strict';
+  const cards=[...document.querySelectorAll('.ambassador-director-card')];
+  if(!cards.length||window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+  const hoverable=window.matchMedia('(hover:hover) and (pointer:fine)').matches;
+  // Animate the actual card and its text/photo as a unified three-dimensional object when scrolling in.
+  const observer=new IntersectionObserver(entries=>{
+    entries.forEach(entry=>{
+      if(entry.isIntersecting){
+        entry.target.classList.add('aba-card-entered');
+        observer.unobserve(entry.target);
+      }
+    });
+  },{threshold:.12,rootMargin:'0px 0px 36px 0px'});
+  cards.forEach((card,i)=>{
+    card.style.setProperty('--aba-stagger',`${(i%3)*170}ms`);
+    card.classList.add('aba-card-ready');
+    observer.observe(card);
+    if(!hoverable)return;
+    let frame=0,tx=0,ty=0,cx=0,cy=0,inside=false;
+    const tick=()=>{
+      frame=0;
+      cx+=(tx-cx)*.2;cy+=(ty-cy)*.2;
+      card.style.setProperty('--aba-tilt-x',`${cy.toFixed(2)}deg`);
+      card.style.setProperty('--aba-tilt-y',`${cx.toFixed(2)}deg`);
+      if(inside||Math.abs(tx-cx)>.05||Math.abs(ty-cy)>.05)frame=requestAnimationFrame(tick);
+    };
+    const schedule=()=>{if(!frame)frame=requestAnimationFrame(tick);};
+    card.addEventListener('pointerenter',()=>{inside=true;schedule();});
+    card.addEventListener('pointermove',e=>{
+      if(!card.classList.contains('aba-card-entered'))return;
+      const r=card.getBoundingClientRect();
+      const x=Math.max(-1,Math.min(1,2*(e.clientX-r.left)/r.width-1));
+      const y=Math.max(-1,Math.min(1,2*(e.clientY-r.top)/r.height-1));
+      tx=x*13;ty=-y*10;
+      card.style.setProperty('--aba-light-x',`${50+x*48}%`);
+      card.style.setProperty('--aba-light-y',`${50+y*48}%`);
+      schedule();
+    },{passive:true});
+    card.addEventListener('pointerleave',()=>{inside=false;tx=0;ty=0;schedule();});
+  });
 })();
 </script>
 </body>
