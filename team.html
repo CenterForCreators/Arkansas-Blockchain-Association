@@ -140,6 +140,13 @@ body{color:#d7e3f1;background:var(--navy)}
 .team-card a:not(.team-join-committee){flex-shrink:0}
 .team-card a.team-join-committee{margin-top:12px;padding:12px 20px;border:1px solid transparent;justify-content:center;flex-shrink:0}
 .team-card a.team-join-committee:hover,.team-card a.team-join-committee:focus-visible{color:#fff;border-color:transparent}
+
+/* Global Student Network cards: remove inherited fixed text heights and expose their join links. */
+.team-group[aria-labelledby="student-committee-chairs-title"] .team-card-body{flex:1 0 auto;min-height:0;justify-content:flex-start}
+.team-group[aria-labelledby="student-committee-chairs-title"] .team-card h3{min-height:0}
+.team-group[aria-labelledby="student-committee-chairs-title"] .team-card p{min-height:0;margin:0 0 6px;flex-shrink:0}
+.team-group[aria-labelledby="student-committee-chairs-title"] .team-card p + p{margin-bottom:14px}
+.team-group[aria-labelledby="student-committee-chairs-title"] .team-card a.team-join-committee{display:inline-flex;visibility:visible;opacity:1;align-self:flex-start;background:linear-gradient(135deg,#0a79eb,#1763bc);color:#fff;border:1px solid transparent;border-radius:6px;margin-top:12px;padding:12px 20px;box-shadow:0 15px 40px rgba(7,95,189,.3)}
 </style>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"Organization","name":"Arkansas Blockchain Association","alternateName":"ABA","url":"https://arkansasblockchainassociation.com/","email":"info@arkansasblockchainassociation.com","description":"A statewide organization advancing blockchain technology, tokenization, digital assets, and emerging digital infrastructure across Arkansas."}</script>
 <style id="aba-grouped-navigation-styles">
