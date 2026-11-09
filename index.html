@@ -433,6 +433,26 @@ body{color:#d7e3f1;background:var(--navy)}
   #involved .participation-card::before,#involved .participation-card::after{animation:none;}
 }
 </style>
+<style id="aba-qiga-homepage-addition">
+/* Fifth initiative uses existing ABA node design; other components remain unchanged. */
+#aba-initiatives .node-qiga{left:50%;top:12%;width:113px;min-height:49px;font-size:.65rem}
+@media(max-width:650px){#aba-initiatives .node-qiga{top:11%;width:99px;min-height:41px;font-size:.55rem}}
+</style>
+
+<style id="aba-industry-center-refinement">
+/* Only the central industry applications circle: preserve the orbital system and its scripts. */
+#innovation .industry-orbit .core{
+  width:146px;height:146px;
+  background:radial-gradient(circle at 35% 25%,rgba(66,170,249,.65) 0%,rgba(14,86,151,.94) 33%,#08264a 74%,#061b35 100%);
+  border:1px solid rgba(159,220,255,.7);
+  box-shadow:0 0 0 5px rgba(71,164,249,.07),0 0 39px rgba(43,146,243,.29),inset 0 0 29px rgba(138,203,255,.12),inset -15px -13px 22px rgba(1,14,36,.38);
+  text-align:center;
+}
+#innovation .industry-orbit .core span{font-size:.91rem;letter-spacing:.045em;line-height:1.2;text-shadow:0 0 18px rgba(162,219,255,.28)}
+#innovation .industry-orbit .core small{font-size:.65rem;font-weight:700;letter-spacing:.11em;line-height:1.55;color:#e4f2ff;margin-top:4px}
+#innovation .industry-orbit .core:before{inset:-10px;border-color:rgba(142,216,255,.33)}
+#innovation .industry-orbit .core:after{inset:4px}
+</style>
 </head>
 <body>
   
@@ -491,7 +511,7 @@ body{color:#d7e3f1;background:var(--navy)}
         <div class="hero-copy reveal">
           <div class="eyebrow"><span></span> ARKANSAS-BASED • NATIONAL AND GLOBAL REACH</div>
           <h1 id="hero-title">Connecting <span>emerging technologies</span> with real-world innovation</h1>
-          <p>Arkansas Blockchain Association connects industry leaders, technology experts, policymakers, researchers, and students to advance emerging technologies through practical applications, research and development, global collaboration, and responsible innovation.</p>
+          <p>Connecting emerging technologies, industry, policy, and global talent to advance practical innovation. Through its five initiatives, ABA creates opportunities to apply blockchain, AI, quantum, and cybersecurity expertise across industries and communities.</p>
           <div class="hero-proof"><span>Industry &amp; innovation</span><span>Applied research</span><span>National &amp; global collaboration</span></div><div class="aba-hero-actions"><a class="btn btn-primary" href="#aba-initiatives">Explore Our Initiatives <span aria-hidden="true">↗</span></a><a class="btn btn-outline" href="/join">Join ABA <span aria-hidden="true">↗</span></a></div>
         </div>
         <div class="hero-visual reveal" aria-label="Animated connections surrounding the Arkansas Blockchain Association logo">
@@ -638,13 +658,13 @@ body{color:#d7e3f1;background:var(--navy)}
         <div class="about-sticky reveal">
           <span class="kicker kicker-light">WHY ABA EXISTS</span>
           <h2 id="about-title">Connecting Arkansas strengths with national and global opportunity</h2>
-          <p class="lead">Arkansas already has extraordinary concentrations of enterprise, logistics, retail, agriculture, food, financial services, education, entrepreneurship, healthcare, infrastructure, arts and culture, and economic-development activity.</p>
+          <p class="lead">Arkansas brings together global leaders in retail, logistics, agriculture, and enterprise, alongside strengths in education, finance, healthcare, and entrepreneurship.</p>
         </div>
         <div class="about-content reveal">
-          <p>Arkansas Blockchain Association (ABA) is an Arkansas-based organization advancing blockchain technology, tokenization, digital assets, and emerging digital infrastructure through statewide, national, and global engagement.</p>
-          <p>ABA brings together business leaders, entrepreneurs, technology professionals, educators, policymakers, investors, and innovators to accelerate education, collaboration, and practical adoption of blockchain technologies.</p>
+          <p>From Arkansas, ABA advances blockchain, digital assets, tokenization, and emerging infrastructure through national and global collaboration.</p>
+          <p>ABA connects industry, researchers, policymakers, investors, and emerging talent to turn technology expertise into practical opportunities.</p>
           <div class="bridge" aria-label="ABA connects key sectors"><span>Industry</span><b>×</b><span>Technology</span><b>×</b><span>Government</span><b>×</b><span>Education</span><b>×</b><span>Capital</span><b>×</b><span>Communities</span></div>
-          <p>Our focus includes enterprise blockchain, tokenization, AI and blockchain convergence, workforce development, financial innovation, government applications, smart cities, arts and culture, and real-world use cases across industries, institutions, and communities in Arkansas and beyond.</p>
+          <p>Our work spans enterprise blockchain, AI convergence, digital finance, workforce development, and applications across public and private sectors.</p>
           <blockquote>ABA is working to strengthen Arkansas’s position in the rapidly evolving digital economy while building education, strategic collaboration, partnerships, and opportunities across the national and global blockchain ecosystem.</blockquote>
         </div>
       </div>
@@ -654,7 +674,7 @@ body{color:#d7e3f1;background:var(--navy)}
       <div class="container">
         <div class="section-intro reveal">
           <div><span class="kicker">OUR PURPOSE</span><h2 id="pillars-title">Four functions<span class="aba-pillars-blue-line">One mission with global reach</span></h2></div>
-          <p>ABA is being built to help leaders, organizations, universities, and communities in Arkansas and beyond understand, connect with, test, and responsibly advance the technologies shaping the next era of commerce and digital infrastructure.</p>
+          <p>ABA advances its mission through four connected functions: educate, connect, innovate, and advance. Each turns shared expertise into opportunities for practical impact.</p>
         </div>
         <div class="pillar-grid">
           <article class="pillar reveal"><span class="pillar-num">01</span><div class="pillar-icon">⌁</div><h3>Educate</h3><p>Build understanding of blockchain, tokenization, digital assets, AI convergence, and emerging technologies for leaders, professionals, students, and communities.</p><div class="pillar-line"></div></article>
@@ -668,9 +688,9 @@ body{color:#d7e3f1;background:var(--navy)}
     
 <section id="aba-initiatives" class="aba-initiatives-section section" aria-labelledby="aba-initiatives-heading">
  <div class="container">
-  <div class="section-heading reveal"><span class="section-kicker">OUR INITIATIVES</span><h2 id="aba-initiatives-heading">Where Innovation Takes Shape</h2><p>Independent initiatives with distinct missions, connected by opportunities to collaborate. Together, they help bring industry, research, policy, and technology into productive conversation.</p></div>
+  <div class="section-heading reveal"><span class="section-kicker">OUR INITIATIVES</span><h2 id="aba-initiatives-heading">Where Innovation Takes Shape</h2><p>Each of ABA’s five initiatives has a distinct mission. Together, they connect blockchain, AI, quantum, and cybersecurity with industry challenges, policy and standards, student research, and interactive knowledge, creating opportunities to share expertise and advance practical applications.</p></div>
   <div class="aba-initiatives-layout">
-   <div class="aba-ecosystem-visual reveal" aria-label="Four independent ABA initiatives connected through shared opportunities for collaboration">
+   <div class="aba-ecosystem-visual reveal" aria-label="Five independent ABA initiatives connected through shared opportunities for collaboration">
     <div class="aba-ecosystem-topline">A CONNECTED ECOSYSTEM</div>
     <svg class="aba-ecosystem-connections" viewBox="0 0 480 450" aria-hidden="true">
      <defs><linearGradient id="aba-connections-gradient" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#4aa8eb" stop-opacity=".25"/><stop offset=".5" stop-color="#8edaff" stop-opacity=".9"/><stop offset="1" stop-color="#4aa8eb" stop-opacity=".25"/></linearGradient></defs>
@@ -678,6 +698,7 @@ body{color:#d7e3f1;background:var(--navy)}
      <path id="aba-circuit" d="M120 116 L360 116 L360 336 L120 336 L120 116" stroke="transparent" fill="none"/>
      <circle r="5" fill="#bdeeff"><animateMotion dur="11s" repeatCount="indefinite"><mpath href="#aba-circuit"/></animateMotion></circle>
      <circle r="3" fill="#bdeeff"><animateMotion dur="11s" begin="-5.5s" repeatCount="indefinite"><mpath href="#aba-circuit"/></animateMotion></circle>
+     <path d="M240 56 V168" fill="none" stroke="url(#aba-connections-gradient)" stroke-dasharray="5 6" stroke-width="1.5"></path>
      <circle cx="240" cy="225" r="76" stroke="#318bc9" stroke-opacity=".32" fill="#0b2446"/>
      <circle cx="240" cy="225" r="57" stroke="#84cfff" stroke-opacity=".35" fill="#091a35"/>
     </svg>
@@ -686,6 +707,7 @@ body{color:#d7e3f1;background:var(--navy)}
     <button class="aba-ecosystem-node node-dasc" type="button" data-aba-index="1" aria-label="Explore DASC">POLICY &amp;<br/>STANDARDS</button>
     <button class="aba-ecosystem-node node-gsn" type="button" data-aba-index="2" aria-label="Explore Global Student Network">STUDENT<br/>RESEARCH</button>
     <button class="aba-ecosystem-node node-tik" type="button" data-aba-index="3" aria-label="Explore Tokenized Interactive Knowledge">INTERACTIVE<br/>KNOWLEDGE</button>
+    <button class="aba-ecosystem-node node-qiga" type="button" data-aba-index="4" aria-label="Explore Quantum Innovation Global Alliance">QUANTUM<br/>INNOVATION</button>
     <p class="aba-ecosystem-foot">Each initiative stands on its own and collaborates where opportunities align.</p>
    </div>
    <div class="aba-initiatives-list reveal"><article class="aba-initiative" id="aba-initiative-supply" data-aba-index="0">
@@ -712,7 +734,16 @@ body{color:#d7e3f1;background:var(--navy)}
  </button>
  <div class="aba-initiative-panel" id="aba-initiative-panel-tik" hidden>
  <p>A live ecosystem for tokenizing and sharing knowledge through embedded AI guidance, interactive reading, gamification, and CFC utility-token engagement.</p><a class="aba-initiative-link" href="/TIK_Overview">Explore this initiative <span aria-hidden="true">↗</span></a>
- </div></article></div>
+ </div></article>    <article class="aba-initiative" id="aba-initiative-qiga" data-aba-index="4">
+      <button type="button" class="aba-initiative-toggle" aria-expanded="false" aria-controls="aba-initiative-panel-qiga">
+        <span class="aba-initiative-num">05</span><span class="aba-initiative-heading"><small>QUANTUM &amp; TECHNOLOGY CONVERGENCE</small><strong>Quantum Innovation Global Alliance (QIGA)</strong></span><span class="aba-initiative-chevron" aria-hidden="true">⌄</span>
+      </button>
+      <div class="aba-initiative-panel" id="aba-initiative-panel-qiga" hidden>
+        <p>Connects international quantum expertise with industry applications, security, emerging technology convergence, and opportunities that support ABA’s other initiatives.</p>
+        <a class="aba-initiative-link" href="/QIGA">Explore this initiative <span aria-hidden="true">↗</span></a>
+      </div>
+    </article>
+</div>
   </div>
  </div>
 </section>
@@ -739,7 +770,7 @@ body{color:#d7e3f1;background:var(--navy)}
       <div class="container">
         <div class="industry-heading reveal"><span class="kicker kicker-light">ARKANSAS INDUSTRY OPPORTUNITY</span><h2 id="industry-title">Blockchain is infrastructure</h2><p>Its practical value is found in trust, transparency, ownership, provenance, coordination, settlement, identity, and data integrity. The opportunity is to apply those capabilities where Arkansas already excels.</p></div>
         <div class="industry-stage reveal">
-          <div class="industry-orbit" aria-hidden="true"><div class="core"><span>ABA</span><small>Practical<br>Adoption</small></div></div>
+          <div class="industry-orbit" aria-hidden="true"><div class="core"><span>Blockchain</span><small>in Action</small></div></div>
           <div class="industry-list" role="list">
             <button class="industry-item active" data-industry="Retail" data-copy="Verifiable products, connected commerce, digital ownership, and payments."><span>01</span>Retail</button>
             <button class="industry-item" data-industry="Supply Chain & Logistics" data-copy="Shared visibility, provenance, trusted documents, and coordination across complex networks."><span>02</span>Supply Chain &amp; Logistics</button>
