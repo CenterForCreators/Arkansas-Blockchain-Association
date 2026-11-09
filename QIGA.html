@@ -909,9 +909,7 @@ body{color:#d7e3f1;background:var(--navy)}
 <div class="aba-nav-submenu" hidden="" id="aba-nav-initiatives">
 <a href="/supply-chain-logistics-trade-alliance">Supply Chain, Logistics &amp; Trade Alliance</a>
 <a href="/DASC">Digital Asset Strategic Council</a>
-<a href="/QIGA">Quantum Innovation Global Alliance</a>
-
-<a aria-current="page" href="/quantum-innovation-global-alliance">Quantum Innovation Global Alliance</a></div>
+<a aria-current="page" href="/QIGA">Quantum Innovation Global Alliance</a></div>
 </div>
 <div class="aba-nav-group">
 <button aria-controls="aba-nav-tik" aria-expanded="false" class="aba-nav-trigger" type="button">Tokenized Interactive Knowledge <span aria-hidden="true">⌄</span></button>
@@ -1091,6 +1089,40 @@ body{color:#d7e3f1;background:var(--navy)}
     nav.classList.remove('open'); document.body.classList.remove('menu-open');
     toggle.setAttribute('aria-expanded', 'false');
   }));
+
+  // Shared ABA dropdown navigation: click/tap to open, Escape/outside-click to close.
+  const dropdownTriggers = Array.from(nav.querySelectorAll('.aba-nav-trigger'));
+  function closeDropdowns(except = null) {
+    dropdownTriggers.forEach(button => {
+      if (button === except) return;
+      button.setAttribute('aria-expanded', 'false');
+      const menu = document.getElementById(button.getAttribute('aria-controls'));
+      if (menu) menu.hidden = true;
+    });
+  }
+  dropdownTriggers.forEach(button => {
+    const menu = document.getElementById(button.getAttribute('aria-controls'));
+    if (!menu) return;
+    button.addEventListener('click', () => {
+      const opening = button.getAttribute('aria-expanded') !== 'true';
+      closeDropdowns(button);
+      button.setAttribute('aria-expanded', String(opening));
+      menu.hidden = !opening;
+    });
+  });
+  document.addEventListener('click', event => {
+    if (!nav.contains(event.target)) closeDropdowns();
+  });
+  document.addEventListener('keydown', event => {
+    if (event.key === 'Escape') {
+      const wasOpen = dropdownTriggers.find(button => button.getAttribute('aria-expanded') === 'true');
+      closeDropdowns();
+      if (wasOpen) wasOpen.focus();
+    }
+  });
+  nav.querySelectorAll('.aba-nav-submenu a').forEach(a => {
+    a.addEventListener('click', () => closeDropdowns());
+  });
 
   const revealObserver = new IntersectionObserver(entries => entries.forEach(entry => {
     if (entry.isIntersecting) { entry.target.classList.add('visible'); revealObserver.unobserve(entry.target); }
