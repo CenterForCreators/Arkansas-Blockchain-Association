@@ -315,9 +315,16 @@ body{color:#d7e3f1;background:var(--navy)}
   animation:gsnCardArrive .52s cubic-bezier(.21,.7,.26,1) both;
   transition:border-color .35s ease,box-shadow .4s ease,transform .4s cubic-bezier(.2,.7,.2,1),background .4s ease;
 }
-.student-network-page #directory>.student-card:nth-child(3n+2),
+/* Student cards: restrained 0.5s rise-and-fade, staggered in DOM order. */
+.student-network-page #directory>.student-card {animation:gsnStudentCardEnter .5s cubic-bezier(.22,.68,.3,1) both}
+.student-network-page #directory>.student-card:nth-child(6n+1) {animation-delay:0s}
+.student-network-page #directory>.student-card:nth-child(6n+2) {animation-delay:.045s}
+.student-network-page #directory>.student-card:nth-child(6n+3) {animation-delay:.09s}
+.student-network-page #directory>.student-card:nth-child(6n+4) {animation-delay:.135s}
+.student-network-page #directory>.student-card:nth-child(6n+5) {animation-delay:.18s}
+.student-network-page #directory>.student-card:nth-child(6n) {animation-delay:.225s}
+@keyframes gsnStudentCardEnter {from{opacity:.78;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
 .student-network-page #groups>.network-card:nth-child(3n+2) {animation-delay:.055s}
-.student-network-page #directory>.student-card:nth-child(3n),
 .student-network-page #groups>.network-card:nth-child(3n) {animation-delay:.11s}
 .student-network-page #directory>.student-card::before,
 .student-network-page #groups>.network-card::before {
