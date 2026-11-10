@@ -197,6 +197,144 @@ body{color:#d7e3f1;background:var(--navy)}
 }
 @media(prefers-reduced-motion:reduce){#aba-primary-nav,#aba-primary-nav .aba-nav-trigger>span{transition:none}}
 </style>
+<style id="member-compact-member-directory">
+/* Scoped signed-in directory layout. Other ABA sections and navigation retain their original styling. */
+#memberApp .member-member-toolbar-section{padding:22px 0 0;border-top:1px solid rgba(152,184,255,.16)}
+#memberApp .member-member-toolbar{display:flex;align-items:center;gap:18px;padding:15px 20px;border-radius:15px;flex-wrap:wrap}
+#memberApp .member-member-welcome{flex:0 0 auto;min-width:138px}
+#memberApp .member-member-welcome .eyebrow{font-size:.63rem;letter-spacing:.13em;margin:0 0 3px}
+#memberApp .member-member-welcome h2{font-size:clamp(1.02rem,1.5vw,1.22rem);line-height:1.25;margin:0;color:#fff}
+#memberApp .member-member-actions{display:flex;align-items:center;gap:8px;margin:0;flex:0 0 auto;flex-wrap:wrap}
+#memberApp .member-member-actions .btn{font-size:.7rem;letter-spacing:.025em;line-height:1.2;padding:10px 12px;min-height:37px;white-space:nowrap}
+#memberApp .member-member-search{margin:0 0 0 auto;display:flex;align-items:center;flex:1 1 270px;min-width:230px;max-width:420px;gap:8px;flex-wrap:nowrap}
+#memberApp .member-member-search input{min-width:0;width:100%;flex:1 1 auto;padding:10px 13px;font-size:.82rem;min-height:38px}
+#memberApp .member-member-search .ghost-action{font-size:.72rem;padding:6px;white-space:nowrap}
+#memberApp .member-directory-section{padding-top:28px}
+#memberApp .member-directory-heading{display:flex;justify-content:space-between;align-items:end;gap:16px;flex-wrap:wrap;margin-bottom:10px}
+#memberApp .member-directory-heading .eyebrow{margin-bottom:7px}
+#memberApp .member-directory-heading h2{margin:0}
+#memberApp #count{color:#aebfdb;font-size:.79rem;white-space:nowrap}
+#memberApp #directoryStatus:empty{display:none}
+#memberApp .member-skeleton-card{pointer-events:none;min-height:185px}
+#memberApp .member-skeleton-circle,#memberApp .member-skeleton-line{background:linear-gradient(105deg,rgba(72,111,160,.18) 8%,rgba(119,167,219,.34) 33%,rgba(72,111,160,.18) 58%);background-size:230% 100%;animation:gsnSkeletonShimmer 1.55s ease-in-out infinite;border-radius:8px}
+#memberApp .member-skeleton-circle{width:58px;height:58px;border-radius:50%;margin-bottom:18px}
+#memberApp .member-skeleton-line{height:11px;width:78%;margin-top:11px}
+#memberApp .member-skeleton-line:last-child{width:54%;height:9px}
+@keyframes gsnSkeletonShimmer{to{background-position-x:-230%}}
+@media(max-width:950px){#memberApp .member-member-toolbar{gap:12px}#memberApp .member-member-search{max-width:none;flex:1 1 100%;margin-left:0}}
+@media(max-width:600px){#memberApp .member-member-toolbar-section{padding-top:12px}#memberApp .member-member-toolbar{padding:14px;gap:12px}#memberApp .member-member-welcome{flex:1 1 auto}#memberApp .member-member-actions{justify-content:flex-start}#memberApp .member-member-actions .btn{padding:9px 11px}#memberApp .member-member-search{min-width:0}#memberApp .member-directory-section{padding-top:22px}}
+@media(prefers-reduced-motion:reduce){#memberApp .member-skeleton-circle,#memberApp .member-skeleton-line{animation:none}}
+</style>
+<style id="member-convergence-animation-only">
+/* Member Network: flowing technology and industry pathways, not a geographic student network. */
+.member-network-page{overflow-x:clip}
+.member-network-page .network-intro{position:relative;isolation:isolate}
+.member-network-page .network-intro__hero{position:relative;isolation:isolate;min-height:320px}
+.member-network-page .network-intro__copy{position:relative;z-index:2}
+.member-network-page .member-convergence-atmosphere{pointer-events:none;position:absolute;z-index:0;inset:-52px -19vw -50px;overflow:hidden;opacity:.7;mask-image:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent);-webkit-mask-image:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent)}
+.member-network-page .member-convergence-svg{display:block;width:100%;height:100%;animation:memberSceneShift 32s ease-in-out infinite alternate}
+.member-network-page .member-flow-path{fill:none;stroke:url(#memberFlowStroke);stroke-width:1.25;vector-effect:non-scaling-stroke}
+.member-network-page .member-flow-tracer{fill:none;stroke:url(#memberPulseStroke);stroke-width:2;stroke-linecap:round;stroke-dasharray:50 2500;opacity:.6;animation:memberPulseMove 25s linear infinite}
+.member-network-page .member-flow-ring{fill:none;stroke:#6aa5d6;stroke-opacity:.16;stroke-width:1;vector-effect:non-scaling-stroke}
+.member-network-page .member-flow-ring-small{stroke-opacity:.075;stroke-dasharray:2 11}
+.member-network-page .member-flow-anchor{fill:#81bde9;opacity:.45}
+@keyframes memberPulseMove{from{stroke-dashoffset:2550}to{stroke-dashoffset:-2500}}
+@keyframes memberSceneShift{from{transform:translate3d(-12px,4px,0) scale(1.025)}to{transform:translate3d(12px,-5px,0) scale(1.07)}}
+.member-network-page .network-intro.reveal{opacity:1;transform:none;transition:none}
+@media(max-width:760px){.member-network-page .network-intro__hero{min-height:260px}.member-network-page .member-convergence-atmosphere{inset:-36px -15vw -35px;opacity:.52}}
+@media(prefers-reduced-motion:reduce){.member-network-page .member-convergence-svg,.member-network-page .member-flow-tracer{animation:none!important}}
+</style>
+<style id="member-dark-controls-card-motion">
+/* Member Network only: harmonize the controls with ABA's navy visual system. */
+.member-network-page .btn.btn-secondary,
+.member-network-page .group-actions {
+  appearance:none;
+  -webkit-appearance:none;
+  background:linear-gradient(145deg,#122c50 0%,#0a1d39 100%);
+  color:#dcecff;
+  border:1px solid rgba(113,163,216,.34);
+  border-radius:12px;
+  box-shadow:inset 0 1px 0 rgba(205,230,255,.055),0 4px 14px rgba(0,0,0,.10);
+  transition:background .28s ease,border-color .28s ease,box-shadow .28s ease,transform .28s ease;
+}
+.member-network-page .btn.btn-secondary:hover,
+.member-network-page .group-actions:hover {
+  background:linear-gradient(145deg,#1b3c68 0%,#112c50 100%);
+  border-color:rgba(134,196,248,.65);
+  color:#fff;
+  box-shadow:0 8px 24px rgba(0,0,0,.2),inset 0 1px 0 rgba(205,230,255,.08);
+  transform:translateY(-2px);
+}
+.member-network-page .btn.btn-secondary:active,
+.member-network-page .group-actions:active {transform:translateY(0)}
+.member-network-page .btn.btn-secondary:focus-visible,
+.member-network-page .group-actions:focus-visible,
+.member-network-page #search:focus-visible {
+  outline:2px solid #82baf1;
+  outline-offset:3px;
+}
+.member-network-page #search {
+  appearance:none;
+  -webkit-appearance:none;
+  color:#eaf3ff;
+  background:#091c36;
+  border:1px solid rgba(113,163,216,.36);
+  border-radius:12px;
+  box-shadow:inset 0 1px 5px rgba(0,0,0,.16);
+  transition:border-color .25s ease,background .25s ease,box-shadow .25s ease;
+}
+.member-network-page #search::placeholder {color:#9db4d0;opacity:1}
+.member-network-page #search:hover {border-color:rgba(133,187,240,.55)}
+.member-network-page #search:focus {background:#0c2240;border-color:#82baf1;box-shadow:0 0 0 3px rgba(83,150,221,.15)}
+/* The opening graphic is visible immediately; its ambient network motion remains. */
+.member-network-page .network-intro.reveal {opacity:1;transform:none;transition:none}
+/* Staggered visual entry happens on already-inserted cards. No content is held back. */
+.member-network-page #directory>.student-card,
+.member-network-page #groups>.network-card {
+  position:relative;
+  overflow:hidden;
+  animation:gsnCardArrive .52s cubic-bezier(.21,.7,.26,1) both;
+  transition:border-color .35s ease,box-shadow .4s ease,transform .4s cubic-bezier(.2,.7,.2,1),background .4s ease;
+}
+/* Member cards animate only when they enter the viewport, never before they are seen. */
+.member-network-page #directory>.student-card {animation:none}
+.member-network-page #directory>.student-card.member-entry-pending {opacity:0;transform:translateY(38px)}
+.member-network-page #directory>.student-card.member-entry-visible {
+  animation:gsnVisibleMemberEntry .78s cubic-bezier(.18,.7,.22,1) both;
+  animation-delay:var(--member-card-delay,0ms);
+}
+@keyframes gsnVisibleMemberEntry {
+  from {opacity:.12;transform:translateY(38px)}
+  to {opacity:1;transform:translateY(0)}
+}
+@media(prefers-reduced-motion:reduce){
+  .member-network-page #directory>.student-card.member-entry-pending,
+  .member-network-page #directory>.student-card.member-entry-visible {animation:none;opacity:1;transform:none}
+}
+.member-network-page #groups>.network-card:nth-child(3n+2) {animation-delay:.055s}
+.member-network-page #groups>.network-card:nth-child(3n) {animation-delay:.11s}
+.member-network-page #directory>.student-card::before,
+.member-network-page #groups>.network-card::before {
+  content:"";position:absolute;inset:0;pointer-events:none;border-radius:inherit;
+  background:radial-gradient(ellipse 70% 48% at 88% 7%,rgba(76,150,235,.13),transparent 78%);
+  opacity:.28;transition:opacity .45s ease;
+}
+.member-network-page #directory>.student-card:hover,
+.member-network-page #groups>.network-card:hover {
+  transform:translateY(-5px);
+  border-color:rgba(125,188,247,.58);
+  background:rgba(14,37,71,.93);
+  box-shadow:0 20px 43px rgba(0,0,0,.24),0 0 28px rgba(46,113,190,.09);
+}
+.member-network-page #directory>.student-card:hover::before,
+.member-network-page #groups>.network-card:hover::before {opacity:1}
+@keyframes gsnCardArrive {from{opacity:.88;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+@media(prefers-reduced-motion:reduce){
+  .member-network-page #directory>.student-card,.member-network-page #groups>.network-card{animation:none;transition:none}
+  .member-network-page #directory>.student-card:hover,.member-network-page #groups>.network-card:hover{transform:none}
+  .member-network-page .btn.btn-secondary,.member-network-page .group-actions,.member-network-page #search{transition:none}
+}
+</style>
 </head>
 <body>
 <header class="site-header" id="top">
@@ -245,9 +383,9 @@ body{color:#d7e3f1;background:var(--navy)}
     </div>
   </header>
 <main id="main" class="student-network-page member-network-page">
-<section class="container network-intro reveal" aria-labelledby="network-title"><div class="network-intro__hero"><div class="network-intro__copy"><p class="eyebrow">ARKANSAS-BASED • NATIONAL AND GLOBAL REACH</p><h1 id="network-title">Connecting ABA Members Across Industries and Borders</h1><p>The ABA Member Network connects professionals, students, organizations, universities, industry leaders, and emerging-technology communities through meaningful relationships, committees, shared knowledge, collaborative initiatives, and opportunities nationally and globally.</p></div></div></section>
+<section class="container network-intro reveal" aria-labelledby="network-title"><div class="network-intro__hero"><div class="member-convergence-atmosphere" aria-hidden="true"><svg class="member-convergence-svg" viewBox="0 0 1440 500" preserveAspectRatio="xMidYMid slice"><defs><linearGradient id="memberFlowStroke" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#4a8bc9" stop-opacity="0"/><stop offset=".5" stop-color="#7aaddc" stop-opacity=".44"/><stop offset="1" stop-color="#66a9e6" stop-opacity="0"/></linearGradient><linearGradient id="memberPulseStroke"><stop stop-color="#9bcffe" stop-opacity="0"/><stop offset=".52" stop-color="#b4d9ff" stop-opacity=".8"/><stop offset="1" stop-color="#9bcffe" stop-opacity="0"/></linearGradient></defs><path class="member-flow-path" d="M -100 120 C 200 20 350 235 635 107 S 1060 -15 1540 120" opacity="0.190"/><path class="member-flow-tracer" d="M -100 120 C 200 20 350 235 635 107 S 1060 -15 1540 120" style="animation-delay:-0.0s;animation-duration:19s"/><path class="member-flow-path" d="M -100 147 C 200 53 350 256 635 134 S 1060 18 1540 147" opacity="0.265"/><path class="member-flow-path" d="M -100 174 C 200 86 350 277 635 161 S 1060 51 1540 174" opacity="0.340"/><path class="member-flow-tracer" d="M -100 174 C 200 86 350 277 635 161 S 1060 51 1540 174" style="animation-delay:-4.6s;animation-duration:21s"/><path class="member-flow-path" d="M -100 201 C 200 119 350 298 635 188 S 1060 84 1540 201" opacity="0.190"/><path class="member-flow-path" d="M -100 228 C 200 152 350 319 635 215 S 1060 117 1540 228" opacity="0.265"/><path class="member-flow-tracer" d="M -100 228 C 200 152 350 319 635 215 S 1060 117 1540 228" style="animation-delay:-9.2s;animation-duration:23s"/><path class="member-flow-path" d="M -100 255 C 200 185 350 340 635 242 S 1060 150 1540 255" opacity="0.340"/><path class="member-flow-path" d="M -100 282 C 200 218 350 361 635 269 S 1060 183 1540 282" opacity="0.190"/><path class="member-flow-tracer" d="M -100 282 C 200 218 350 361 635 269 S 1060 183 1540 282" style="animation-delay:-13.8s;animation-duration:25s"/><path class="member-flow-path" d="M -100 309 C 200 251 350 382 635 296 S 1060 216 1540 309" opacity="0.265"/><path class="member-flow-path" d="M -100 336 C 200 284 350 403 635 323 S 1060 249 1540 336" opacity="0.340"/><path class="member-flow-tracer" d="M -100 336 C 200 284 350 403 635 323 S 1060 249 1540 336" style="animation-delay:-18.4s;animation-duration:27s"/><path class="member-flow-path" d="M -100 363 C 200 317 350 424 635 350 S 1060 282 1540 363" opacity="0.190"/><path class="member-flow-path" d="M -100 390 C 200 350 350 445 635 377 S 1060 315 1540 390" opacity="0.265"/><path class="member-flow-tracer" d="M -100 390 C 200 350 350 445 635 377 S 1060 315 1540 390" style="animation-delay:-23.0s;animation-duration:29s"/><circle class="member-flow-ring" cx="160" cy="176" r="61" /><circle class="member-flow-ring member-flow-ring-small" cx="160" cy="176" r="44"/><circle class="member-flow-anchor" cx="160" cy="176" r="3"/><circle class="member-flow-ring" cx="415" cy="294" r="85" /><circle class="member-flow-ring member-flow-ring-small" cx="415" cy="294" r="61"/><circle class="member-flow-anchor" cx="415" cy="294" r="3"/><circle class="member-flow-ring" cx="735" cy="164" r="122" /><circle class="member-flow-ring member-flow-ring-small" cx="735" cy="164" r="88"/><circle class="member-flow-anchor" cx="735" cy="164" r="3"/><circle class="member-flow-ring" cx="1050" cy="302" r="91" /><circle class="member-flow-ring member-flow-ring-small" cx="1050" cy="302" r="66"/><circle class="member-flow-anchor" cx="1050" cy="302" r="3"/><circle class="member-flow-ring" cx="1310" cy="151" r="67" /><circle class="member-flow-ring member-flow-ring-small" cx="1310" cy="151" r="48"/><circle class="member-flow-anchor" cx="1310" cy="151" r="3"/></svg></div><div class="network-intro__copy"><p class="eyebrow">ARKANSAS-BASED • NATIONAL AND GLOBAL REACH</p><h1 id="network-title">Connecting ABA Members Across Industries and Borders</h1><p>The ABA Member Network connects professionals, students, organizations, universities, industry leaders, and emerging-technology communities through meaningful relationships, committees, shared knowledge, collaborative initiatives, and opportunities nationally and globally.</p></div></div></section>
 <section class="network-section" aria-labelledby="signin-title"><div class="container"><div id="authView" class="auth-panel reveal"><p class="eyebrow">MEMBER ACCESS</p><h2 id="signin-title">Member Sign-In</h2><p>Use the same email address you submitted when joining ABA. We’ll send a six-digit verification code.</p><form id="requestForm"><div class="field-row"><label for="email">Email address</label><input id="email" name="email" type="email" autocomplete="email" required></div><div class="network-actions"><button class="btn btn-primary" type="submit">Send Verification Code</button></div></form><form id="verifyForm" class="hidden"><div class="field-row"><label for="code">Six-digit verification code</label><input id="code" name="code" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" autocomplete="one-time-code" required></div><div class="network-actions"><button class="btn btn-primary" type="submit">Verify and Sign In</button><button class="ghost-action" type="button" id="resend">Resend Code</button><button class="ghost-action" type="button" id="changeEmail">Change Email</button></div></form><p id="authStatus" class="status" role="status" aria-live="polite"></p></div></div></section>
-<section id="memberApp" class="hidden"><section class="network-section" aria-labelledby="welcome-title"><div class="container"><div class="network-panel"><p class="eyebrow">MEMBER NETWORK</p><h2 id="welcome-title">Welcome, <span id="memberName"></span></h2><div class="network-actions"><button class="btn btn-primary" id="profileButton" type="button">My Profile &amp; Committees</button><button class="btn btn-secondary" id="signout" type="button">Sign Out</button></div></div></div></section><section class="network-section" aria-labelledby="directory-title"><div class="container"><p class="eyebrow">GLOBAL COMMUNITY</p><h2 id="directory-title">Member Directory</h2><div class="directory-tools"><input id="search" type="search" placeholder="Search by name, organization or university, role, or country" aria-label="Search Member Directory"><button class="ghost-action" id="clearSearch" type="button">Clear search</button><span id="count" aria-live="polite"></span></div><p id="directoryStatus" class="status" role="status"></p><div id="directory" class="cards-grid"></div><div class="network-actions"><button class="btn btn-secondary hidden" id="loadMore" type="button">Load More</button></div></div></section><section class="network-section" aria-labelledby="groups-title"><div class="container"><p class="eyebrow">COLLABORATE</p><h2 id="groups-title">ABA Committees</h2><div id="groups" class="cards-grid"></div><div id="groupDetail" class="network-panel detail-panel hidden"></div></div></section><section class="network-section" aria-labelledby="suggest-title"><div class="container"><div class="network-panel"><p class="eyebrow">SHAPE THE NETWORK</p><h2 id="suggest-title">Suggest a Committee</h2><p>Share an area of focus or collaboration that would be valuable to ABA members.</p><button class="btn btn-secondary" id="suggestButton" type="button">Suggest a Committee</button></div></div></section></section>
+<section id="memberApp" class="hidden"><section class="network-section member-member-toolbar-section" aria-labelledby="welcome-title"><div class="container"><div class="network-panel member-member-toolbar"><div class="member-member-welcome"><p class="eyebrow">MEMBER NETWORK</p><h2 id="welcome-title">Welcome, <span id="memberName"></span></h2></div><div class="network-actions member-member-actions"><button class="btn btn-primary" id="profileButton" type="button">My Profile &amp; Committees</button><button class="btn btn-secondary" id="signout" type="button">Sign Out</button></div><div class="directory-tools member-member-search"><input id="search" type="search" placeholder="Search by name, organization or university, role, or country" aria-label="Search Member Directory"><button class="ghost-action" id="clearSearch" type="button">Clear search</button></div></div></div></section><section class="network-section member-directory-section" aria-labelledby="directory-title"><div class="container"><div class="member-directory-heading"><div><p class="eyebrow">GLOBAL COMMUNITY</p><h2 id="directory-title">Member Directory</h2></div><span id="count" aria-live="polite"></span></div><p id="directoryStatus" class="status" role="status"></p><div id="directory" class="cards-grid"></div><div class="network-actions"><button class="btn btn-secondary hidden" id="loadMore" type="button">Load More</button></div></div></section><section class="network-section" aria-labelledby="groups-title"><div class="container"><p class="eyebrow">COLLABORATE</p><h2 id="groups-title">ABA Committees</h2><div id="groups" class="cards-grid"></div><div id="groupDetail" class="network-panel detail-panel hidden"></div></div></section><section class="network-section" aria-labelledby="suggest-title"><div class="container"><div class="network-panel"><p class="eyebrow">SHAPE THE NETWORK</p><h2 id="suggest-title">Suggest a Committee</h2><p>Share an area of focus or collaboration that would be valuable to ABA members.</p><button class="btn btn-secondary" id="suggestButton" type="button">Suggest a Committee</button></div></div></section></section>
 <div id="modal" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="modalTitle"><div class="network-panel modal-box"><button class="ghost-action" id="closeModal" type="button">Close</button><div id="modalContent"></div></div></div>
 </main>
 <footer class="site-footer">
@@ -416,14 +554,59 @@ const ABA_MEMBER_CACHE_KEY='aba_member_session';const cachedMember=()=>{try{retu
 const api=async(path,options={})=>{const r=await fetch(API_BASE_URL+path,{credentials:'include',...options,headers:{Accept:'application/json',...(options.headers||{})}});const d=await r.json().catch(()=>({}));if(!r.ok)throw Error(d.error||'The service is unavailable. Please try again.');return d};
 const text=(el,v)=>el.textContent=v||'';const avatar=(p)=>{const a=document.createElement(p?.profilePhotoUrl?'img':'div');a.className='avatar';if(p?.profilePhotoUrl){a.src=p.profilePhotoUrl;a.alt=`${p.firstName} ${p.lastName}`}else text(a,`${p?.firstName?.[0]||''}${p?.lastName?.[0]||''}`);return a};
 function status(id,msg,bad=false){const e=$(id);text(e,msg);e.classList.toggle('error',bad)}function card(p){const a=document.createElement('article');a.className='network-card student-card';a.append(avatar(p));const h=document.createElement('h3');text(h,`${p.firstName} ${p.lastName}`);a.append(h);for(const v of [p.organization||p.university,p.role,p.country])if(v){const x=document.createElement('p');text(x,v);a.append(x)}if(p.linkedin){const l=document.createElement('a');l.className='network-link';l.href=p.linkedin;l.target='_blank';l.rel='noopener noreferrer';text(l,'LinkedIn Profile ↗');a.append(l)}return a}
-async function directory(reset=false){if(reset)page=1;status('#directoryStatus','Loading directory…');try{const d=await api(`/api/member-network/members?search=${encodeURIComponent($('#search').value)}&page=${page}`);const box=$('#directory');if(reset)box.replaceChildren();d.members.forEach(p=>box.append(card(p)));text($('#count'),`${d.total} ${d.total===1?'member':'members'}`);$('#loadMore').classList.toggle('hidden',page*18>=d.total);status('#directoryStatus',d.total?'':'No directory-visible members match your search.')}catch(e){status('#directoryStatus',e.message,true)}}
+let directoryRequestId=0;
+function showDirectoryPlaceholders(){const box=$('#directory');if(box.children.length)return;const fragment=document.createDocumentFragment();for(let i=0;i<6;i++){const a=document.createElement('article');a.className='network-card member-skeleton-card';a.setAttribute('aria-hidden','true');const circle=document.createElement('div');circle.className='member-skeleton-circle';a.append(circle);for(let j=0;j<3;j++){const line=document.createElement('div');line.className='member-skeleton-line';a.append(line)}fragment.append(a)}box.append(fragment)}
+async function directory(reset=false,prepared=null){if(reset)page=1;const requestId=++directoryRequestId;if(reset)$('#directory').replaceChildren();showDirectoryPlaceholders();status('#directoryStatus','Loading directory…');try{const d=prepared?await prepared:await api(`/api/member-network/members?search=${encodeURIComponent($('#search').value)}&page=${page}`);if(requestId!==directoryRequestId)return;if(d.error)throw d.error;const data=d.data||d;const box=$('#directory');if(reset||box.querySelector('.member-skeleton-card'))box.replaceChildren();data.members.forEach(p=>box.append(card(p)));text($('#count'),`${data.total} ${data.total===1?'member':'members'}`);$('#loadMore').classList.toggle('hidden',page*18>=data.total);status('#directoryStatus',data.total?'':'No directory-visible members match your search.')}catch(e){if(requestId!==directoryRequestId)return;$('#directory').querySelectorAll('.member-skeleton-card').forEach(n=>n.remove());status('#directoryStatus',e.message,true)}}
+
 const committeeName=name=>/committee$/i.test(name||'')?name:`${name} Committee`;const isSupplyChain=g=>/supply[ -]chain/i.test(g.name||'')||/supply-chain/i.test(g.slug||'');
-async function groups(){const d=await api('/api/student-network/working-groups');const box=$('#groups');box.replaceChildren();d.groups.forEach(g=>{const a=document.createElement('article');a.className='network-card';const h=document.createElement('h3');text(h,isSupplyChain(g)?'Supply Chain & Logistics Committee':committeeName(g.name));const p=document.createElement('p');text(p,g.shortDescription);const c=document.createElement('p');text(c,`${g.memberCount} ${g.memberCount===1?'member':'members'}`);const b=document.createElement('button');b.className='btn btn-secondary group-actions';b.type='button';text(b,'View Committee');b.onclick=()=>group(g.id);a.append(h,p,c,b);box.append(a)})}
+async function groups(prepared=null){const d=prepared?await prepared:await api('/api/student-network/working-groups');if(d.error)throw d.error;const data=d.data||d;const box=$('#groups');box.replaceChildren();data.groups.forEach(g=>{const a=document.createElement('article');a.className='network-card';const h=document.createElement('h3');text(h,isSupplyChain(g)?'Supply Chain & Logistics Committee':committeeName(g.name));const p=document.createElement('p');text(p,g.shortDescription);const c=document.createElement('p');text(c,`${g.memberCount} ${g.memberCount===1?'member':'members'}`);const b=document.createElement('button');b.className='btn btn-secondary group-actions';b.type='button';text(b,'View Committee');b.onclick=()=>group(g.id);a.append(h,p,c,b);box.append(a)})}
 async function group(id){const d=await api('/api/student-network/working-groups/'+id),g=d.group,box=$('#groupDetail');box.replaceChildren();box.classList.remove('hidden');const h=document.createElement('h2');text(h,isSupplyChain(g)?'Supply Chain & Logistics Committee':committeeName(g.name));const p=document.createElement('p');text(p,g.fullDescription);const c=document.createElement('p');text(c,`${g.memberCount} ${g.memberCount===1?'member':'members'}`);box.append(h,p,c);if(isSupplyChain(g)){const chair=document.createElement('p');const strong=document.createElement('strong');text(strong,'Committee Chair: ');chair.append(strong,document.createTextNode('Justin Green'));box.append(chair)}if(g.members.length){const memberGrid=document.createElement('div');memberGrid.className='cards-grid';memberGrid.style.marginTop='24px';g.members.forEach(m=>memberGrid.append(card(m)));box.append(memberGrid)}else{const empty=document.createElement('p');text(empty,'No directory-visible members have joined this committee yet.');box.append(empty)}if(id==='33333333-3333-4333-8333-333333333333'){const linkedin=document.createElement('a');linkedin.className='btn btn-secondary group-actions';linkedin.href='https://www.linkedin.com/showcase/abaglobalstudentnetworkdigitalfinancecommittee';linkedin.target='_blank';linkedin.rel='noopener noreferrer';text(linkedin,'Follow the Committee on LinkedIn ↗');box.append(linkedin)}if(isSupplyChain(g)){const supplyChainLinkedIn=document.createElement('a');supplyChainLinkedIn.className='btn btn-secondary group-actions';supplyChainLinkedIn.href='https://www.linkedin.com/showcase/arkansas-blockchain-association-supply-chain-logistics-committee';supplyChainLinkedIn.target='_blank';supplyChainLinkedIn.rel='noopener noreferrer';text(supplyChainLinkedIn,'Follow the Committee on LinkedIn ↗');box.append(supplyChainLinkedIn)}const join=document.createElement('button');join.className='btn btn-primary group-actions';text(join,'Join Committee');join.onclick=async()=>{await api('/api/student-network/working-groups/'+id+'/join',{method:'POST'});await group(id);await groups()};const leave=document.createElement('button');leave.className='ghost-action';text(leave,'Leave Committee');leave.onclick=async()=>{await api('/api/student-network/working-groups/'+id+'/leave',{method:'DELETE'});box.classList.add('hidden');await groups()};const close=document.createElement('button');close.className='ghost-action';text(close,'Return to Committees');close.onclick=()=>box.classList.add('hidden');box.append(join,leave,close);box.scrollIntoView({behavior:'smooth',block:'start'})}
 function modal(html){$('#modalContent').replaceChildren();$('#modalContent').append(html);$('#modal').classList.remove('hidden')}function profileForm(){const f=document.createElement('form');const title=document.createElement('h2');title.id='modalTitle';text(title,'My Profile & Committees');f.append(title);[['firstName','First name'],['lastName','Last name'],['organization','Organization / University'],['country','Country'],['linkedin','LinkedIn URL']].forEach(([k,l])=>{const w=document.createElement('div');w.className='field-row';const lab=document.createElement('label');lab.htmlFor='p_'+k;text(lab,l);const i=document.createElement('input');i.id='p_'+k;i.name=k;i.value=k==='organization'?(profile.organization||profile.university||''):(profile[k]||'');w.append(lab,i);f.append(w)});const w=document.createElement('div');w.className='field-row';const lab=document.createElement('label');lab.htmlFor='p_photo';text(lab,'Profile photo (JPG, PNG, or WebP; 5 MB maximum)');const pic=document.createElement('input');pic.id='p_photo';pic.name='profilePhoto';pic.type='file';pic.accept='image/jpeg,image/png,image/webp';w.append(lab,pic);f.append(w);const chk=document.createElement('input');chk.type='checkbox';chk.name='publicDirectoryConsent';chk.checked=profile.publicDirectoryConsent;const cl=document.createElement('label');cl.append(chk,document.createTextNode(' Show my profile in the Member Network directory'));f.append(cl);const b=document.createElement('button');b.className='btn btn-primary';b.type='submit';text(b,'Save Changes');f.append(b);f.onsubmit=async e=>{e.preventDefault();const d=new FormData(f);d.set('publicDirectoryConsent',chk.checked?'true':'false');try{const x=await api('/api/student-network/me',{method:'PATCH',body:d});profile=x.profile;$('#modal').classList.add('hidden');await directory(true)}catch(err){alert(err.message)}};modal(f)}
 function suggestion(){const f=document.createElement('form');const t=document.createElement('h2');t.id='modalTitle';text(t,'Suggest a Committee');f.append(t);[['proposedName','Proposed committee name'],['areaOfFocus','Area of focus'],['purpose','Brief purpose'],['valueExplanation','Why the committee would be valuable'],['comments','Additional comments (optional)']].forEach(([k,l])=>{const w=document.createElement('div');w.className='field-row';const a=document.createElement('label');a.htmlFor='s_'+k;text(a,l);const i=document.createElement(k==='comments'?'textarea':'input');i.id='s_'+k;i.name=k;if(k!=='comments')i.required=true;w.append(a,i);f.append(w)});const b=document.createElement('button');b.className='btn btn-primary';b.type='submit';text(b,'Submit Suggestion');const result=document.createElement('p');result.className='status';result.setAttribute('role','status');result.setAttribute('aria-live','polite');f.append(b,result);f.onsubmit=async e=>{e.preventDefault();b.disabled=true;text(result,'Submitting…');result.classList.remove('error');try{await api('/api/student-network/working-group-suggestions',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(Object.fromEntries(new FormData(f)))});f.reset();text(result,'Your committee suggestion has been submitted.')}catch(err){text(result,err.message);result.classList.add('error')}finally{b.disabled=false}};modal(f)}
-async function signed(){const d=await api('/api/student-network/me');profile=d.profile;rememberMember(profile);text($('#memberName'),profile.firstName);$('#authView').closest('.network-section').classList.add('hidden');$('#memberApp').classList.remove('hidden');await Promise.all([directory(true),groups()])}
-$('#requestForm').onsubmit=async e=>{e.preventDefault();const button=$('#requestForm button[type="submit"]');email=$('#email').value;button.disabled=true;button.textContent='Sending Verification Code...';status('#authStatus','Please wait while we send your verification code.');try{await api('/api/student-auth/request-code',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email})});$('#requestForm').classList.add('hidden');$('#verifyForm').classList.remove('hidden');status('#authStatus','If this address is eligible, a verification code has been sent.')}catch(x){status('#authStatus',x.message,true)}finally{button.disabled=false;button.textContent='Send Verification Code'}};$('#verifyForm').onsubmit=async e=>{e.preventDefault();try{await api('/api/student-auth/verify-code',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,code:$('#code').value})});await signed()}catch(x){status('#authStatus',x.message,true)}};$('#resend').onclick=()=>$('#requestForm').dispatchEvent(new Event('submit',{cancelable:true}));$('#changeEmail').onclick=()=>{$('#verifyForm').classList.add('hidden');$('#requestForm').classList.remove('hidden');status('#authStatus','')};$('#clearSearch').onclick=()=>{$('#search').value='';directory(true)};$('#search').oninput=()=>directory(true);$('#loadMore').onclick=()=>{page++;directory()};$('#profileButton').onclick=profileForm;$('#suggestButton').onclick=suggestion;$('#closeModal').onclick=()=>$('#modal').classList.add('hidden');$('#signout').onclick=async()=>{try{await api('/api/student-auth/logout',{method:'POST'})}finally{forgetMember();location.reload()}};const authSection=$('#authView').closest('.network-section');const restore=cachedMember();$('#requestForm').classList.add('hidden');if(restore){text($('#memberName'),restore.firstName);authSection.classList.add('hidden');$('#memberApp').classList.remove('hidden');signed().catch(()=>{forgetMember();$('#memberApp').classList.add('hidden');authSection.classList.remove('hidden');$('#requestForm').classList.remove('hidden');status('#authStatus','')})}else{status('#authStatus','Checking your membership...');signed().catch(()=>{$('#requestForm').classList.remove('hidden');status('#authStatus','')})}
+async function signed(parallelRestore=false){
+// Verify the existing server session before rendering member data; protected requests can start in parallel.
+const mePromise=api('/api/student-network/me');
+const preparedDirectory=parallelRestore?api('/api/member-network/members?search=&page=1').then(data=>({data}),error=>({error})):null;
+const preparedGroups=parallelRestore?api('/api/student-network/working-groups').then(data=>({data}),error=>({error})):null;
+const d=await mePromise;profile=d.profile;rememberMember(profile);text($('#memberName'),profile.firstName);
+$('#authView').closest('.network-section').classList.add('hidden');$('#memberApp').classList.remove('hidden');
+void directory(true,preparedDirectory);void groups(preparedGroups).catch(()=>{});
+}
+$('#requestForm').onsubmit=async e=>{e.preventDefault();const button=$('#requestForm button[type="submit"]');email=$('#email').value;button.disabled=true;button.textContent='Sending Verification Code...';status('#authStatus','Please wait while we send your verification code.');try{await api('/api/student-auth/request-code',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email})});$('#requestForm').classList.add('hidden');$('#verifyForm').classList.remove('hidden');status('#authStatus','If this address is eligible, a verification code has been sent.')}catch(x){status('#authStatus',x.message,true)}finally{button.disabled=false;button.textContent='Send Verification Code'}};$('#verifyForm').onsubmit=async e=>{e.preventDefault();try{await api('/api/student-auth/verify-code',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,code:$('#code').value})});await signed()}catch(x){status('#authStatus',x.message,true)}};$('#resend').onclick=()=>$('#requestForm').dispatchEvent(new Event('submit',{cancelable:true}));$('#changeEmail').onclick=()=>{$('#verifyForm').classList.add('hidden');$('#requestForm').classList.remove('hidden');status('#authStatus','')};$('#clearSearch').onclick=()=>{$('#search').value='';directory(true)};let searchDebounce;$('#search').oninput=()=>{clearTimeout(searchDebounce);searchDebounce=setTimeout(()=>directory(true),220)};$('#loadMore').onclick=()=>{page++;directory()};$('#profileButton').onclick=profileForm;$('#suggestButton').onclick=suggestion;$('#closeModal').onclick=()=>$('#modal').classList.add('hidden');$('#signout').onclick=async()=>{try{await api('/api/student-auth/logout',{method:'POST'})}finally{forgetMember();location.reload()}};const authSection=$('#authView').closest('.network-section');const restore=cachedMember();$('#requestForm').classList.add('hidden');if(restore){text($('#memberName'),restore.firstName);authSection.classList.add('hidden');$('#memberApp').classList.remove('hidden');showDirectoryPlaceholders();status('#directoryStatus','Loading directory…');signed(true).catch(()=>{forgetMember();$('#memberApp').classList.add('hidden');authSection.classList.remove('hidden');$('#requestForm').classList.remove('hidden');status('#authStatus','')})}else{status('#authStatus','Checking your membership...');signed().catch(()=>{$('#requestForm').classList.remove('hidden');status('#authStatus','')})}
+</script>
+<script id="member-card-viewport-entrance">
+/* The cards are populated after authentication. Observe additions and animate on-screen entry. */
+(()=>{
+  const directory=document.getElementById('directory');
+  if(!directory)return;
+  const reduced=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if(reduced||!('IntersectionObserver' in window))return;
+  let entered=0;
+  const cardObserver=new IntersectionObserver(entries=>{
+    const showing=entries.filter(entry=>entry.isIntersecting).sort((a,b)=>{
+      const ar=a.target.getBoundingClientRect(),br=b.target.getBoundingClientRect();
+      return ar.top-br.top||ar.left-br.left;
+    });
+    if(showing.length){
+      showing.forEach((entry,i)=>{
+        const card=entry.target;
+        card.style.setProperty('--member-card-delay',`${Math.min(i,5)*120}ms`);
+        card.classList.remove('member-entry-pending');
+        card.classList.add('member-entry-visible');
+        cardObserver.unobserve(card);
+      });
+    }
+  },{threshold:.12,rootMargin:'0px 0px -24px 0px'});
+  function watchCards(){
+    for(const card of directory.querySelectorAll(':scope > .student-card:not(.member-entry-pending):not(.member-entry-visible)')){
+      card.classList.add('member-entry-pending');
+      cardObserver.observe(card);
+    }
+  }
+  const changes=new MutationObserver(watchCards);
+  changes.observe(directory,{childList:true});
+  watchCards();
+})();
 </script>
 </body>
 </html>
