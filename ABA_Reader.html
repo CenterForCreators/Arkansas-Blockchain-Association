@@ -695,6 +695,94 @@ function setupPager(){
   setTimeout(updatePageInfo,200);
 }
 
+
+/* ABA Ideas & Research reader extension: separate from existing CFC/ABA article tracking and rewards. */
+async function loadAbaIdeasResearch(id,statusEl,content){
+  const BASE='https://aba-tik-ideas-research-backend.onrender.com/api/ideas-research';
+  const SESSION='aba_tik_ideas_wallet_session';
+  const heading=document.getElementById('nftHeader');
+  if(!/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i.test(id)){
+    statusEl.textContent='Invalid Ideas & Research reference';content.replaceChildren();return;
+  }
+  content.replaceChildren();
+  const resultBox=document.createElement('div');resultBox.style.cssText='white-space:pre-wrap;line-height:1.8;color:#e5e7eb';
+  content.append(resultBox);
+  const sess=()=>sessionStorage.getItem(SESSION)||'';
+  async function request(path,{method='GET',body}={}){
+    const response=await fetch(BASE+path,{method,headers:{...(sess()?{'Authorization':'Bearer '+sess()}:{}),...(body?{'Content-Type':'application/json'}:{})},...(body?{body:JSON.stringify(body)}:{})});
+    const data=await response.json().catch(()=>({}));if(!response.ok)throw Error(data.error||'Unable to load content');return data;
+  }
+  function makeButton(label,callback){const btn=document.createElement('button');btn.className='btn-wallet';btn.type='button';btn.textContent=label;btn.style.cssText='margin:8px;cursor:pointer';btn.addEventListener('click',callback);return btn;}
+  function info(msg){statusEl.textContent=msg;}
+  async function signIn(){
+    try{
+      const r=await request('/auth/start',{method:'POST',body:{}});
+      info('Confirm your wallet in Xaman.');resultBox.replaceChildren();
+      const a=document.createElement('a');a.href=r.xaman_url;a.target='_blank';a.rel='noopener noreferrer';a.textContent='Open Xaman to Verify Wallet';a.style.cssText='color:#87CEEB;display:inline-block;padding:10px';resultBox.append(a);
+      resultBox.append(makeButton('Continue After Signing',async()=>{
+        try{const verified=await request('/auth/complete',{method:'POST',body:{challenge_id:r.challenge_id}});sessionStorage.setItem(SESSION,verified.token);await showIdea();}
+        catch(e){info(e.message);}
+      }));
+    }catch(e){info(e.message);}
+  }
+  async function b64Bytes(value){
+    const raw=atob(value);const bytes=new Uint8Array(raw.length);for(let i=0;i<raw.length;i++)bytes[i]=raw.charCodeAt(i);return bytes;
+  }
+  async function extractDocx(buffer){
+    if(!window.mammoth){
+      await new Promise((resolve,reject)=>{const script=document.createElement('script');script.src='https://cdn.jsdelivr.net/npm/mammoth@1.9.1/mammoth.browser.min.js';script.onload=resolve;script.onerror=()=>reject(Error('Word document viewer unavailable'));document.head.append(script);});
+    }
+    const result=await window.mammoth.extractRawText({arrayBuffer:buffer});return result.value;
+  }
+  async function showIdea(){
+    if(!sess())return signIn();
+    try{
+      info('Opening Ideas & Research...');const record=await request('/reader/'+encodeURIComponent(id));
+      document.getElementById('nftName').textContent=record.title||'Ideas & Research';
+      document.getElementById('nftCat').textContent='Ideas & Research';
+      document.getElementById('nftDesc').textContent=record.creator_name||'';
+      heading.style.display='flex';
+      if(record.cover?.base64&&record.cover?.mime){document.getElementById('nftThumb').src='data:'+record.cover.mime+';base64,'+record.cover.base64;}
+      else document.getElementById('nftThumb').style.display='none';
+      const latest=record.versions?.[record.versions.length-1];if(!latest)throw Error('Content unavailable');
+      const bytes=await b64Bytes(latest.content_base64);const mime=latest.content_mime;
+      let readable='';
+      if(mime==='text/plain')readable=new TextDecoder().decode(bytes);
+      else if(mime==='application/vnd.tik.idea-combined+json'){
+        const envelope=JSON.parse(new TextDecoder().decode(bytes));
+        readable=envelope.text||'';
+        if(envelope.file_base64){
+          readable+='\n\nAttached Word document: '+(envelope.filename||'')+'\n\n';
+          const doc=await b64Bytes(envelope.file_base64);
+          readable+=await extractDocx(doc.buffer);
+        }
+      }else if(mime==='application/vnd.openxmlformats-officedocument.wordprocessingml.document'){
+        readable=await extractDocx(bytes.buffer);
+      }else throw Error('This document format cannot be displayed');
+      resultBox.textContent=readable;
+      info('Content loaded');setupPager();
+      const actionBar=document.createElement('div');actionBar.style.cssText='display:flex;flex-wrap:wrap;gap:8px;padding:12px';
+      const bonus=await request('/records/'+encodeURIComponent(id)+'/reward').catch(()=>null);
+      if(record.status==='minted'){
+        if(bonus?.status==='paid'){
+          const done=document.createElement('span');done.style.color='#34D399';done.textContent='100 CFC bonus claimed';actionBar.append(done);
+        }else if(bonus?.status==='unclaimed'){
+          const b=makeButton('Claim 100 CFC',async()=>{
+            b.disabled=true;try{const result=await request('/records/'+encodeURIComponent(id)+'/reward/claim',{method:'POST'});info(result.status==='paid'?'100 CFC bonus confirmed.':'Bonus submitted. Check again for XRPL confirmation.');b.textContent='Check CFC Bonus';b.disabled=false;}
+            catch(e){info(e.message);b.disabled=false;}
+          });actionBar.append(b);
+        }else if(bonus){actionBar.append(makeButton('Check CFC Bonus',async()=>{
+          try{const result=await request('/records/'+encodeURIComponent(id)+'/reward/verify',{method:'POST'});info(result.status==='paid'?'100 CFC bonus confirmed.':'Reward status: '+result.status);}catch(e){info(e.message);}
+        }));}
+      }
+      document.getElementById('statusBar').after(actionBar);
+      // Existing AI guide works with the visible content but original publication reward tracking is not invoked.
+      document.getElementById('aiButton').style.display='block';
+    }catch(e){info(e.message);resultBox.replaceChildren();if(/session|sign-in|unauthoriz|invalid/i.test(e.message)){sessionStorage.removeItem(SESSION);await signIn();}}
+  }
+  await showIdea();
+}
+
 // ===== MAIN INIT =====
 (async function init(){
   const statusEl = document.getElementById("status");
@@ -703,6 +791,11 @@ function setupPager(){
   if (wallet) {
   setTimeout(updateWalletUI, 0);
 }
+
+  if(qp('ideas_id')) {
+    await loadAbaIdeasResearch(qp('ideas_id'),statusEl,content);
+    return; // Separate, authenticated Ideas & Research path; legacy article reader remains untouched.
+  }
 
   if(!submissionId&&!metadataCid){
     statusEl.textContent = "No content specified.";
