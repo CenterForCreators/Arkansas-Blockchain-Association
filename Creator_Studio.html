@@ -685,7 +685,7 @@ textarea.tik-ideas-input{min-height:148px;resize:vertical;line-height:1.6}
         <div>
           <div class="tik-ideas-field"><label for="tik-ideas-title">Title of your idea or research</label><input id="tik-ideas-title" class="tik-ideas-input" type="text" maxlength="140" placeholder="Enter a clear title"></div>
           <div class="tik-ideas-field"><label for="tik-ideas-author">Creator name</label><input id="tik-ideas-author" class="tik-ideas-input" type="text" maxlength="100" placeholder="Name displayed on the cover"></div>
-          <div class="tik-ideas-field" id="tik-ideas-cover-upload-field" hidden><label for="tik-ideas-cover-upload">Choose your cover image</label><input id="tik-ideas-cover-upload" class="tik-ideas-input" type="file" accept="image/png,image/jpeg,image/gif,.jpg,.jpeg,.png,.gif"><p class="tik-ideas-help">400 × 400 pixels. JPG, PNG, or GIF. Maximum 2 MB.</p></div>
+
           <p class="tik-ideas-help" style="margin:0 0 12px">Write your work directly, attach a Word document, or use both.</p><div class="tik-ideas-field"><label for="tik-ideas-body-text">Your idea or research</label><textarea id="tik-ideas-body-text" class="tik-ideas-input" maxlength="100000" placeholder="Write your original work here..."></textarea></div>
           <div class="tik-ideas-field"><label for="tik-ideas-document">Or attach a document</label><input id="tik-ideas-document" class="tik-ideas-input" type="file" accept=".docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document"><p class="tik-ideas-help">Microsoft Word (.docx) only. Optional.</p></div>
           <fieldset class="tik-ideas-field" style="border:0;padding:0"><legend class="tik-ideas-legend">Visibility preference</legend><div class="tik-ideas-visibility"><label class="tik-ideas-radio"><input type="radio" name="tik-ideas-visibility" value="private" checked><span><strong>Private</strong><small>Intended only for your authorized library access.</small></span></label><label class="tik-ideas-radio"><input type="radio" name="tik-ideas-visibility" value="public"><span><strong>Public</strong><small>Intended for optional sharing, never marketplace listing.</small></span></label></div></fieldset>
@@ -696,6 +696,7 @@ textarea.tik-ideas-input{min-height:148px;resize:vertical;line-height:1.6}
         <aside aria-label="Cover designer preview">
           <div class="tik-cover-mode-row" role="group" aria-label="Choose cover format"><button id="tik-cover-mode-text" class="tik-cover-mode-btn" type="button" aria-pressed="true">Text Cover</button><button id="tik-cover-mode-image" class="tik-cover-mode-btn" type="button" aria-pressed="false">Image Cover</button></div>
           <p id="tik-cover-mode-hint" class="tik-cover-mode-hint">Your title and name will appear centered on a designed cover.</p>
+          <div class="tik-ideas-field" id="tik-ideas-cover-upload-field" hidden><label for="tik-ideas-cover-upload">Upload a cover photo</label><input id="tik-ideas-cover-upload" class="tik-ideas-input" type="file" accept="image/jpeg,image/png,image/gif,.jpg,.jpeg,.png,.gif"><p class="tik-ideas-help">JPG, PNG, or GIF. Your photo will be fitted to a 400 × 400 cover under 2 MB.</p></div>
           <div id="tik-ideas-cover" class="tik-ideas-cover" data-theme="blue" data-cover-mode="text">
             <img id="tik-ideas-cover-image" alt="Selected cover background" hidden>
             <div class="tik-cover-tag">TIK / Ideas &amp; Research</div>
@@ -2646,6 +2647,7 @@ else{abaMemberStatus('Checking your membership...');abaConfirmMember().catch(()=
   const imageField=$('tik-ideas-cover-upload-field');
   const textMode=$('tik-cover-mode-text'),imageMode=$('tik-cover-mode-image');
   let imageUrl=null;
+  let normalizedCoverFile=null;
   function setCoverMode(mode){
     const isImage=mode==='image';
     cover.dataset.coverMode=mode;
@@ -2653,7 +2655,7 @@ else{abaMemberStatus('Checking your membership...');abaConfirmMember().catch(()=
     imageMode.setAttribute('aria-pressed',String(isImage));
     imageField.hidden=!isImage;
     document.querySelector('.tik-ideas-theme-row').hidden=isImage;
-    $('tik-cover-mode-hint').textContent=isImage?'Upload your 400 × 400 image (JPG, PNG, or GIF; maximum 2 MB).':'Your title appears centered on the cover.';
+    $('tik-cover-mode-hint').textContent=isImage?'Choose a photo from your device. It will be fitted to the cover automatically.':'Your title appears centered on the cover.';
   }
   textMode.addEventListener('click',()=>setCoverMode('text'));
   imageMode.addEventListener('click',()=>setCoverMode('image'));
@@ -2663,20 +2665,46 @@ else{abaMemberStatus('Checking your membership...');abaConfirmMember().catch(()=
     cover.dataset.theme=b.dataset.theme;
     document.querySelectorAll('#tik-ideas-workspace .tik-theme-btn').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));
   }));
-  function clearImage(){if(imageUrl)URL.revokeObjectURL(imageUrl);imageUrl=null;coverImage.hidden=true;coverImage.removeAttribute('src');}
+  function clearImage(){
+    if(imageUrl)URL.revokeObjectURL(imageUrl);
+    imageUrl=null;normalizedCoverFile=null;
+    coverImage.hidden=true;coverImage.removeAttribute('src');
+  }
   imageInput.addEventListener('change',async()=>{
-    clearImage();const file=imageInput.files?.[0];if(!file)return;
-    if(!['image/jpeg','image/png','image/gif'].includes(file.type)||file.size>=2*1024*1024){
-      imageInput.value='';feedback.textContent='Choose a JPG, PNG, or GIF image smaller than 2 MB.';return;
+    const file=imageInput.files?.[0];if(!file)return;
+    feedback.textContent='';
+    if(!['image/jpeg','image/png','image/gif'].includes(file.type)&&!/\.(jpe?g|png|gif)$/i.test(file.name)){
+      imageInput.value='';feedback.textContent='Please select a JPG, PNG, or GIF photo.';return;
     }
-    const objectUrl=URL.createObjectURL(file);
+    // Standardize uploaded phone pictures to the same 400 x 400, <2 MB
+    // cover format used by the existing Creator Studio.
+    const originalUrl=URL.createObjectURL(file);
     try{
-      const img=new Image();img.src=objectUrl;await img.decode();
-      if(img.naturalWidth!==400||img.naturalHeight!==400){
-        URL.revokeObjectURL(objectUrl);imageInput.value='';feedback.textContent='Cover images must be exactly 400 × 400 pixels.';return;
-      }
-      imageUrl=objectUrl;coverImage.src=imageUrl;coverImage.hidden=false;feedback.textContent='';
-    }catch{URL.revokeObjectURL(objectUrl);imageInput.value='';feedback.textContent='Unable to open the image.';}
+      const source=new Image();
+      await new Promise((resolve,reject)=>{
+        source.onload=resolve;source.onerror=reject;source.src=originalUrl;
+      });
+      const width=source.naturalWidth,height=source.naturalHeight;
+      if(!width||!height)throw new Error('Invalid photo dimensions');
+      const canvas=document.createElement('canvas');canvas.width=400;canvas.height=400;
+      const ctx=canvas.getContext('2d');if(!ctx)throw new Error('Canvas unavailable');
+      // Center-crop rectangular photographs to a square.
+      const square=Math.min(width,height),x=(width-square)/2,y=(height-square)/2;
+      ctx.drawImage(source,x,y,square,square,0,0,400,400);
+      const result=await new Promise(resolve=>canvas.toBlob(resolve,'image/jpeg',0.88));
+      if(!result||result.size>=2*1024*1024)throw new Error('Image processing failed');
+      const prepared=new File([result],'tik-cover.jpg',{type:'image/jpeg'});
+      // Keep the prepared file available for the future mint integration.
+      // Some mobile browsers do not permit updating input.files; preserve
+      // normalizedCoverFile either way.
+      try{const transfer=new DataTransfer();transfer.items.add(prepared);imageInput.files=transfer.files;}catch{}
+      clearImage();normalizedCoverFile=prepared;
+      imageUrl=URL.createObjectURL(prepared);
+      coverImage.src=imageUrl;coverImage.hidden=false;
+      feedback.textContent='Photo added to your cover.';
+    }catch{
+      feedback.textContent='This photo could not be opened. Please choose a JPG, PNG, or GIF image.';
+    }finally{URL.revokeObjectURL(originalUrl);}
   });
   documentInput.addEventListener('change',()=>{
     const file=documentInput.files?.[0];if(!file)return;
