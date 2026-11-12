@@ -728,10 +728,6 @@ textarea.tik-ideas-input{min-height:148px;resize:vertical;line-height:1.6}
         </div>
         <p id="aba-ideas-library-notice" role="status" aria-live="polite" style="font-size:.82rem;color:#a5c1d3;margin:12px 0"></p>
         <div id="aba-ideas-library-items" style="display:grid;gap:12px"></div>
-        <div id="aba-ideas-wallet-verify" hidden style="margin-top:14px;display:flex;gap:12px;flex-wrap:wrap;align-items:center">
-          <a id="aba-ideas-wallet-link" class="tik-ideas-action" target="_blank" rel="noopener noreferrer" style="text-decoration:none">Verify Wallet with Xaman</a>
-          <button type="button" class="tik-ideas-action secondary" id="aba-ideas-wallet-complete">Continue After Signing</button>
-        </div>
       </div>
     </div>
   </div>
@@ -1260,6 +1256,8 @@ async function navConnectWallet(){
     localStorage.setItem('xrpl_account', addr);
 
     creatorWallet = addr;
+    sessionStorage.removeItem('aba_tik_ideas_wallet_session');
+    window.dispatchEvent(new CustomEvent('aba-creator-wallet-connected'));
 
     const creatorInput = document.getElementById('creator-wallet');
     if(creatorInput){
@@ -2631,6 +2629,39 @@ else{abaMemberStatus('Checking your membership...');abaConfirmMember().catch(()=
 })();
 </script>
 
+<script id="aba-ideas-existing-wallet-session">
+/* Ideas & Research only: exchange the existing Xaman OAuth identity for a scoped Ideas session.
+   The existing ABA membership sign-in and Publish Knowledge wallet flow are untouched. */
+window.abaIdeasGetSession = async function(){
+  const key='aba_tik_ideas_wallet_session';
+  const previous=sessionStorage.getItem(key);
+  // An ABA member must have passed the normal site session validation first.
+  await abaMemberApi('/api/student-network/me');
+  const xumm=getXumm();
+  // Obtain the OAuth credential already issued by the existing Creator Studio Xaman SDK.
+  // A saved r-address alone is not evidence of wallet ownership.
+  let bearer=await xumm.environment.bearer;
+  let signedAccount=await xumm.user.account;
+  if(!bearer||!signedAccount){
+    throw new Error('Connect your wallet using the existing Creator Studio Connect Wallet button.');
+  }
+  if(previous && sessionStorage.getItem('aba_tik_ideas_session_wallet')===signedAccount && (!creatorWallet || signedAccount===creatorWallet))return previous;
+  sessionStorage.removeItem(key);
+  if(creatorWallet && signedAccount!==creatorWallet){
+    throw new Error('Your connected Xaman wallet differs from the selected Creator Studio wallet. Reconnect the correct wallet.');
+  }
+  const r=await fetch('https://aba-tik-ideas-research-backend.onrender.com/api/ideas-research/auth/existing-wallet',{
+    method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({xaman_bearer:bearer})
+  });
+  const data=await r.json().catch(()=>({}));
+  if(!r.ok||!data.token)throw new Error(data.error||'Could not use your existing Xaman connection.');
+  if(data.wallet!==signedAccount)throw new Error('Connected wallet verification failed.');
+  sessionStorage.setItem(key,data.token);
+  sessionStorage.setItem('aba_tik_ideas_session_wallet',signedAccount);
+  window.dispatchEvent(new CustomEvent('aba-ideas-session-ready'));
+  return data.token;
+};
+</script>
 <script id="tik-ideas-stage1-script">
 /* Independent Ideas & Research editor. No changes to existing publishing wizard. */
 (() => {
@@ -2755,7 +2786,7 @@ else{abaMemberStatus('Checking your membership...');abaConfirmMember().catch(()=
   $('tik-ideas-fingerprint-button').addEventListener('click',showReview);
   $('tik-review-back').addEventListener('click',showEditor);
   // Dedicated Ideas & Research tokenization; no calls to the Publish Knowledge endpoints.
-  let tikMintPhase='ready',tikChallenge=null,tikSession=null,tikRecordId=null;
+  let tikMintPhase='ready',tikSession=null,tikRecordId=null;
   const tikStartButton=$('tik-review-start');
   function tikShowLink(url,label){
     reviewStatus.replaceChildren();
@@ -2797,15 +2828,7 @@ else{abaMemberStatus('Checking your membership...');abaConfirmMember().catch(()=
     tikStartButton.disabled=true;
     try{
       if(tikMintPhase==='ready'){
-        const auth=await tikApi('/auth/start',{});
-        tikChallenge=auth.challenge_id;tikMintPhase='verify_wallet';
-        tikShowLink(auth.xaman_url,'Open Xaman to Verify Wallet');
-        tikStartButton.textContent='Continue After Signing In →';
-      }else if(tikMintPhase==='verify_wallet'){
-        const auth=await tikApi('/auth/complete',{challenge_id:tikChallenge});
-        tikSession=auth.token;
-        sessionStorage.setItem('aba_tik_ideas_wallet_session',auth.token);
-        window.dispatchEvent(new CustomEvent('aba-ideas-session-ready'));
+        tikSession=await window.abaIdeasGetSession();
         const record=await tikApi('/records',await tikPrepareRecord(),tikSession);
         tikRecordId=record.id;
         const mint=await tikApi('/records/'+encodeURIComponent(tikRecordId)+'/mint/start',{},tikSession);
@@ -2840,8 +2863,7 @@ else{abaMemberStatus('Checking your membership...');abaConfirmMember().catch(()=
  const base='https://aba-tik-ideas-research-backend.onrender.com/api/ideas-research';
  const $=id=>document.getElementById(id);
  const SESSION='aba_tik_ideas_wallet_session';
- let challenge=null;
- const notice=$('aba-ideas-library-notice'),items=$('aba-ideas-library-items'),verify=$('aba-ideas-wallet-verify');
+ const notice=$('aba-ideas-library-notice'),items=$('aba-ideas-library-items');
  function say(s){notice.textContent=s;}
  function token(){return sessionStorage.getItem(SESSION)||'';}
  async function call(path,{method='GET',body}={}){
@@ -2863,8 +2885,11 @@ else{abaMemberStatus('Checking your membership...');abaConfirmMember().catch(()=
    catch(e){say(e.message);}finally{btn.disabled=false;}
  }
  async function load(){
-   items.replaceChildren();verify.hidden=true;
-   if(!token()){say('Verify your wallet with Xaman to view your Ideas & Research library.');await signInStart();return;}
+   items.replaceChildren();
+   if(!token()){
+     try{await window.abaIdeasGetSession();}
+     catch(e){say(e.message||'Connect Wallet in Creator Studio to view your library.');return;}
+   }
    try{
      const result=await call('/my-library');say(result.items.length?'Your Ideas & Research records':'Your Ideas & Research library is empty.');
      for(const item of result.items){
@@ -2881,25 +2906,11 @@ else{abaMemberStatus('Checking your membership...');abaConfirmMember().catch(()=
        }
        c.append(actions);items.append(c);
      }
-   }catch(e){if(/session|sign-in|unauthoriz|invalid/i.test(e.message)){sessionStorage.removeItem(SESSION);say('Your wallet session has expired. Verify with Xaman again.');await signInStart();}else say(e.message);}
+   }catch(e){if(/session|sign-in|unauthoriz|invalid/i.test(e.message)){sessionStorage.removeItem(SESSION);say('Your session expired. Select Refresh to reconnect using your existing Xaman session.');}else say(e.message);}
  }
- async function signInStart(){
-   try{
-     const r=await fetch(base+'/auth/start',{method:'POST',headers:{'Content-Type':'application/json'},body:'{}'});
-     const data=await r.json();if(!r.ok)throw Error(data.error||'Wallet verification unavailable');
-     challenge=data.challenge_id;$('aba-ideas-wallet-link').href=data.xaman_url;verify.hidden=false;
-   }catch(e){say(e.message);}
- }
- $('aba-ideas-wallet-complete').addEventListener('click',async()=>{
-   try{
-     if(!challenge)throw Error('Start Xaman verification again.');
-     const r=await fetch(base+'/auth/complete',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({challenge_id:challenge})});
-     const data=await r.json();if(!r.ok)throw Error(data.error||'Finish signing in Xaman first');
-     sessionStorage.setItem(SESSION,data.token);challenge=null;await load();
-   }catch(e){say(e.message);}
- });
  $('aba-ideas-library-refresh').addEventListener('click',load);
  window.addEventListener('aba-ideas-session-ready',load);
+ window.addEventListener('aba-creator-wallet-connected',load);
  window.addEventListener('aba-ideas-minted',load);
 })();
 </script>
