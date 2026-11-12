@@ -2146,6 +2146,16 @@ document.querySelector('.mobile-menu-btn').addEventListener('click', () => {
    }
    try{
      const data=await api('/my-library');if(current!==generation)return;
+     // A previously signed NFT may have validated while the browser was closed.
+     // Only verify existing mint requests; this NEVER submits another NFT mint.
+     let recovered=false;
+     for(const pending of (data.items||[]).filter(x=>x.status==='mint_pending').slice(0,5)){
+       try{const result=await api('/records/'+encodeURIComponent(pending.id)+'/mint/complete',{method:'POST'});
+         if(result.status==='minted'){pending.status='minted';pending.nftoken_id=result.nftoken_id;recovered=true;}
+       }catch(e){console.warn('Pending tokenization verification:',e.message);}
+     }
+     if(recovered){const updated=await api('/my-library');data.items=updated.items;}
+     if(current!==generation)return;
      for(const item of data.items||[]){
        const kind=item.content_kind==='idea'?'idea':item.content_kind==='research'?'research':'idea-research';
        const card=document.createElement('div');card.className='order-card';card.dataset.ownedCat=kind;
