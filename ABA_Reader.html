@@ -739,7 +739,7 @@ async function loadAbaIdeasResearch(id,statusEl,content){
     try{
       info('Opening Ideas & Research...');const record=await request('/reader/'+encodeURIComponent(id));
       document.getElementById('nftName').textContent=record.title||'Ideas & Research';
-      document.getElementById('nftCat').textContent='Ideas & Research';
+      document.getElementById('nftCat').textContent=record.content_kind==='research'?'Research':record.content_kind==='idea'?'Idea':'Ideas & Research';
       document.getElementById('nftDesc').textContent=record.creator_name||'';
       heading.style.display='flex';
       if(record.cover?.base64&&record.cover?.mime){document.getElementById('nftThumb').src='data:'+record.cover.mime+';base64,'+record.cover.base64;}
