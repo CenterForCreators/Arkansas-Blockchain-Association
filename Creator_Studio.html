@@ -2927,6 +2927,15 @@ window.abaIdeasGetSession = async function(){
      if(!r.ok)throw Error('Ideas & Research records unavailable');
      const data=await r.json();
      if(generation!==loadGeneration||!Array.isArray(data.items))return;
+     // Verify prior Xaman signatures if user left before confirmation; never re-mint.
+     for(const pending of data.items.filter(x=>x.status==='mint_pending').slice(0,5)){
+       try{
+         const verify=await fetch(BASE+'/records/'+encodeURIComponent(pending.id)+'/mint/complete',{
+           method:'POST',headers:{Authorization:'Bearer '+jwt}});
+         if(verify.ok){const confirmed=await verify.json();if(confirmed.status==='minted')pending.status='minted';}
+       }catch(e){console.warn('Pending Ideas & Research confirmation:',e.message);}
+     }
+     if(generation!==loadGeneration)return;
      if(data.items.length){
        const empty=grid.querySelector('.empty-state');
        if(empty && /No submissions yet/i.test(empty.textContent))empty.remove();
