@@ -2634,25 +2634,35 @@ else{abaMemberStatus('Checking your membership...');abaConfirmMember().catch(()=
    The existing ABA membership sign-in and Publish Knowledge wallet flow are untouched. */
 window.abaIdeasGetSession = async function(){
   const key='aba_tik_ideas_wallet_session';
-  const previous=sessionStorage.getItem(key);
-  // An ABA member must have passed the normal site session validation first.
-  await abaMemberApi('/api/student-network/me');
+  // Reuse the normal ABA membership session; never treat a saved wallet address as proof.
+  const deadline=(promise,ms,message)=>Promise.race([
+    Promise.resolve(promise),
+    new Promise((_,reject)=>setTimeout(()=>reject(new Error(message)),ms))
+  ]);
+  await deadline(abaMemberApi('/api/student-network/me'),12000,'ABA membership verification timed out. Please retry.');
   const xumm=getXumm();
-  // Obtain the OAuth credential already issued by the existing Creator Studio Xaman SDK.
-  // A saved r-address alone is not evidence of wallet ownership.
-  let bearer=await xumm.environment.bearer;
-  let signedAccount=await xumm.user.account;
-  if(!bearer||!signedAccount){
-    throw new Error('Connect your wallet using the existing Creator Studio Connect Wallet button.');
+  // Use the same authorized Xaman SDK instance as Publish Knowledge.
+  // Previously the SDK bearer promise could remain unresolved without showing any status.
+  let signedAccount=await deadline(xumm.user.account,1500,'Xaman session is initializing.').catch(()=>null);
+  if(!signedAccount){
+    const state=await deadline(xumm.authorize(),15000,'Xaman connection timed out. Use Connect Wallet to reconnect, then retry.');
+    signedAccount=state?.me?.account;
   }
-  if(previous && sessionStorage.getItem('aba_tik_ideas_session_wallet')===signedAccount && (!creatorWallet || signedAccount===creatorWallet))return previous;
-  sessionStorage.removeItem(key);
-  if(creatorWallet && signedAccount!==creatorWallet){
-    throw new Error('Your connected Xaman wallet differs from the selected Creator Studio wallet. Reconnect the correct wallet.');
-  }
-  const r=await fetch('https://aba-tik-ideas-research-backend.onrender.com/api/ideas-research/auth/existing-wallet',{
-    method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({xaman_bearer:bearer})
-  });
+  if(!signedAccount)throw new Error('Use the existing Creator Studio Connect Wallet button, then retry.');
+  if(creatorWallet && signedAccount!==creatorWallet)throw new Error('The selected wallet does not match your Xaman connection. Reconnect the correct wallet.');
+  const previous=sessionStorage.getItem(key);
+  if(previous && sessionStorage.getItem('aba_tik_ideas_session_wallet')===signedAccount)return previous;
+  const bearer=await deadline(xumm.environment.bearer,8000,'Your Xaman authorization is not ready. Use Connect Wallet to reconnect, then retry.');
+  if(!bearer)throw new Error('Use the existing Creator Studio Connect Wallet button to authorize Xaman, then retry.');
+  const controller=new AbortController();
+  const timer=setTimeout(()=>controller.abort(),12000);
+  let r;
+  try{
+    r=await fetch('https://aba-tik-ideas-research-backend.onrender.com/api/ideas-research/auth/existing-wallet',{
+      method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({xaman_bearer:bearer}),signal:controller.signal
+    });
+  }catch(e){throw new Error('The Ideas & Research service did not respond. Please retry.');}
+  finally{clearTimeout(timer);}
   const data=await r.json().catch(()=>({}));
   if(!r.ok||!data.token)throw new Error(data.error||'Could not use your existing Xaman connection.');
   if(data.wallet!==signedAccount)throw new Error('Connected wallet verification failed.');
@@ -2799,9 +2809,14 @@ window.abaIdeasGetSession = async function(){
   async function tikApi(path,body,token){
     const base=String(window.ABA_TIK_IDEAS_API_URL||'https://aba-tik-ideas-research-backend.onrender.com').replace(/\/$/,'');
     if(!/^https:\/\//.test(base))throw Error('Tokenization service is unavailable. Please try again later.');
-    const r=await fetch(base+'/api/ideas-research'+path,{
+    const controller=new AbortController();
+    const timer=setTimeout(()=>controller.abort(),20000);
+    let r;
+    try{r=await fetch(base+'/api/ideas-research'+path,{
       method:'POST',headers:{'Content-Type':'application/json',...(token?{'Authorization':'Bearer '+token}:{})},
-      body:JSON.stringify(body||{})});
+      body:JSON.stringify(body||{}),signal:controller.signal});}
+    catch(e){throw new Error('Tokenization service did not respond. Please retry.');}
+    finally{clearTimeout(timer);}
     const data=await r.json().catch(()=>({}));
     if(!r.ok)throw Error(data.error||'Unable to complete this step. Please try again.');
     return data;
@@ -2823,26 +2838,68 @@ window.abaIdeasGetSession = async function(){
     }
     return record;
   }
+  // Reuse the same visible Xaman modal as Publish Knowledge, but never its
+  // marketplace/sell-offer APIs. Only Ideas & Research endpoints are used.
+  let tikCheckTimer=null,tikChecking=false,tikChecks=0;
+  async function tikCheckMint(){
+    if(tikChecking||tikMintPhase!=='confirm_mint')return;
+    tikChecking=true;
+    try{
+      const result=await tikApi('/records/'+encodeURIComponent(tikRecordId)+'/mint/complete',{},tikSession);
+      if(result.status==='minted'){
+        tikMintPhase='done';
+        if(tikCheckTimer)clearInterval(tikCheckTimer);
+        closeModal('xaman-modal');
+        tikSay('Your idea or research has been tokenized on XRPL.');
+        tikStartButton.textContent='Tokenization Complete';
+        tikStartButton.disabled=true;
+        window.dispatchEvent(new CustomEvent('aba-ideas-minted',{detail:{id:tikRecordId}}));
+      }else if(result.status==='awaiting_validation'){
+        const status=document.getElementById('xaman-status');
+        if(status)status.textContent='Signature received. Confirming on XRPL…';
+      }
+    }catch(err){
+      // Leave the pending request in place; never create a duplicate NFT.
+      tikSay(err.message||'Verification is temporarily unavailable. Use Confirm Tokenization to retry.');
+    }finally{tikChecking=false;}
+  }
+  function tikOpenSigningModal(url){
+    showXamanModal('Tokenize Ideas & Research','Approve the NFT transaction in Xaman.');
+    const qr=document.getElementById('xaman-qr');
+    qr.replaceChildren();
+    const canvas=document.createElement('canvas');canvas.id='xaman-qr-canvas';qr.append(canvas);
+    if(typeof QRCode!=='undefined')QRCode.toCanvas(canvas,url,{width:180,color:{dark:'#A855F7',light:'#12121F'}}).catch(()=>{});
+    const link=document.createElement('a');link.href=url;link.target='_blank';link.rel='noopener noreferrer';
+    link.className='xaman-link-btn';link.textContent='Open in XAMAN App →';
+    qr.append(link);
+    const status=document.getElementById('xaman-status');
+    if(status)status.textContent='Waiting for your Xaman approval…';
+    if(tikCheckTimer)clearInterval(tikCheckTimer);
+    tikChecks=0;
+    // Confirm against the new backend and XRPL. Never assume signing is success.
+    tikCheckTimer=setInterval(()=>{
+      if(tikMintPhase!=='confirm_mint'||++tikChecks>60){clearInterval(tikCheckTimer);return;}
+      tikCheckMint();
+    },3000);
+  }
   tikStartButton.addEventListener('click',async()=>{
     if(tikStartButton.disabled)return;
     tikStartButton.disabled=true;
+    tikSay(tikMintPhase==='ready'?'Preparing your Xaman tokenization request…':'Checking XRPL confirmation…');
     try{
       if(tikMintPhase==='ready'){
         tikSession=await window.abaIdeasGetSession();
+        tikSay('Saving your idea securely…');
         const record=await tikApi('/records',await tikPrepareRecord(),tikSession);
         tikRecordId=record.id;
+        tikSay('Creating your NFT signing request…');
         const mint=await tikApi('/records/'+encodeURIComponent(tikRecordId)+'/mint/start',{},tikSession);
+        if(!mint.xaman_url)throw Error('Xaman did not return a signing link.');
         tikMintPhase='confirm_mint';
-        tikShowLink(mint.xaman_url,'Open Xaman to Tokenize');
         tikStartButton.textContent='Confirm Tokenization →';
-      }else if(tikMintPhase==='confirm_mint'){
-        const result=await tikApi('/records/'+encodeURIComponent(tikRecordId)+'/mint/complete',{},tikSession);
-        if(result.status==='minted'){
-          tikMintPhase='done';tikSay('Your idea or research has been tokenized on XRPL.');
-          tikStartButton.textContent='Tokenization Complete';
-          window.dispatchEvent(new CustomEvent('aba-ideas-minted',{detail:{id:tikRecordId}}));
-        }else tikSay(result.status==='awaiting_signature'?'Please sign the NFT transaction in Xaman, then select Confirm Tokenization again.':'Your transaction is being verified on XRPL. Please select Confirm Tokenization again shortly.');
-      }
+        tikOpenSigningModal(mint.xaman_url);
+        tikSay('Approve the transaction in Xaman. Confirmation will update automatically.');
+      }else if(tikMintPhase==='confirm_mint')await tikCheckMint();
     }catch(err){tikSay(err.message||'Unable to continue. Please try again.');}
     finally{tikStartButton.disabled=tikMintPhase==='done';}
   });
