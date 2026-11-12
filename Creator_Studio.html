@@ -721,6 +721,18 @@ textarea.tik-ideas-input{min-height:148px;resize:vertical;line-height:1.6}
         <div class="tik-review-footer"><button id="tik-review-back" class="tik-ideas-action secondary" type="button">← Back to Edit</button><button id="tik-review-start" class="tik-ideas-action" type="button">Start Tokenization →</button></div>
         <p id="tik-review-feedback" role="status" aria-live="polite"></p>
       </div>
+      <div id="aba-ideas-library" style="padding:22px 30px;border-top:1px solid rgba(116,174,217,.2)" aria-label="My Ideas and Research Library">
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px">
+          <h3 style="font:700 1.15rem 'Space Grotesk',sans-serif;color:#f2f7fc">My Library · Ideas &amp; Research</h3>
+          <button type="button" class="tik-ideas-action secondary" id="aba-ideas-library-refresh">View My Library</button>
+        </div>
+        <p id="aba-ideas-library-notice" role="status" aria-live="polite" style="font-size:.82rem;color:#a5c1d3;margin:12px 0"></p>
+        <div id="aba-ideas-library-items" style="display:grid;gap:12px"></div>
+        <div id="aba-ideas-wallet-verify" hidden style="margin-top:14px;display:flex;gap:12px;flex-wrap:wrap;align-items:center">
+          <a id="aba-ideas-wallet-link" class="tik-ideas-action" target="_blank" rel="noopener noreferrer" style="text-decoration:none">Verify Wallet with Xaman</a>
+          <button type="button" class="tik-ideas-action secondary" id="aba-ideas-wallet-complete">Continue After Signing</button>
+        </div>
+      </div>
     </div>
   </div>
 </section>
@@ -2792,6 +2804,8 @@ else{abaMemberStatus('Checking your membership...');abaConfirmMember().catch(()=
       }else if(tikMintPhase==='verify_wallet'){
         const auth=await tikApi('/auth/complete',{challenge_id:tikChallenge});
         tikSession=auth.token;
+        sessionStorage.setItem('aba_tik_ideas_wallet_session',auth.token);
+        window.dispatchEvent(new CustomEvent('aba-ideas-session-ready'));
         const record=await tikApi('/records',await tikPrepareRecord(),tikSession);
         tikRecordId=record.id;
         const mint=await tikApi('/records/'+encodeURIComponent(tikRecordId)+'/mint/start',{},tikSession);
@@ -2803,6 +2817,7 @@ else{abaMemberStatus('Checking your membership...');abaConfirmMember().catch(()=
         if(result.status==='minted'){
           tikMintPhase='done';tikSay('Your idea or research has been tokenized on XRPL.');
           tikStartButton.textContent='Tokenization Complete';
+          window.dispatchEvent(new CustomEvent('aba-ideas-minted',{detail:{id:tikRecordId}}));
         }else tikSay(result.status==='awaiting_signature'?'Please sign the NFT transaction in Xaman, then select Confirm Tokenization again.':'Your transaction is being verified on XRPL. Please select Confirm Tokenization again shortly.');
       }
     }catch(err){tikSay(err.message||'Unable to continue. Please try again.');}
@@ -2816,6 +2831,76 @@ else{abaMemberStatus('Checking your membership...');abaConfirmMember().catch(()=
     document.querySelector('#tik-ideas-workspace input[name="tik-ideas-visibility"][value="private"]').checked=true;
     showEditor();feedback.textContent='';
   });
+})();
+</script>
+<script id="aba-ideas-library-reader-rewards-integration">
+/* ABA Ideas & Research only. Existing publishing, marketplace, CFC Reader rewards are unchanged. */
+(()=>{
+ 'use strict';
+ const base='https://aba-tik-ideas-research-backend.onrender.com/api/ideas-research';
+ const $=id=>document.getElementById(id);
+ const SESSION='aba_tik_ideas_wallet_session';
+ let challenge=null;
+ const notice=$('aba-ideas-library-notice'),items=$('aba-ideas-library-items'),verify=$('aba-ideas-wallet-verify');
+ function say(s){notice.textContent=s;}
+ function token(){return sessionStorage.getItem(SESSION)||'';}
+ async function call(path,{method='GET',body}={}){
+   const headers={...(token()?{Authorization:'Bearer '+token()}:{}),...(body?{'Content-Type':'application/json'}:{})};
+   const r=await fetch(base+path,{method,headers,...(body?{body:JSON.stringify(body)}:{})});
+   const data=await r.json().catch(()=>({}));
+   if(!r.ok)throw Error(data.error||'Request unsuccessful');return data;
+ }
+ function button(label,callback){const b=document.createElement('button');b.type='button';b.className='tik-ideas-action secondary';b.textContent=label;b.addEventListener('click',callback);return b;}
+ async function claim(recordId,btn){
+   btn.disabled=true;try{
+     const result=await call('/records/'+encodeURIComponent(recordId)+'/reward/claim',{method:'POST'});
+     say(result.status==='paid'?'100 CFC bonus confirmed.':'Claim submitted. XRPL confirmation may take a short time.');
+     await load();
+   }catch(e){say(e.message);}finally{btn.disabled=false;}
+ }
+ async function verifyClaim(recordId,btn){
+   btn.disabled=true;try{const r=await call('/records/'+encodeURIComponent(recordId)+'/reward/verify',{method:'POST'});say(r.status==='paid'?'100 CFC bonus confirmed.':'Reward status: '+r.status);await load();}
+   catch(e){say(e.message);}finally{btn.disabled=false;}
+ }
+ async function load(){
+   items.replaceChildren();verify.hidden=true;
+   if(!token()){say('Verify your wallet with Xaman to view your Ideas & Research library.');await signInStart();return;}
+   try{
+     const result=await call('/my-library');say(result.items.length?'Your Ideas & Research records':'Your Ideas & Research library is empty.');
+     for(const item of result.items){
+       const c=document.createElement('div');c.style.cssText='border:1px solid rgba(135,188,225,.2);background:#091625;border-radius:10px;padding:15px;display:grid;gap:9px';
+       const title=document.createElement('strong');title.textContent=item.title;c.append(title);
+       const sub=document.createElement('small');sub.style.color='#a5c1d3';sub.textContent=(item.status==='minted'?'Tokenized on XRPL':item.status==='mint_pending'?'Tokenization pending':'Draft')+' · '+item.visibility;c.append(sub);
+       const actions=document.createElement('div');actions.style.cssText='display:flex;gap:8px;flex-wrap:wrap';
+       const read=button('Open in CFC Reader',()=>{location.href='/reader?ideas_id='+encodeURIComponent(item.id);});actions.append(read);
+       if(item.status==='minted'){
+         const status=item.reward_status;
+         if(status==='unclaimed'){actions.append(button('Claim 100 CFC',function(){claim(item.id,this);}));}
+         else if(status==='paid'){const paid=document.createElement('span');paid.textContent='100 CFC bonus claimed';paid.style.color='#34D399';actions.append(paid);}
+         else{actions.append(button('Check CFC Bonus',function(){verifyClaim(item.id,this);}));}
+       }
+       c.append(actions);items.append(c);
+     }
+   }catch(e){if(/session|sign-in|unauthoriz|invalid/i.test(e.message)){sessionStorage.removeItem(SESSION);say('Your wallet session has expired. Verify with Xaman again.');await signInStart();}else say(e.message);}
+ }
+ async function signInStart(){
+   try{
+     const r=await fetch(base+'/auth/start',{method:'POST',headers:{'Content-Type':'application/json'},body:'{}'});
+     const data=await r.json();if(!r.ok)throw Error(data.error||'Wallet verification unavailable');
+     challenge=data.challenge_id;$('aba-ideas-wallet-link').href=data.xaman_url;verify.hidden=false;
+   }catch(e){say(e.message);}
+ }
+ $('aba-ideas-wallet-complete').addEventListener('click',async()=>{
+   try{
+     if(!challenge)throw Error('Start Xaman verification again.');
+     const r=await fetch(base+'/auth/complete',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({challenge_id:challenge})});
+     const data=await r.json();if(!r.ok)throw Error(data.error||'Finish signing in Xaman first');
+     sessionStorage.setItem(SESSION,data.token);challenge=null;await load();
+   }catch(e){say(e.message);}
+ });
+ $('aba-ideas-library-refresh').addEventListener('click',load);
+ window.addEventListener('aba-ideas-session-ready',load);
+ window.addEventListener('aba-ideas-minted',load);
 })();
 </script>
 </body>
