@@ -508,6 +508,25 @@ textarea.tik-ideas-input{min-height:148px;resize:vertical;line-height:1.6}
 #tik-ideas-hash h3{font:700 1.1rem 'Space Grotesk',sans-serif;color:#f2f7fc;margin:0 0 10px}
 #tik-ideas-hash p{margin:0 0 12px;white-space:pre-wrap}
 #tik-ideas-hash .tik-preview-label{font-weight:700;color:#9bdaf3;margin-top:10px}
+
+/* Ideas & Research review screen — isolated from publishing. */
+#tik-ideas-workspace .tik-ideas-body[hidden],#tik-ideas-review[hidden]{display:none!important}
+.tik-ideas-review{padding:28px 30px 34px}
+.tik-review-top{text-align:center;max-width:650px;margin:0 auto 28px}
+.tik-review-step{font-size:.69rem;letter-spacing:.15em;color:#80c9e9;font-weight:800}
+.tik-review-top h2{font:700 clamp(1.4rem,3vw,1.9rem) 'Space Grotesk',sans-serif;color:#f2f7fc;margin:10px 0}
+.tik-review-top p{color:#a5bed0;font-size:.88rem;line-height:1.6}
+.tik-review-layout{display:grid;grid-template-columns:minmax(0,320px) minmax(0,1fr);align-items:start;gap:32px;max-width:960px;margin:0 auto}
+.tik-review-cover-slot .tik-ideas-cover{width:100%;max-width:320px;box-shadow:none}
+.tik-review-details{min-width:0}
+.tik-review-section{padding:0 0 17px;margin:0 0 17px;border-bottom:1px solid rgba(128,180,211,.18)}
+.tik-review-label{display:block;color:#8ecbe7;font-size:.72rem;font-weight:700;letter-spacing:.05em;margin-bottom:8px}
+.tik-review-section h3{color:#f2f7fc;font-size:1.15rem;line-height:1.4;overflow-wrap:anywhere}
+.tik-review-section p,.tik-review-content{color:#e4eef5;font-size:.9rem;line-height:1.7;overflow-wrap:anywhere;white-space:pre-wrap}
+.tik-review-content{max-height:350px;overflow:auto;padding:15px;background:#091625;border:1px solid rgba(135,188,225,.2);border-radius:9px}
+.tik-review-footer{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;max-width:960px;margin:22px auto 0}
+#tik-review-feedback{max-width:960px;margin:12px auto 0;color:#9bdaf3;font-size:.84rem;line-height:1.6}
+@media(max-width:760px){.tik-review-layout{grid-template-columns:1fr;gap:24px}.tik-review-cover-slot .tik-ideas-cover{max-width:290px}.tik-ideas-review{padding:20px}.tik-review-footer .tik-ideas-action{flex:1;min-width:140px}}
 </style>
 </head>
 <body class="aba-membership-pending">
@@ -671,9 +690,8 @@ textarea.tik-ideas-input{min-height:148px;resize:vertical;line-height:1.6}
           <div class="tik-ideas-field"><label for="tik-ideas-document">Or attach a document</label><input id="tik-ideas-document" class="tik-ideas-input" type="file" accept=".docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document"><p class="tik-ideas-help">Microsoft Word (.docx) only. Optional.</p></div>
           <fieldset class="tik-ideas-field" style="border:0;padding:0"><legend class="tik-ideas-legend">Visibility preference</legend><div class="tik-ideas-visibility"><label class="tik-ideas-radio"><input type="radio" name="tik-ideas-visibility" value="private" checked><span><strong>Private</strong><small>Intended only for your authorized library access.</small></span></label><label class="tik-ideas-radio"><input type="radio" name="tik-ideas-visibility" value="public"><span><strong>Public</strong><small>Intended for optional sharing, never marketplace listing.</small></span></label></div></fieldset>
           <div class="tik-ideas-divider"></div>
-          <div class="tik-ideas-actions"><button id="tik-ideas-fingerprint-button" class="tik-ideas-action" type="button">Preview Content</button><button id="tik-ideas-reset-button" class="tik-ideas-action secondary" type="button">Clear</button></div>
+          <div class="tik-ideas-actions"><button id="tik-ideas-fingerprint-button" class="tik-ideas-action" type="button">Preview & Continue →</button><button id="tik-ideas-reset-button" class="tik-ideas-action secondary" type="button">Clear</button></div>
           <p id="tik-ideas-feedback" role="status" aria-live="polite"></p>
-          <div id="tik-ideas-hash" hidden></div>
         </div>
         <aside aria-label="Cover designer preview">
           <div class="tik-cover-mode-row" role="group" aria-label="Choose cover format"><button id="tik-cover-mode-text" class="tik-cover-mode-btn" type="button" aria-pressed="true">Text Cover</button><button id="tik-cover-mode-image" class="tik-cover-mode-btn" type="button" aria-pressed="false">Image Cover</button></div>
@@ -685,8 +703,22 @@ textarea.tik-ideas-input{min-height:148px;resize:vertical;line-height:1.6}
             <div id="tik-ideas-cover-author" class="tik-cover-author">Creator name</div>
           </div>
           <div class="tik-ideas-theme-row" role="group" aria-label="Cover color theme"><button class="tik-theme-btn" type="button" data-theme="blue" aria-pressed="true">Ocean</button><button class="tik-theme-btn" type="button" data-theme="slate" aria-pressed="false">Slate</button><button class="tik-theme-btn" type="button" data-theme="violet" aria-pressed="false">Violet</button></div>
-          <div class="tik-ideas-actions tik-ideas-downloads"><button id="tik-ideas-download-cover" class="tik-ideas-action secondary" type="button">Download Cover</button><button id="tik-ideas-download-word" class="tik-ideas-action secondary" type="button">Download Word Document</button></div>
         </aside>
+      </div>
+      <div id="tik-ideas-review" class="tik-ideas-review" hidden aria-labelledby="tik-ideas-review-heading">
+        <div class="tik-review-top"><span class="tik-review-step">STEP 2 OF 2</span><h2 id="tik-ideas-review-heading">Review Your Idea or Research</h2><p>Review your cover and content before you tokenize your work.</p></div>
+        <div class="tik-review-layout">
+          <div class="tik-review-cover-column"><div id="tik-review-cover-slot" class="tik-review-cover-slot" aria-label="Your selected cover"></div></div>
+          <div class="tik-review-details">
+            <div class="tik-review-section"><span class="tik-review-label">Title</span><h3 id="tik-review-title"></h3></div>
+            <div class="tik-review-section"><span class="tik-review-label">Creator</span><p id="tik-review-author"></p></div>
+            <div class="tik-review-section"><span class="tik-review-label">Visibility</span><p id="tik-review-visibility"></p></div>
+            <div class="tik-review-section"><span class="tik-review-label">Your idea or research</span><div id="tik-review-body" class="tik-review-content"></div></div>
+            <div id="tik-review-document-row" class="tik-review-section" hidden><span class="tik-review-label">Attached Word document</span><p id="tik-review-document"></p></div>
+          </div>
+        </div>
+        <div class="tik-review-footer"><button id="tik-review-back" class="tik-ideas-action secondary" type="button">← Back to Edit</button><button id="tik-review-start" class="tik-ideas-action" type="button">Start Tokenization →</button></div>
+        <p id="tik-review-feedback" role="status" aria-live="polite"></p>
       </div>
     </div>
   </div>
@@ -2608,7 +2640,7 @@ else{abaMemberStatus('Checking your membership...');abaConfirmMember().catch(()=
   ideas.addEventListener('click',()=>choose('ideas'));
   const title=$('tik-ideas-title'), author=$('tik-ideas-author'), body=$('tik-ideas-body-text');
   const coverTitle=$('tik-ideas-cover-title'),coverAuthor=$('tik-ideas-cover-author');
-  const feedback=$('tik-ideas-feedback'), preview=$('tik-ideas-hash');
+  const feedback=$('tik-ideas-feedback');
   const cover=$('tik-ideas-cover'),coverImage=$('tik-ideas-cover-image');
   const imageInput=$('tik-ideas-cover-upload'),documentInput=$('tik-ideas-document');
   const imageField=$('tik-ideas-cover-upload-field');
@@ -2652,72 +2684,40 @@ else{abaMemberStatus('Checking your membership...');abaConfirmMember().catch(()=
       documentInput.value='';feedback.textContent='Please choose a Microsoft Word (.docx) document.';
     }else feedback.textContent='';
   });
-  const fileSafeName = value=>(value.trim()||'Ideas-and-Research').replace(/[^\w\- ]+/g,'').trim().replace(/\s+/g,'-').slice(0,65)||'Ideas-and-Research';
-  const saveBlob=(blob,name)=>{const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1500);};
-  const addPreviewText=(root,tag,text,cls)=>{const e=document.createElement(tag);if(cls)e.className=cls;e.textContent=text;root.appendChild(e);};
-  $('tik-ideas-fingerprint-button').addEventListener('click',()=>{
-    feedback.textContent='';preview.replaceChildren();
-    const label=title.value.trim(),txt=body.value.trim(),file=documentInput.files?.[0];
-    if(!label&&!txt&&!file){feedback.textContent='Add a title, write your work, or attach a Word document to preview.';preview.hidden=true;return;}
-    addPreviewText(preview,'h3',label||'Ideas & Research');
-    if(author.value.trim())addPreviewText(preview,'p','By '+author.value.trim());
-    if(txt){addPreviewText(preview,'div','Your work','tik-preview-label');addPreviewText(preview,'p',txt);}
-    if(file){addPreviewText(preview,'div','Attached Word document','tik-preview-label');addPreviewText(preview,'p',file.name);}
-    if(!txt&&!file)addPreviewText(preview,'p','Add a description or Word document if you would like to include more detail.');
-    preview.hidden=false;
-    preview.scrollIntoView({behavior:'smooth',block:'nearest'});
-  });
-  $('tik-ideas-download-cover').addEventListener('click',async()=>{
-    const canvas=document.createElement('canvas');canvas.width=400;canvas.height=400;
-    const cx=canvas.getContext('2d');
-    if(cover.dataset.coverMode==='image'){
-      if(!imageUrl){feedback.textContent='Choose an image first, or select Text Cover.';return;}
-      const img=new Image();img.src=imageUrl;
-      try{await img.decode();cx.drawImage(img,0,0,400,400);}catch{feedback.textContent='Unable to prepare this cover image.';return;}
-    }else{
-      const palette=cover.dataset.theme==='violet'?['#342e60','#101727']:cover.dataset.theme==='slate'?['#33495c','#101925']:['#0e3450','#071827'];
-      const grad=cx.createLinearGradient(0,0,400,400);grad.addColorStop(0,palette[0]);grad.addColorStop(1,palette[1]);cx.fillStyle=grad;cx.fillRect(0,0,400,400);
-      const glow=cx.createRadialGradient(290,70,2,290,70,245);glow.addColorStop(0,'rgba(110,198,234,.15)');glow.addColorStop(1,'rgba(110,198,234,0)');cx.fillStyle=glow;cx.fillRect(0,0,400,400);
-      cx.textAlign='center';cx.textBaseline='middle';cx.fillStyle='#a2e4f8';cx.font='700 11px Arial';cx.fillText('TIK / IDEAS & RESEARCH',200,35);
-      function lines(str,maxWidth,font){cx.font=font;const words=str.split(/\s+/);const result=[];let line='';for(const word of words){const tryLine=line?line+' '+word:word;if(cx.measureText(tryLine).width>maxWidth&&line){result.push(line);line=word;}else line=tryLine;}if(line)result.push(line);return result;}
-      const name=title.value.trim()||'Your idea begins here';
-      let fontSize=30, wraps=[];do{wraps=lines(name,344,`700 ${fontSize}px Arial`);if(wraps.length<=5)break;fontSize-=2;}while(fontSize>=16);
-      const spacing=fontSize*1.28;const y=200-(wraps.length-1)*spacing/2;
-      cx.font=`700 ${fontSize}px Arial`;cx.fillStyle='#ffffff';
-      wraps.slice(0,6).forEach((line,i)=>cx.fillText(line,200,y+i*spacing));
-      if(author.value.trim()){cx.font='15px Arial';cx.fillStyle='#d1e8f4';cx.fillText(author.value.trim().slice(0,45),200,Math.min(360,y+wraps.length*spacing+12));}
-    }
-    canvas.toBlob(blob=>{if(blob)saveBlob(blob,fileSafeName(title.value)+'-cover.png');else feedback.textContent='Unable to download the cover.';},'image/png');
-  });
-  // Minimal DOCX writer using ZIP stored entries; no external libraries or network dependencies.
-  const enc = new TextEncoder();
-  const xmlEscape=t=>t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&apos;');
-  const crcTable=new Uint32Array(256);for(let n=0;n<256;n++){let c=n;for(let k=0;k<8;k++)c=(c&1)?0xedb88320^(c>>>1):c>>>1;crcTable[n]=c>>>0;}
-  function crc32(data){let crc=0xffffffff;for(const b of data)crc=crcTable[(crc^b)&255]^(crc>>>8);return (crc^0xffffffff)>>>0;}
-  const u16=(v)=>[v&255,(v>>>8)&255],u32=v=>[v&255,(v>>>8)&255,(v>>>16)&255,(v>>>24)&255];
-  function zip(entries){let offset=0;const parts=[],central=[];for(const [filename,content] of entries){const n=enc.encode(filename),d=enc.encode(content),crc=crc32(d);
-    const local=new Uint8Array([80,75,3,4,...u16(20),...u16(0),...u16(0),...u16(0),...u16(0),...u32(crc),...u32(d.length),...u32(d.length),...u16(n.length),...u16(0),...n]);
-    parts.push(local,d);const cd=new Uint8Array([80,75,1,2,...u16(20),...u16(20),...u16(0),...u16(0),...u16(0),...u16(0),...u32(crc),...u32(d.length),...u32(d.length),...u16(n.length),...u16(0),...u16(0),...u16(0),...u16(0),...u32(0),...u32(offset),...n]);central.push(cd);offset+=local.length+d.length;}
-    const size=central.reduce((n,p)=>n+p.length,0);return new Blob([...parts,...central,new Uint8Array([80,75,5,6,...u16(0),...u16(0),...u16(entries.length),...u16(entries.length),...u32(size),...u32(offset),...u16(0)])],{type:'application/vnd.openxmlformats-officedocument.wordprocessingml.document'});
+  // Review is a separate screen; the existing publishing wizard is not involved.
+  const editor = panel.querySelector('.tik-ideas-body');
+  const review = $('tik-ideas-review');
+  const reviewStatus = $('tik-review-feedback');
+  function showEditor(){
+    review.hidden=true;editor.hidden=false;reviewStatus.textContent='';
+    $('tik-ideas-heading').textContent='Ideas & Research';
+    panel.scrollIntoView({behavior:'smooth',block:'start'});
   }
-  function makeDocx(){const p=text=>'<w:p><w:r><w:t xml:space="preserve">'+xmlEscape(text)+'</w:t></w:r></w:p>';
-    const paragraphs=[title.value.trim()||'Ideas & Research'];if(author.value.trim())paragraphs.push('By '+author.value.trim());paragraphs.push('');paragraphs.push(...(body.value.trim()||'').split(/\r?\n/));
-    const bodyXML=paragraphs.map(p).join('');
-    return zip([
-      ['[Content_Types].xml','<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/></Types>'],
-      ['_rels/.rels','<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/></Relationships>'],
-      ['word/document.xml','<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:body>'+bodyXML+'<w:sectPr/></w:body></w:document>']
-    ]);
-  }
-  $('tik-ideas-download-word').addEventListener('click',()=>{
-    if(!title.value.trim()&&!body.value.trim()&&documentInput.files?.[0]){
-      saveBlob(documentInput.files[0],documentInput.files[0].name);return;
-    }
-    if(!title.value.trim()&&!body.value.trim()){
-      feedback.textContent='Add a title or write your idea to download a Word document.';return;
-    }
-    saveBlob(makeDocx(),fileSafeName(title.value)+'.docx');
+  function showReview(){
     feedback.textContent='';
+    const name=title.value.trim(),written=body.value.trim(),file=documentInput.files?.[0];
+    if(!name){feedback.textContent='Please enter a title to continue.';title.focus();return;}
+    if(!written&&!file){feedback.textContent='Please write your idea or research, or attach a Word document.';body.focus();return;}
+    if(cover.dataset.coverMode==='image'&&!imageUrl){feedback.textContent='Please choose a 400 × 400 cover image or select Text Cover.';return;}
+    $('tik-review-title').textContent=name;
+    $('tik-review-author').textContent=author.value.trim()||'Not specified';
+    $('tik-review-visibility').textContent=document.querySelector('input[name="tik-ideas-visibility"]:checked')?.value==='public'?'Public':'Private';
+    const bodyPreview=$('tik-review-body');
+    bodyPreview.textContent=written||'Your work is in the attached Word document.';
+    $('tik-review-document-row').hidden=!file;
+    $('tik-review-document').textContent=file?.name||'';
+    const coverSlot=$('tik-review-cover-slot');
+    coverSlot.replaceChildren(cover.cloneNode(true));
+    editor.hidden=true;review.hidden=false;reviewStatus.textContent='';
+    $('tik-ideas-heading').textContent='Ideas & Research';
+    review.scrollIntoView({behavior:'smooth',block:'start'});
+  }
+  $('tik-ideas-fingerprint-button').addEventListener('click',showReview);
+  $('tik-review-back').addEventListener('click',showEditor);
+  $('tik-review-start').addEventListener('click',()=>{
+    // Existing publishing mint endpoints also create marketplace records and sell offers.
+    // Never use them for Ideas & Research. Only a dedicated integration may handle this.
+    reviewStatus.textContent='Tokenization is not available for Ideas & Research yet. Your work is still here; you can return to edit it.';
   });
   $('tik-ideas-reset-button').addEventListener('click',()=>{
     [title,author,body,imageInput,documentInput].forEach(e=>{e.value='';});
@@ -2725,7 +2725,7 @@ else{abaMemberStatus('Checking your membership...');abaConfirmMember().catch(()=
     document.querySelectorAll('#tik-ideas-workspace .tik-theme-btn').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.theme==='blue')));
     coverTitle.textContent='Your idea begins here';coverAuthor.textContent='Creator name';
     document.querySelector('#tik-ideas-workspace input[name="tik-ideas-visibility"][value="private"]').checked=true;
-    preview.replaceChildren();preview.hidden=true;feedback.textContent='';
+    showEditor();feedback.textContent='';
   });
 })();
 </script>
