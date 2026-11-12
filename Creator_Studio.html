@@ -466,14 +466,22 @@ textarea.tik-ideas-input{min-height:148px;resize:vertical;line-height:1.6}
 .tik-ideas-radio{display:flex;align-items:flex-start;gap:9px;border:1px solid rgba(135,188,225,.21);background:#0a192a;padding:11px 13px;border-radius:10px;flex:1;min-width:160px;cursor:pointer;font-size:.83rem;color:#dce9f2}
 .tik-ideas-radio input{accent-color:#5abce6;margin-top:3px}
 .tik-ideas-radio small{display:block;font-size:.73rem;color:#9eb7c9;margin-top:3px;line-height:1.45}
-.tik-ideas-cover{aspect-ratio:1/1;max-width:370px;width:100%;margin:0 auto;background:radial-gradient(circle at 70% 20%,rgba(80,187,220,.25),transparent 48%),linear-gradient(145deg,#0e3450,#071827);border:1px solid rgba(135,204,235,.35);border-radius:12px;display:flex;flex-direction:column;justify-content:flex-end;overflow:hidden;position:relative;padding:27px;box-shadow:0 22px 55px rgba(0,0,0,.2)}
+.tik-ideas-cover{aspect-ratio:1/1;max-width:370px;width:100%;margin:0 auto;background:radial-gradient(circle at 70% 20%,rgba(80,187,220,.25),transparent 48%),linear-gradient(145deg,#0e3450,#071827);border:1px solid rgba(135,204,235,.35);border-radius:12px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;overflow:hidden;position:relative;padding:27px;box-shadow:0 22px 55px rgba(0,0,0,.2)}
 .tik-ideas-cover[data-theme="slate"]{background:radial-gradient(circle at 70% 20%,rgba(140,166,192,.22),transparent 48%),linear-gradient(145deg,#33495c,#101925)}
 .tik-ideas-cover[data-theme="violet"]{background:radial-gradient(circle at 65% 20%,rgba(148,113,226,.29),transparent 48%),linear-gradient(145deg,#342e60,#101727)}
 .tik-ideas-cover img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
 .tik-ideas-cover:after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.06),rgba(2,10,20,.78))}
 .tik-ideas-cover>*:not(img){position:relative;z-index:1}
-.tik-cover-tag{color:#a2e4f8;font-size:.65rem;letter-spacing:.18em;font-weight:800;text-transform:uppercase;margin-bottom:auto}
-.tik-cover-title{font:700 clamp(1.25rem,2.6vw,1.75rem)/1.25 'Space Grotesk',sans-serif;overflow-wrap:anywhere;color:#fff;margin:0 0 .6rem}
+.tik-ideas-cover[data-cover-mode="image"] .tik-cover-tag,.tik-ideas-cover[data-cover-mode="image"] .tik-cover-title,.tik-ideas-cover[data-cover-mode="image"] .tik-cover-author{display:none}
+.tik-ideas-cover[data-cover-mode="image"]:after{display:none}
+.tik-ideas-cover[data-cover-mode="image"] img[hidden]{display:none}
+.tik-ideas-cover[data-cover-mode="image"] img:not([hidden]){display:block}
+.tik-cover-mode-row{display:flex;gap:8px;margin:0 0 12px}
+.tik-cover-mode-btn{flex:1;cursor:pointer;border:1px solid rgba(130,184,221,.32);background:#122b43;color:#d5e9f6;border-radius:8px;padding:10px 9px;font:600 .8rem Inter,system-ui,sans-serif}
+.tik-cover-mode-btn[aria-pressed="true"]{background:#184467;border-color:#78d5f5;color:white}
+.tik-cover-mode-hint{font-size:.73rem;color:#93b3c6;line-height:1.5;margin:8px 0 16px}
+.tik-cover-tag{color:#a2e4f8;font-size:.65rem;letter-spacing:.18em;font-weight:800;text-transform:uppercase;margin-bottom:25px}
+.tik-cover-title{font:700 clamp(1.45rem,3vw,1.9rem)/1.25 'Space Grotesk',sans-serif;overflow-wrap:anywhere;color:#fff;margin:0 0 .6rem}
 .tik-cover-author{font-size:.77rem;color:#d1e8f4;overflow-wrap:anywhere}
 .tik-ideas-theme-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px;justify-content:center}
 .tik-theme-btn{border:1px solid rgba(130,184,221,.32);background:#122b43;color:#d5e9f6;border-radius:7px;padding:7px 12px;cursor:pointer;font:inherit;font-size:.77rem}
@@ -487,6 +495,19 @@ textarea.tik-ideas-input{min-height:148px;resize:vertical;line-height:1.6}
 #tik-ideas-feedback{min-height:1.5em;color:#9bdaf3;font-size:.81rem;line-height:1.55;margin-top:13px}
 .tik-ideas-safeguard{padding:13px 15px;background:rgba(55,102,144,.13);border:1px solid rgba(127,187,225,.23);border-radius:10px;color:#a5c1d3;font-size:.78rem;line-height:1.65}
 @media(max-width:760px){.tik-choice-grid,.tik-ideas-body{grid-template-columns:1fr}.tik-ideas-head,.tik-ideas-body{padding:20px}.tik-ideas-cover{max-width:320px}}
+
+/* Ideas & Research: centered cover title and content preview */
+.tik-ideas-cover .tik-cover-tag{position:absolute;top:20px;left:12px;right:12px;margin:0;text-align:center}
+.tik-ideas-cover .tik-cover-title{width:100%;margin:0;text-align:center;font-size:clamp(1.35rem,2.3vw,1.85rem);line-height:1.27}
+.tik-ideas-cover .tik-cover-author{margin-top:16px;text-align:center}
+.tik-ideas-cover[data-cover-mode="image"] .tik-cover-tag,.tik-ideas-cover[data-cover-mode="image"] .tik-cover-title,.tik-ideas-cover[data-cover-mode="image"] .tik-cover-author{display:none}
+.tik-ideas-downloads{justify-content:center;margin-top:16px;gap:8px}
+.tik-ideas-downloads .tik-ideas-action{padding:10px 12px;font-size:.78rem}
+#tik-ideas-hash[hidden]{display:none}
+#tik-ideas-hash{font-family:Inter,system-ui,sans-serif;font-size:.88rem;color:#e5f1f8;white-space:pre-wrap;overflow-wrap:anywhere;border:1px solid rgba(135,188,225,.22);background:#091625;border-radius:12px;padding:19px 20px;line-height:1.75;margin-top:15px}
+#tik-ideas-hash h3{font:700 1.1rem 'Space Grotesk',sans-serif;color:#f2f7fc;margin:0 0 10px}
+#tik-ideas-hash p{margin:0 0 12px;white-space:pre-wrap}
+#tik-ideas-hash .tik-preview-label{font-weight:700;color:#9bdaf3;margin-top:10px}
 </style>
 </head>
 <body class="aba-membership-pending">
@@ -639,32 +660,32 @@ textarea.tik-ideas-input{min-height:148px;resize:vertical;line-height:1.6}
     <div class="tik-ideas-shell">
       <div class="tik-ideas-head">
         <h2 id="tik-ideas-heading">Ideas &amp; Research</h2>
-        <p>Design your cover and prepare an original work record. This initial preview stays in your browser; blockchain tokenization, secure storage, and CFC rewards will be enabled only after the separate backend is integrated and tested.</p>
+        <p>Design a cover and add your idea or research. Type your work directly or attach a Word document.</p>
       </div>
       <div class="tik-ideas-body">
         <div>
           <div class="tik-ideas-field"><label for="tik-ideas-title">Title of your idea or research</label><input id="tik-ideas-title" class="tik-ideas-input" type="text" maxlength="140" placeholder="Enter a clear title"></div>
           <div class="tik-ideas-field"><label for="tik-ideas-author">Creator name</label><input id="tik-ideas-author" class="tik-ideas-input" type="text" maxlength="100" placeholder="Name displayed on the cover"></div>
-          <div class="tik-ideas-field"><label for="tik-ideas-cover-upload">Optional cover image</label><input id="tik-ideas-cover-upload" class="tik-ideas-input" type="file" accept="image/png,image/jpeg,image/webp"><p class="tik-ideas-help">Choose an image or use a built-in cover style. Images remain local during this preview.</p></div>
-          <div class="tik-ideas-field"><label for="tik-ideas-body-text">Describe your idea or research</label><textarea id="tik-ideas-body-text" class="tik-ideas-input" maxlength="100000" placeholder="Write your original work here..."></textarea></div>
-          <div class="tik-ideas-field"><label for="tik-ideas-document">Or attach a document</label><input id="tik-ideas-document" class="tik-ideas-input" type="file" accept=".txt,.md,.pdf,.docx"><p class="tik-ideas-help">The file is not uploaded. You can calculate a local SHA-256 fingerprint to preview future verification.</p></div>
-          <fieldset class="tik-ideas-field" style="border:0;padding:0"><legend class="tik-ideas-legend">Visibility preference</legend><div class="tik-ideas-visibility"><label class="tik-ideas-radio"><input type="radio" name="tik-ideas-visibility" value="private" checked><span><strong>Private</strong><small>Intended only for your authorized library access.</small></span></label><label class="tik-ideas-radio"><input type="radio" name="tik-ideas-visibility" value="public"><span><strong>Public</strong><small>Intended for optional sharing, never marketplace listing.</small></span></label></div><p class="tik-ideas-help">Visibility is a preference only until the secure backend is implemented. Do not enter confidential inventions into a shared or untrusted device.</p></fieldset>
+          <div class="tik-ideas-field" id="tik-ideas-cover-upload-field" hidden><label for="tik-ideas-cover-upload">Choose your cover image</label><input id="tik-ideas-cover-upload" class="tik-ideas-input" type="file" accept="image/png,image/jpeg,image/gif,.jpg,.jpeg,.png,.gif"><p class="tik-ideas-help">400 × 400 pixels. JPG, PNG, or GIF. Maximum 2 MB.</p></div>
+          <p class="tik-ideas-help" style="margin:0 0 12px">Write your work directly, attach a Word document, or use both.</p><div class="tik-ideas-field"><label for="tik-ideas-body-text">Your idea or research</label><textarea id="tik-ideas-body-text" class="tik-ideas-input" maxlength="100000" placeholder="Write your original work here..."></textarea></div>
+          <div class="tik-ideas-field"><label for="tik-ideas-document">Or attach a document</label><input id="tik-ideas-document" class="tik-ideas-input" type="file" accept=".docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document"><p class="tik-ideas-help">Microsoft Word (.docx) only. Optional.</p></div>
+          <fieldset class="tik-ideas-field" style="border:0;padding:0"><legend class="tik-ideas-legend">Visibility preference</legend><div class="tik-ideas-visibility"><label class="tik-ideas-radio"><input type="radio" name="tik-ideas-visibility" value="private" checked><span><strong>Private</strong><small>Intended only for your authorized library access.</small></span></label><label class="tik-ideas-radio"><input type="radio" name="tik-ideas-visibility" value="public"><span><strong>Public</strong><small>Intended for optional sharing, never marketplace listing.</small></span></label></div></fieldset>
           <div class="tik-ideas-divider"></div>
-          <div class="tik-ideas-actions"><button id="tik-ideas-fingerprint-button" class="tik-ideas-action" type="button">Preview Content Fingerprint</button><button id="tik-ideas-reset-button" class="tik-ideas-action secondary" type="button">Clear Preview</button></div>
+          <div class="tik-ideas-actions"><button id="tik-ideas-fingerprint-button" class="tik-ideas-action" type="button">Preview Content</button><button id="tik-ideas-reset-button" class="tik-ideas-action secondary" type="button">Clear</button></div>
           <p id="tik-ideas-feedback" role="status" aria-live="polite"></p>
           <div id="tik-ideas-hash" hidden></div>
-          <div class="tik-ideas-divider"></div>
-          <div class="tik-ideas-safeguard"><strong>Coming in the next integration steps:</strong> XRPL NFT creation without sell offers, a dedicated My Library tab, CFC Reader access, Claim Bonus CFC Tokens, and linked development history. A timestamped blockchain record provides supporting evidence of existence; it does not automatically establish intellectual property ownership.</div>
         </div>
         <aside aria-label="Cover designer preview">
-          <div id="tik-ideas-cover" class="tik-ideas-cover" data-theme="blue">
+          <div class="tik-cover-mode-row" role="group" aria-label="Choose cover format"><button id="tik-cover-mode-text" class="tik-cover-mode-btn" type="button" aria-pressed="true">Text Cover</button><button id="tik-cover-mode-image" class="tik-cover-mode-btn" type="button" aria-pressed="false">Image Cover</button></div>
+          <p id="tik-cover-mode-hint" class="tik-cover-mode-hint">Your title and name will appear centered on a designed cover.</p>
+          <div id="tik-ideas-cover" class="tik-ideas-cover" data-theme="blue" data-cover-mode="text">
             <img id="tik-ideas-cover-image" alt="Selected cover background" hidden>
             <div class="tik-cover-tag">TIK / Ideas &amp; Research</div>
             <h3 id="tik-ideas-cover-title" class="tik-cover-title">Your idea begins here</h3>
             <div id="tik-ideas-cover-author" class="tik-cover-author">Creator name</div>
           </div>
           <div class="tik-ideas-theme-row" role="group" aria-label="Cover color theme"><button class="tik-theme-btn" type="button" data-theme="blue" aria-pressed="true">Ocean</button><button class="tik-theme-btn" type="button" data-theme="slate" aria-pressed="false">Slate</button><button class="tik-theme-btn" type="button" data-theme="violet" aria-pressed="false">Violet</button></div>
-          <p class="tik-ideas-help" style="text-align:center">Live cover preview · not yet an NFT</p>
+          <div class="tik-ideas-actions tik-ideas-downloads"><button id="tik-ideas-download-cover" class="tik-ideas-action secondary" type="button">Download Cover</button><button id="tik-ideas-download-word" class="tik-ideas-action secondary" type="button">Download Word Document</button></div>
         </aside>
       </div>
     </div>
@@ -2566,71 +2587,145 @@ else{abaMemberStatus('Checking your membership...');abaConfirmMember().catch(()=
 </script>
 
 <script id="tik-ideas-stage1-script">
-/* Isolated, local-only preview. Never calls a TIK API or changes the existing wizard. */
+/* Independent Ideas & Research editor. No changes to existing publishing wizard. */
 (() => {
   'use strict';
   const $ = id => document.getElementById(id);
   const publish = $('tik-choice-publish'), ideas = $('tik-choice-ideas');
-  const newPanel = $('tik-ideas-workspace');
-  const existingSections = ['how-it-works','specs-trigger','creator-studio'];
+  const panel = $('tik-ideas-workspace');
+  const originalSections = ['how-it-works','specs-trigger','creator-studio'];
   function choose(mode) {
     const isIdeas = mode === 'ideas';
-    publish.setAttribute('aria-pressed', String(!isIdeas));
-    ideas.setAttribute('aria-pressed', String(isIdeas));
-    publish.querySelector('.tik-choice-state').textContent = isIdeas ? 'Select this pathway' : 'Selected pathway';
-    ideas.querySelector('.tik-choice-state').textContent = isIdeas ? 'Selected pathway' : 'Select this pathway';
-    existingSections.forEach(id => { $(id).hidden = isIdeas; });
-    newPanel.hidden = !isIdeas;
-    if (isIdeas) newPanel.scrollIntoView({behavior:'smooth',block:'start'});
+    publish.setAttribute('aria-pressed',String(!isIdeas));
+    ideas.setAttribute('aria-pressed',String(isIdeas));
+    publish.querySelector('.tik-choice-state').textContent=isIdeas?'Select this pathway':'Selected pathway';
+    ideas.querySelector('.tik-choice-state').textContent=isIdeas?'Selected pathway':'Select this pathway';
+    originalSections.forEach(id=>{$(id).hidden=isIdeas;});
+    panel.hidden=!isIdeas;
+    if(isIdeas)panel.scrollIntoView({behavior:'smooth',block:'start'});
   }
-  publish.addEventListener('click', () => choose('publish'));
-  ideas.addEventListener('click', () => choose('ideas'));
-  const title = $('tik-ideas-title'), author = $('tik-ideas-author');
-  const coverTitle = $('tik-ideas-cover-title'), coverAuthor = $('tik-ideas-cover-author');
-  const feedback = $('tik-ideas-feedback'), hashOutput = $('tik-ideas-hash');
-  const cover = $('tik-ideas-cover'), coverImage = $('tik-ideas-cover-image');
-  const upload = $('tik-ideas-cover-upload'), documentFile = $('tik-ideas-document');
-  const bodyText = $('tik-ideas-body-text');
-  let coverObjectUrl = null;
-  title.addEventListener('input', () => {coverTitle.textContent=title.value.trim()||'Your idea begins here';});
-  author.addEventListener('input', () => {coverAuthor.textContent=author.value.trim()||'Creator name';});
-  document.querySelectorAll('#tik-ideas-workspace .tik-theme-btn').forEach(button => button.addEventListener('click', () => {
-    cover.dataset.theme = button.dataset.theme;
-    document.querySelectorAll('#tik-ideas-workspace .tik-theme-btn').forEach(b => b.setAttribute('aria-pressed',String(b===button)));
+  publish.addEventListener('click',()=>choose('publish'));
+  ideas.addEventListener('click',()=>choose('ideas'));
+  const title=$('tik-ideas-title'), author=$('tik-ideas-author'), body=$('tik-ideas-body-text');
+  const coverTitle=$('tik-ideas-cover-title'),coverAuthor=$('tik-ideas-cover-author');
+  const feedback=$('tik-ideas-feedback'), preview=$('tik-ideas-hash');
+  const cover=$('tik-ideas-cover'),coverImage=$('tik-ideas-cover-image');
+  const imageInput=$('tik-ideas-cover-upload'),documentInput=$('tik-ideas-document');
+  const imageField=$('tik-ideas-cover-upload-field');
+  const textMode=$('tik-cover-mode-text'),imageMode=$('tik-cover-mode-image');
+  let imageUrl=null;
+  function setCoverMode(mode){
+    const isImage=mode==='image';
+    cover.dataset.coverMode=mode;
+    textMode.setAttribute('aria-pressed',String(!isImage));
+    imageMode.setAttribute('aria-pressed',String(isImage));
+    imageField.hidden=!isImage;
+    document.querySelector('.tik-ideas-theme-row').hidden=isImage;
+    $('tik-cover-mode-hint').textContent=isImage?'Upload your 400 × 400 image (JPG, PNG, or GIF; maximum 2 MB).':'Your title appears centered on the cover.';
+  }
+  textMode.addEventListener('click',()=>setCoverMode('text'));
+  imageMode.addEventListener('click',()=>setCoverMode('image'));
+  title.addEventListener('input',()=>{coverTitle.textContent=title.value.trim()||'Your idea begins here';});
+  author.addEventListener('input',()=>{coverAuthor.textContent=author.value.trim()||'Creator name';});
+  document.querySelectorAll('#tik-ideas-workspace .tik-theme-btn').forEach(b=>b.addEventListener('click',()=>{
+    cover.dataset.theme=b.dataset.theme;
+    document.querySelectorAll('#tik-ideas-workspace .tik-theme-btn').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));
   }));
-  function removeCoverImage() {
-    if(coverObjectUrl) URL.revokeObjectURL(coverObjectUrl);
-    coverObjectUrl=null;coverImage.hidden=true;coverImage.removeAttribute('src');
-  }
-  upload.addEventListener('change', () => {
-    removeCoverImage();
-    const f=upload.files?.[0];
-    if(!f) return;
-    if(!['image/jpeg','image/png','image/webp'].includes(f.type) || f.size>5*1024*1024){
-      upload.value='';feedback.textContent='Choose a JPG, PNG, or WEBP cover image under 5 MB.';return;
+  function clearImage(){if(imageUrl)URL.revokeObjectURL(imageUrl);imageUrl=null;coverImage.hidden=true;coverImage.removeAttribute('src');}
+  imageInput.addEventListener('change',async()=>{
+    clearImage();const file=imageInput.files?.[0];if(!file)return;
+    if(!['image/jpeg','image/png','image/gif'].includes(file.type)||file.size>=2*1024*1024){
+      imageInput.value='';feedback.textContent='Choose a JPG, PNG, or GIF image smaller than 2 MB.';return;
     }
-    coverObjectUrl=URL.createObjectURL(f);coverImage.src=coverObjectUrl;coverImage.hidden=false;
-    feedback.textContent='Cover image previewed locally. Nothing has been uploaded.';
-  });
-  $('tik-ideas-fingerprint-button').addEventListener('click', async () => {
-    feedback.textContent='';hashOutput.hidden=true;hashOutput.textContent='';
-    const f=documentFile.files?.[0], text=bodyText.value.trim();
-    if(!f&&!text){feedback.textContent='Write your idea or attach a file to preview its fingerprint.';return;}
-    if(!globalThis.crypto?.subtle){feedback.textContent='SHA-256 is unavailable in this browser context. Use a secure HTTPS page.';return;}
-    if(f&&f.size>20*1024*1024){feedback.textContent='For this preview, choose a file under 20 MB.';return;}
+    const objectUrl=URL.createObjectURL(file);
     try{
-      const bytes=f?await f.arrayBuffer():new TextEncoder().encode(text);
-      const hash=await crypto.subtle.digest('SHA-256',bytes);
-      const hex=Array.from(new Uint8Array(hash),b=>b.toString(16).padStart(2,'0')).join('');
-      hashOutput.textContent='SHA-256 (local preview): '+hex;hashOutput.hidden=false;
-      feedback.textContent=f?'Fingerprint calculated for your attached file. No file was uploaded or recorded on XRPL.':'Fingerprint calculated for your text. No content was uploaded or recorded on XRPL.';
-    }catch{feedback.textContent='Unable to calculate the fingerprint for this content.';}
+      const img=new Image();img.src=objectUrl;await img.decode();
+      if(img.naturalWidth!==400||img.naturalHeight!==400){
+        URL.revokeObjectURL(objectUrl);imageInput.value='';feedback.textContent='Cover images must be exactly 400 × 400 pixels.';return;
+      }
+      imageUrl=objectUrl;coverImage.src=imageUrl;coverImage.hidden=false;feedback.textContent='';
+    }catch{URL.revokeObjectURL(objectUrl);imageInput.value='';feedback.textContent='Unable to open the image.';}
   });
-  $('tik-ideas-reset-button').addEventListener('click', () => {
-    [title,author,bodyText,upload,documentFile].forEach(el=>{el.value='';});
-    removeCoverImage();coverTitle.textContent='Your idea begins here';coverAuthor.textContent='Creator name';
+  documentInput.addEventListener('change',()=>{
+    const file=documentInput.files?.[0];if(!file)return;
+    if(!/\.docx$/i.test(file.name)){
+      documentInput.value='';feedback.textContent='Please choose a Microsoft Word (.docx) document.';
+    }else feedback.textContent='';
+  });
+  const fileSafeName = value=>(value.trim()||'Ideas-and-Research').replace(/[^\w\- ]+/g,'').trim().replace(/\s+/g,'-').slice(0,65)||'Ideas-and-Research';
+  const saveBlob=(blob,name)=>{const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1500);};
+  const addPreviewText=(root,tag,text,cls)=>{const e=document.createElement(tag);if(cls)e.className=cls;e.textContent=text;root.appendChild(e);};
+  $('tik-ideas-fingerprint-button').addEventListener('click',()=>{
+    feedback.textContent='';preview.replaceChildren();
+    const label=title.value.trim(),txt=body.value.trim(),file=documentInput.files?.[0];
+    if(!label&&!txt&&!file){feedback.textContent='Add a title, write your work, or attach a Word document to preview.';preview.hidden=true;return;}
+    addPreviewText(preview,'h3',label||'Ideas & Research');
+    if(author.value.trim())addPreviewText(preview,'p','By '+author.value.trim());
+    if(txt){addPreviewText(preview,'div','Your work','tik-preview-label');addPreviewText(preview,'p',txt);}
+    if(file){addPreviewText(preview,'div','Attached Word document','tik-preview-label');addPreviewText(preview,'p',file.name);}
+    if(!txt&&!file)addPreviewText(preview,'p','Add a description or Word document if you would like to include more detail.');
+    preview.hidden=false;
+    preview.scrollIntoView({behavior:'smooth',block:'nearest'});
+  });
+  $('tik-ideas-download-cover').addEventListener('click',async()=>{
+    const canvas=document.createElement('canvas');canvas.width=400;canvas.height=400;
+    const cx=canvas.getContext('2d');
+    if(cover.dataset.coverMode==='image'){
+      if(!imageUrl){feedback.textContent='Choose an image first, or select Text Cover.';return;}
+      const img=new Image();img.src=imageUrl;
+      try{await img.decode();cx.drawImage(img,0,0,400,400);}catch{feedback.textContent='Unable to prepare this cover image.';return;}
+    }else{
+      const palette=cover.dataset.theme==='violet'?['#342e60','#101727']:cover.dataset.theme==='slate'?['#33495c','#101925']:['#0e3450','#071827'];
+      const grad=cx.createLinearGradient(0,0,400,400);grad.addColorStop(0,palette[0]);grad.addColorStop(1,palette[1]);cx.fillStyle=grad;cx.fillRect(0,0,400,400);
+      const glow=cx.createRadialGradient(290,70,2,290,70,245);glow.addColorStop(0,'rgba(110,198,234,.15)');glow.addColorStop(1,'rgba(110,198,234,0)');cx.fillStyle=glow;cx.fillRect(0,0,400,400);
+      cx.textAlign='center';cx.textBaseline='middle';cx.fillStyle='#a2e4f8';cx.font='700 11px Arial';cx.fillText('TIK / IDEAS & RESEARCH',200,35);
+      function lines(str,maxWidth,font){cx.font=font;const words=str.split(/\s+/);const result=[];let line='';for(const word of words){const tryLine=line?line+' '+word:word;if(cx.measureText(tryLine).width>maxWidth&&line){result.push(line);line=word;}else line=tryLine;}if(line)result.push(line);return result;}
+      const name=title.value.trim()||'Your idea begins here';
+      let fontSize=30, wraps=[];do{wraps=lines(name,344,`700 ${fontSize}px Arial`);if(wraps.length<=5)break;fontSize-=2;}while(fontSize>=16);
+      const spacing=fontSize*1.28;const y=200-(wraps.length-1)*spacing/2;
+      cx.font=`700 ${fontSize}px Arial`;cx.fillStyle='#ffffff';
+      wraps.slice(0,6).forEach((line,i)=>cx.fillText(line,200,y+i*spacing));
+      if(author.value.trim()){cx.font='15px Arial';cx.fillStyle='#d1e8f4';cx.fillText(author.value.trim().slice(0,45),200,Math.min(360,y+wraps.length*spacing+12));}
+    }
+    canvas.toBlob(blob=>{if(blob)saveBlob(blob,fileSafeName(title.value)+'-cover.png');else feedback.textContent='Unable to download the cover.';},'image/png');
+  });
+  // Minimal DOCX writer using ZIP stored entries; no external libraries or network dependencies.
+  const enc = new TextEncoder();
+  const xmlEscape=t=>t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&apos;');
+  const crcTable=new Uint32Array(256);for(let n=0;n<256;n++){let c=n;for(let k=0;k<8;k++)c=(c&1)?0xedb88320^(c>>>1):c>>>1;crcTable[n]=c>>>0;}
+  function crc32(data){let crc=0xffffffff;for(const b of data)crc=crcTable[(crc^b)&255]^(crc>>>8);return (crc^0xffffffff)>>>0;}
+  const u16=(v)=>[v&255,(v>>>8)&255],u32=v=>[v&255,(v>>>8)&255,(v>>>16)&255,(v>>>24)&255];
+  function zip(entries){let offset=0;const parts=[],central=[];for(const [filename,content] of entries){const n=enc.encode(filename),d=enc.encode(content),crc=crc32(d);
+    const local=new Uint8Array([80,75,3,4,...u16(20),...u16(0),...u16(0),...u16(0),...u16(0),...u32(crc),...u32(d.length),...u32(d.length),...u16(n.length),...u16(0),...n]);
+    parts.push(local,d);const cd=new Uint8Array([80,75,1,2,...u16(20),...u16(20),...u16(0),...u16(0),...u16(0),...u16(0),...u32(crc),...u32(d.length),...u32(d.length),...u16(n.length),...u16(0),...u16(0),...u16(0),...u16(0),...u32(0),...u32(offset),...n]);central.push(cd);offset+=local.length+d.length;}
+    const size=central.reduce((n,p)=>n+p.length,0);return new Blob([...parts,...central,new Uint8Array([80,75,5,6,...u16(0),...u16(0),...u16(entries.length),...u16(entries.length),...u32(size),...u32(offset),...u16(0)])],{type:'application/vnd.openxmlformats-officedocument.wordprocessingml.document'});
+  }
+  function makeDocx(){const p=text=>'<w:p><w:r><w:t xml:space="preserve">'+xmlEscape(text)+'</w:t></w:r></w:p>';
+    const paragraphs=[title.value.trim()||'Ideas & Research'];if(author.value.trim())paragraphs.push('By '+author.value.trim());paragraphs.push('');paragraphs.push(...(body.value.trim()||'').split(/\r?\n/));
+    const bodyXML=paragraphs.map(p).join('');
+    return zip([
+      ['[Content_Types].xml','<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/></Types>'],
+      ['_rels/.rels','<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/></Relationships>'],
+      ['word/document.xml','<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:body>'+bodyXML+'<w:sectPr/></w:body></w:document>']
+    ]);
+  }
+  $('tik-ideas-download-word').addEventListener('click',()=>{
+    if(!title.value.trim()&&!body.value.trim()&&documentInput.files?.[0]){
+      saveBlob(documentInput.files[0],documentInput.files[0].name);return;
+    }
+    if(!title.value.trim()&&!body.value.trim()){
+      feedback.textContent='Add a title or write your idea to download a Word document.';return;
+    }
+    saveBlob(makeDocx(),fileSafeName(title.value)+'.docx');
+    feedback.textContent='';
+  });
+  $('tik-ideas-reset-button').addEventListener('click',()=>{
+    [title,author,body,imageInput,documentInput].forEach(e=>{e.value='';});
+    clearImage();setCoverMode('text');cover.dataset.theme='blue';
+    document.querySelectorAll('#tik-ideas-workspace .tik-theme-btn').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.theme==='blue')));
+    coverTitle.textContent='Your idea begins here';coverAuthor.textContent='Creator name';
     document.querySelector('#tik-ideas-workspace input[name="tik-ideas-visibility"][value="private"]').checked=true;
-    feedback.textContent='Preview cleared. No submission was created.';hashOutput.textContent='';hashOutput.hidden=true;
+    preview.replaceChildren();preview.hidden=true;feedback.textContent='';
   });
 })();
 </script>
