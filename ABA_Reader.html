@@ -715,15 +715,11 @@ async function loadAbaIdeasResearch(id,statusEl,content){
   function makeButton(label,callback){const btn=document.createElement('button');btn.className='btn-wallet';btn.type='button';btn.textContent=label;btn.style.cssText='margin:8px;cursor:pointer';btn.addEventListener('click',callback);return btn;}
   function info(msg){statusEl.textContent=msg;}
   async function signIn(){
-    try{
-      const r=await request('/auth/start',{method:'POST',body:{}});
-      info('Confirm your wallet in Xaman.');resultBox.replaceChildren();
-      const a=document.createElement('a');a.href=r.xaman_url;a.target='_blank';a.rel='noopener noreferrer';a.textContent='Open Xaman to Verify Wallet';a.style.cssText='color:#87CEEB;display:inline-block;padding:10px';resultBox.append(a);
-      resultBox.append(makeButton('Continue After Signing',async()=>{
-        try{const verified=await request('/auth/complete',{method:'POST',body:{challenge_id:r.challenge_id}});sessionStorage.setItem(SESSION,verified.token);await showIdea();}
-        catch(e){info(e.message);}
-      }));
-    }catch(e){info(e.message);}
+    // Same verified Creator Studio wallet session; do not initiate a second Xaman login.
+    info('Your Ideas & Research wallet session is unavailable or expired. Open Creator Studio using your existing ABA sign-in and wallet connection, then return to My Library.');
+    resultBox.replaceChildren();
+    const a=document.createElement('a');a.href='/creator-admin';a.textContent='Open Creator Studio';
+    a.style.cssText='color:#87CEEB;display:inline-block;padding:10px';resultBox.append(a);
   }
   async function b64Bytes(value){
     const raw=atob(value);const bytes=new Uint8Array(raw.length);for(let i=0;i<raw.length;i++)bytes[i]=raw.charCodeAt(i);return bytes;
