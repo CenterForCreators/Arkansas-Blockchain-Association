@@ -2742,10 +2742,71 @@ else{abaMemberStatus('Checking your membership...');abaConfirmMember().catch(()=
   }
   $('tik-ideas-fingerprint-button').addEventListener('click',showReview);
   $('tik-review-back').addEventListener('click',showEditor);
-  $('tik-review-start').addEventListener('click',()=>{
-    // Existing publishing mint endpoints also create marketplace records and sell offers.
-    // Never use them for Ideas & Research. Only a dedicated integration may handle this.
-    reviewStatus.textContent='Tokenization is not available for Ideas & Research yet. Your work is still here; you can return to edit it.';
+  // Dedicated Ideas & Research tokenization; no calls to the Publish Knowledge endpoints.
+  let tikMintPhase='ready',tikChallenge=null,tikSession=null,tikRecordId=null;
+  const tikStartButton=$('tik-review-start');
+  function tikShowLink(url,label){
+    reviewStatus.replaceChildren();
+    const a=document.createElement('a');a.href=url;a.target='_blank';a.rel='noopener noreferrer';
+    a.className='tik-ideas-action';a.textContent=label;
+    a.style.cssText='display:inline-block;text-decoration:none;margin:8px 0 3px';
+    reviewStatus.append(a);
+  }
+  function tikSay(message){reviewStatus.textContent=message;}
+  async function tikApi(path,body,token){
+    const base=String(window.ABA_TIK_IDEAS_API_URL||'https://aba-tik-ideas-research-backend.onrender.com').replace(/\/$/,'');
+    if(!/^https:\/\//.test(base))throw Error('Tokenization service is unavailable. Please try again later.');
+    const r=await fetch(base+'/api/ideas-research'+path,{
+      method:'POST',headers:{'Content-Type':'application/json',...(token?{'Authorization':'Bearer '+token}:{})},
+      body:JSON.stringify(body||{})});
+    const data=await r.json().catch(()=>({}));
+    if(!r.ok)throw Error(data.error||'Unable to complete this step. Please try again.');
+    return data;
+  }
+  function tikBase64(bytes){
+    let result='';for(let i=0;i<bytes.length;i+=8192){result+=String.fromCharCode(...bytes.subarray(i,i+8192));}
+    return btoa(result);
+  }
+  async function tikFileBase64(file){return tikBase64(new Uint8Array(await file.arrayBuffer()));}
+  async function tikPrepareRecord(){
+    const written=body.value.trim(),word=documentInput.files?.[0];
+    const content=word?(written?{type:'combined',text:written,file:{filename:word.name,base64:await tikFileBase64(word)}}:
+      {type:'file',filename:word.name,base64:await tikFileBase64(word)}):{type:'text',text:written};
+    const record={title:title.value.trim(),creator_name:author.value.trim()||'Creator',
+      visibility:document.querySelector('input[name="tik-ideas-visibility"]:checked')?.value||'private',
+      cover_theme:cover.dataset.theme||'blue',content};
+    if(cover.dataset.coverMode==='image'&&normalizedCoverFile){
+      record.cover={mime:'image/jpeg',base64:await tikFileBase64(normalizedCoverFile)};
+    }
+    return record;
+  }
+  tikStartButton.addEventListener('click',async()=>{
+    if(tikStartButton.disabled)return;
+    tikStartButton.disabled=true;
+    try{
+      if(tikMintPhase==='ready'){
+        const auth=await tikApi('/auth/start',{});
+        tikChallenge=auth.challenge_id;tikMintPhase='verify_wallet';
+        tikShowLink(auth.xaman_url,'Open Xaman to Verify Wallet');
+        tikStartButton.textContent='Continue After Signing In →';
+      }else if(tikMintPhase==='verify_wallet'){
+        const auth=await tikApi('/auth/complete',{challenge_id:tikChallenge});
+        tikSession=auth.token;
+        const record=await tikApi('/records',await tikPrepareRecord(),tikSession);
+        tikRecordId=record.id;
+        const mint=await tikApi('/records/'+encodeURIComponent(tikRecordId)+'/mint/start',{},tikSession);
+        tikMintPhase='confirm_mint';
+        tikShowLink(mint.xaman_url,'Open Xaman to Tokenize');
+        tikStartButton.textContent='Confirm Tokenization →';
+      }else if(tikMintPhase==='confirm_mint'){
+        const result=await tikApi('/records/'+encodeURIComponent(tikRecordId)+'/mint/complete',{},tikSession);
+        if(result.status==='minted'){
+          tikMintPhase='done';tikSay('Your idea or research has been tokenized on XRPL.');
+          tikStartButton.textContent='Tokenization Complete';
+        }else tikSay(result.status==='awaiting_signature'?'Please sign the NFT transaction in Xaman, then select Confirm Tokenization again.':'Your transaction is being verified on XRPL. Please select Confirm Tokenization again shortly.');
+      }
+    }catch(err){tikSay(err.message||'Unable to continue. Please try again.');}
+    finally{tikStartButton.disabled=tikMintPhase==='done';}
   });
   $('tik-ideas-reset-button').addEventListener('click',()=>{
     [title,author,body,imageInput,documentInput].forEach(e=>{e.value='';});
