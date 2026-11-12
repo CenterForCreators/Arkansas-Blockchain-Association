@@ -801,7 +801,18 @@ body.aba-membership-pending .site-footer{visibility:hidden!important}
     <div class="section-tag tag-gold">MY LIBRARY</div>
     <h2 class="section-title">Your Learning Library</h2>
     <p class="section-sub">Your purchased and unlocked learning experiences. Open any item to continue in the interactive reader.</p>
+   <style id="aba-owned-filter-styling">#aba-owned-filters .aba-owned-filter{border:1px solid rgba(135,206,235,.3);background:#10243a;color:#c8deef;padding:9px 14px;border-radius:4px;font:600 .78rem Inter,system-ui,sans-serif;cursor:pointer}#aba-owned-filters .aba-owned-filter.active{background:#235375;color:white;border-color:#87ceeb}</style>
+   <div id="aba-owned-filters" role="group" aria-label="Filter My Library" style="display:flex;flex-wrap:wrap;gap:8px;margin:16px 0">
+     <button type="button" class="aba-owned-filter active" data-owned-cat="all">All</button>
+     <button type="button" class="aba-owned-filter" data-owned-cat="book">Books</button>
+     <button type="button" class="aba-owned-filter" data-owned-cat="article">Articles</button>
+     <button type="button" class="aba-owned-filter" data-owned-cat="workshop">Workshops</button>
+     <button type="button" class="aba-owned-filter" data-owned-cat="idea">Ideas</button>
+     <button type="button" class="aba-owned-filter" data-owned-cat="research">Research</button>
+   </div>
    <div id="orders-grid" class="orders-grid"></div>
+   <div id="aba-owned-ideas" class="orders-grid" aria-label="My Ideas and Research" style="margin-top:20px"></div>
+   <p id="aba-owned-ideas-status" role="status" aria-live="polite" style="color:#9bd8ef;font-size:.83rem;margin:12px 0"></p>
      </div>
 </section>
 
@@ -1761,7 +1772,7 @@ if(!wallet) return;
       return;
     }
    grid.innerHTML = orders.map(o=>`
-  <div class="order-card">
+  <div class="order-card" data-owned-cat="${['book','article','workshop'].includes(String(o.category||o.marketplace_nft?.category||'').toLowerCase())?String(o.category||o.marketplace_nft?.category).toLowerCase():'other'}">
 <img
   src="${o.image_url || o.marketplace_nft?.image_url || (o.image_cid ? IPFS_GATEWAY + o.image_cid : '') || (o.marketplace_nft?.image_cid ? IPFS_GATEWAY + o.marketplace_nft.image_cid : '')}"
   class="buy-nft-img"
@@ -1942,6 +1953,7 @@ function switchView(view) {
   if (view === 'my-orders') {
     setTimeout(() => {
       loadOrders();
+      if(typeof window.abaLoadOwnedIdeas==='function')window.abaLoadOwnedIdeas();
     }, 50);
   }
   }
@@ -2077,5 +2089,93 @@ document.querySelector('.mobile-menu-btn').addEventListener('click', () => {
 })();
 </script>
 
+<script id="aba-ideas-existing-my-library-integration">
+/* Additive: separate authenticated Ideas & Research records in the EXISTING My Library.
+   Marketplace/Knowledge Library listings, buy flow, and CFC rewards are unchanged. */
+(()=>{
+ 'use strict';
+ const BASE='https://aba-tik-ideas-research-backend.onrender.com/api/ideas-research';
+ const SESSION='aba_tik_ideas_wallet_session';
+ const target=document.getElementById('aba-owned-ideas'),status=document.getElementById('aba-owned-ideas-status');
+ const filters=[...document.querySelectorAll('#aba-owned-filters [data-owned-cat]')];
+ const orders=document.getElementById('orders-grid');
+ if(!target||!status||!orders)return;
+ let category='all';
+ let generation=0;
+ function filter(){
+   for(const card of orders.querySelectorAll('.order-card')){
+     const c=card.dataset.ownedCat||'other';card.style.display=category==='all'||category===c?'':'none';
+   }
+   for(const card of target.querySelectorAll('[data-owned-cat]')){
+     const c=card.dataset.ownedCat;
+     card.style.display=category==='all'||category===c||((category==='idea'||category==='research')&&c==='idea-research')?'':'none';
+   }
+ }
+ const observer=new MutationObserver(filter);observer.observe(orders,{childList:true});
+ filters.forEach(b=>b.addEventListener('click',()=>{
+   category=b.dataset.ownedCat;filters.forEach(x=>x.classList.toggle('active',x===b));filter();
+ }));
+ const button=(label,callback)=>{const el=document.createElement('button');el.className='btn-full-outline';el.type='button';el.textContent=label;el.addEventListener('click',callback);return el;};
+ async function api(path,options={}){
+   const token=sessionStorage.getItem(SESSION);
+   if(!token)throw Error('Open Creator Studio and connect your existing wallet to access Ideas & Research.');
+   const res=await fetch(BASE+path,{...options,headers:{Authorization:'Bearer '+token,...(options.body?{'Content-Type':'application/json'}:{})}});
+   const data=await res.json().catch(()=>({}));if(!res.ok)throw Error(data.error||'Unable to access Ideas & Research');return data;
+ }
+ async function claim(item,btn){
+   btn.disabled=true;
+   try{
+     const result=await api('/records/'+encodeURIComponent(item.id)+'/reward/claim',{method:'POST'});
+     status.textContent=result.status==='paid'?'100 CFC bonus confirmed.':'CFC claim submitted. Check confirmation.';
+     await load();
+   }catch(e){status.textContent=e.message;btn.disabled=false;}
+ }
+ async function verify(item,btn){
+   btn.disabled=true;
+   try{
+     const result=await api('/records/'+encodeURIComponent(item.id)+'/reward/verify',{method:'POST'});
+     status.textContent=result.status==='paid'?'100 CFC bonus confirmed.':'Reward status: '+result.status;
+     await load();
+   }catch(e){status.textContent=e.message;btn.disabled=false;}
+ }
+ async function load(){
+   const current=++generation;target.replaceChildren();
+   if(!sessionStorage.getItem(SESSION)){
+     status.textContent='To see Ideas & Research, use your existing Creator Studio wallet connection. Your purchased content remains available above.';
+     return;
+   }
+   try{
+     const data=await api('/my-library');if(current!==generation)return;
+     for(const item of data.items||[]){
+       const kind=item.content_kind==='idea'?'idea':item.content_kind==='research'?'research':'idea-research';
+       const card=document.createElement('div');card.className='order-card';card.dataset.ownedCat=kind;
+       if(item.cover?.base64&&item.cover?.mime){
+         const img=document.createElement('img');img.className='buy-nft-img';img.alt='Cover for '+(item.title||'Ideas & Research');
+         img.src='data:'+item.cover.mime+';base64,'+item.cover.base64;card.append(img);
+       }
+       const name=document.createElement('div');name.className='order-name';name.textContent=item.title||'Untitled';card.append(name);
+       const detail=document.createElement('div');detail.className='order-meta';
+       detail.textContent=(kind==='idea'?'Idea':kind==='research'?'Research':'Ideas & Research')+' · '+(item.status==='minted'?'Minted':item.status==='mint_pending'?'Mint pending':'Draft');card.append(detail);
+       const actions=document.createElement('div');actions.style.cssText='display:flex;gap:8px;flex-wrap:wrap;margin-top:12px';
+       if(item.status==='minted'){
+         actions.append(button('Open Content',()=>{location.href='/reader?ideas_id='+encodeURIComponent(item.id);}));
+         if(item.reward_status==='unclaimed')actions.append(button('Claim 100 CFC',function(){claim(item,this);}));
+         else if(item.reward_status==='paid'){
+           const done=document.createElement('span');done.className='order-badge badge-completed';done.textContent='100 CFC Bonus Claimed';actions.append(done);
+         }else actions.append(button('Check CFC Bonus',function(){verify(item,this);}));
+       }
+       card.append(actions);target.append(card);
+     }
+     status.textContent=(data.items||[]).length?'':'No Ideas & Research items yet.';
+     filter();
+   }catch(err){if(current===generation)status.textContent=err.message;}
+ }
+ window.abaLoadOwnedIdeas=load;
+ if(new URLSearchParams(location.search).get('view')==='my-library'){
+   const open=()=>{if(typeof switchView==='function')switchView('my-orders');else load();};
+   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',open,{once:true});else open();
+ }
+})();
+</script>
 </body>
 </html>
