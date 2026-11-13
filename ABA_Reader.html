@@ -715,11 +715,32 @@ async function loadAbaIdeasResearch(id,statusEl,content){
   function makeButton(label,callback){const btn=document.createElement('button');btn.className='btn-wallet';btn.type='button';btn.textContent=label;btn.style.cssText='margin:8px;cursor:pointer';btn.addEventListener('click',callback);return btn;}
   function info(msg){statusEl.textContent=msg;}
   async function signIn(){
-    // Same verified Creator Studio wallet session; do not initiate a second Xaman login.
-    info('Your Ideas & Research wallet session is unavailable or expired. Open Creator Studio using your existing ABA sign-in and wallet connection, then return to My Library.');
-    resultBox.replaceChildren();
-    const a=document.createElement('a');a.href='/creator-admin';a.textContent='Open Creator Studio';
-    a.style.cssText='color:#87CEEB;display:inline-block;padding:10px';resultBox.append(a);
+    // Reuse the authorized ABA member/Xaman wallet identity. Never use a typed address as proof.
+    info('Restoring your existing ABA wallet session...');
+    try{
+      const member=await fetch('https://api.arkansasblockchainassociation.com/api/student-network/me',{credentials:'include'});
+      if(!member.ok)throw Error('Your ABA membership session has expired. Return to Creator Studio to sign in.');
+      if(!window.Xumm){
+        await new Promise((resolve,reject)=>{const script=document.createElement('script');script.src='https://xumm.app/assets/cdn/xumm.min.js';script.onload=resolve;script.onerror=()=>reject(Error('Xaman connection could not be loaded'));document.head.append(script);});
+      }
+      const xumm=new Xumm('eebd4c17-c3ef-435b-b891-89afb99e259e');
+      // Reading a restored account does not request a second wallet signature.
+      const wait=(p,ms)=>Promise.race([Promise.resolve(p),new Promise((_,reject)=>setTimeout(()=>reject(Error('Xaman session not yet available')),ms))]);
+      const account=await wait(xumm.user.account,5000);
+      const bearer=await wait(xumm.environment.bearer,5000);
+      if(!account||!bearer)throw Error('Please reconnect the same wallet in Creator Studio; no new NFT transaction is needed.');
+      const response=await fetch(BASE+'/auth/existing-wallet',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({xaman_bearer:bearer})});
+      const data=await response.json().catch(()=>({}));
+      if(!response.ok||!data.token||data.wallet!==account)throw Error(data.error||'The connected wallet could not be verified.');
+      sessionStorage.setItem(SESSION,data.token);sessionStorage.setItem('aba_tik_ideas_session_wallet',account);
+      return true;
+    }catch(error){
+      info(error.message||'Your Ideas & Research wallet session needs to be restored.');
+      resultBox.replaceChildren();
+      const a=document.createElement('a');a.href='/Creator_Studio';a.textContent='Return to Creator Studio';
+      a.style.cssText='color:#87CEEB;display:inline-block;padding:10px';resultBox.append(a);
+      return false;
+    }
   }
   async function b64Bytes(value){
     const raw=atob(value);const bytes=new Uint8Array(raw.length);for(let i=0;i<raw.length;i++)bytes[i]=raw.charCodeAt(i);return bytes;
@@ -731,7 +752,7 @@ async function loadAbaIdeasResearch(id,statusEl,content){
     const result=await window.mammoth.extractRawText({arrayBuffer:buffer});return result.value;
   }
   async function showIdea(){
-    if(!sess())return signIn();
+    if(!sess() && !(await signIn()))return;
     try{
       info('Opening Ideas & Research...');
       let record;
@@ -772,7 +793,7 @@ async function loadAbaIdeasResearch(id,statusEl,content){
           const done=document.createElement('span');done.style.color='#34D399';done.textContent='100 CFC bonus claimed';actionBar.append(done);
         }else if(bonus?.status==='unclaimed'){
           const b=makeButton('Claim 100 CFC',async()=>{
-            b.disabled=true;try{const result=await request('/records/'+encodeURIComponent(id)+'/reward/claim',{method:'POST'});info(result.status==='paid'?'100 CFC bonus confirmed.':'Bonus submitted. Check again for XRPL confirmation.');b.textContent='Check CFC Bonus';b.disabled=false;}
+            b.disabled=true;try{const result=await request('/records/'+encodeURIComponent(id)+'/reward/claim',{method:'POST'});info(result.status==='paid'?'100 CFC bonus confirmed.':'Bonus submitted. Awaiting XRPL confirmation; no second claim is needed.');b.textContent='Check CFC Bonus';b.onclick=async()=>{try{const check=await request('/records/'+encodeURIComponent(id)+'/reward/verify',{method:'POST'});info(check.status==='paid'?'100 CFC bonus confirmed.':'Reward status: '+check.status)}catch(err){info(err.message)}};b.disabled=false;}
             catch(e){info(e.message);b.disabled=false;}
           });actionBar.append(b);
         }else if(bonus){actionBar.append(makeButton('Check CFC Bonus',async()=>{
@@ -782,7 +803,7 @@ async function loadAbaIdeasResearch(id,statusEl,content){
       document.getElementById('statusBar').after(actionBar);
       // Existing AI guide works with the visible content but original publication reward tracking is not invoked.
       document.getElementById('aiButton').style.display='block';
-    }catch(e){info('Ideas & Research Reader: '+e.message);resultBox.replaceChildren();if(/session|sign-in|unauthoriz|invalid/i.test(e.message)){sessionStorage.removeItem(SESSION);await signIn();}}
+    }catch(e){info('Ideas & Research Reader: '+e.message);resultBox.replaceChildren();if(/session|sign-in|unauthoriz|401|expired/i.test(e.message)){sessionStorage.removeItem(SESSION);if(await signIn())return showIdea();}}
   }
   await showIdea();
 }
