@@ -710,7 +710,7 @@ async function loadAbaIdeasResearch(id,statusEl,content){
   const sess=()=>sessionStorage.getItem(SESSION)||'';
   async function request(path,{method='GET',body}={}){
     const response=await fetch(BASE+path,{method,headers:{...(sess()?{'Authorization':'Bearer '+sess()}:{}),...(body?{'Content-Type':'application/json'}:{})},...(body?{body:JSON.stringify(body)}:{})});
-    const data=await response.json().catch(()=>({}));if(!response.ok)throw Error(data.error||'Unable to load content');return data;
+    const data=await response.json().catch(()=>({}));if(!response.ok)throw Error(data.error||('HTTP '+response.status+' for '+path));return data;
   }
   function makeButton(label,callback){const btn=document.createElement('button');btn.className='btn-wallet';btn.type='button';btn.textContent=label;btn.style.cssText='margin:8px;cursor:pointer';btn.addEventListener('click',callback);return btn;}
   function info(msg){statusEl.textContent=msg;}
@@ -733,7 +733,15 @@ async function loadAbaIdeasResearch(id,statusEl,content){
   async function showIdea(){
     if(!sess())return signIn();
     try{
-      info('Opening Ideas & Research...');const record=await request('/reader/'+encodeURIComponent(id));
+      info('Opening Ideas & Research...');
+      let record;
+      try{record=await request('/reader/'+encodeURIComponent(id));}
+      catch(e){
+        if(!/not found|404|Cannot GET/i.test(e.message))throw e;
+        // /records/:id is the original, authenticated full-content route.
+        // Some backend deployments do not yet expose the reader alias.
+        record=await request('/records/'+encodeURIComponent(id));
+      }
       document.getElementById('nftName').textContent=record.title||'Ideas & Research';
       document.getElementById('nftCat').textContent=record.content_kind==='research'?'Research':record.content_kind==='idea'?'Idea':'Ideas & Research';
       document.getElementById('nftDesc').textContent=record.creator_name||'';
@@ -774,7 +782,7 @@ async function loadAbaIdeasResearch(id,statusEl,content){
       document.getElementById('statusBar').after(actionBar);
       // Existing AI guide works with the visible content but original publication reward tracking is not invoked.
       document.getElementById('aiButton').style.display='block';
-    }catch(e){info(e.message);resultBox.replaceChildren();if(/session|sign-in|unauthoriz|invalid/i.test(e.message)){sessionStorage.removeItem(SESSION);await signIn();}}
+    }catch(e){info('Ideas & Research Reader: '+e.message);resultBox.replaceChildren();if(/session|sign-in|unauthoriz|invalid/i.test(e.message)){sessionStorage.removeItem(SESSION);await signIn();}}
   }
   await showIdea();
 }
