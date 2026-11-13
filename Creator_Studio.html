@@ -2881,7 +2881,21 @@ window.abaIdeasGetSession = async function(){
         closeModal('xaman-modal');
         tikSay('Your idea or research has been tokenized on XRPL.');
         // Same confirmation modal already used by the working Publish Knowledge pathway.
-        showSuccess('&#127881;', 'Your Ideas & Research NFT is complete. You can view it in My Submissions or My Library.');
+        showSuccess('&#127881;', 'Your Ideas & Research NFT is complete. It is saved to My Submissions and My Library.');
+        // Only add actions to this Ideas & Research confirmation; no changes to Publish Knowledge.
+        const successBox=document.querySelector('#success-modal .modal-box');
+        if(successBox){
+          successBox.querySelectorAll('[data-aba-ideas-success-action]').forEach(node=>node.remove());
+          const actions=document.createElement('div');actions.dataset.abaIdeasSuccessAction='1';
+          actions.style.cssText='display:flex;flex-wrap:wrap;gap:10px;margin-top:14px';
+          const toReader=document.createElement('button');toReader.className='btn-sm-purple';toReader.textContent='Open in Reader';
+          toReader.onclick=async()=>{try{await window.abaOpenIdeasReader(tikRecordId)}catch(e){tikSay(e.message);alert(e.message)}};
+          const toLibrary=document.createElement('a');toLibrary.href='/Knowledge_Library?view=my-library';toLibrary.className='btn-sm-outline';toLibrary.textContent='View My Library';toLibrary.style.textDecoration='none';
+          actions.append(toReader,toLibrary);successBox.append(actions);
+          // Remove these scoped buttons whenever the normal confirmation is dismissed.
+          const normalDone=successBox.querySelector('button[onclick*="closeModal"]');
+          if(normalDone)normalDone.addEventListener('click',()=>actions.remove(),{once:true});
+        }
         tikStartButton.textContent='Tokenization Complete';
         tikStartButton.disabled=true;
         window.dispatchEvent(new CustomEvent('aba-ideas-minted',{detail:{id:tikRecordId}}));
@@ -2944,6 +2958,24 @@ window.abaIdeasGetSession = async function(){
   });
 })();
 </script>
+<script id="aba-ideas-reader-navigation">
+/* Ideas & Research only: verify the existing Reader page route before leaving this page. */
+window.abaOpenIdeasReader=async function(recordId){
+  if(!/^[0-9a-f-]{36}$/i.test(String(recordId||'')))throw Error('Invalid Ideas & Research record');
+  const paths=['/reader','/ABA_Reader'];
+  for(const path of paths){
+    try{
+      const response=await fetch(path,{method:'GET',credentials:'same-origin',cache:'no-store',headers:{Accept:'text/html'}});
+      if(!response.ok)continue;
+      const html=await response.text();
+      if(/<title>\s*ABA Interactive Reader\b/i.test(html)||html.includes('loadAbaIdeasResearch(')){
+        location.assign(path+'?ideas_id='+encodeURIComponent(recordId));return;
+      }
+    }catch(e){console.warn('Reader route check:',e.message);}
+  }
+  throw Error('The ABA Reader page could not be located. Check that the deployed Reader URL matches the working Publish Knowledge page.');
+};
+</script>
 <script id="aba-ideas-submissions-integration">
 /* Additive: Ideas & Research appears in existing My Submissions, never in marketplace.
    This is separate from the existing publishing dashboard and does not change its API. */
@@ -2985,7 +3017,7 @@ window.abaIdeasGetSession = async function(){
        status.textContent=item.status==='minted'?'Minted':item.status==='mint_pending'?'Mint pending':'Draft';card.append(status);
        const actions=document.createElement('div');actions.className='dash-actions';
        if(item.status==='minted'){
-         const read=document.createElement('a');read.href='/reader?ideas_id='+encodeURIComponent(item.id);read.className='btn-sm-purple';read.textContent='Open in Reader';read.style.textDecoration='none';actions.append(read);
+         const read=document.createElement('a');read.href='/reader?ideas_id='+encodeURIComponent(item.id);read.className='btn-sm-purple';read.textContent='Open in Reader';read.style.textDecoration='none';read.addEventListener('click',async event=>{event.preventDefault();try{await window.abaOpenIdeasReader(item.id)}catch(e){alert(e.message)}});actions.append(read);
        }
        const library=document.createElement('a');library.href='/Knowledge_Library?view=my-library';library.className='btn-sm-outline';library.textContent='View My Library';library.style.textDecoration='none';actions.append(library);
        card.append(actions);grid.append(card);
