@@ -689,7 +689,7 @@ textarea.tik-ideas-input{min-height:148px;resize:vertical;line-height:1.6}
 
           <p class="tik-ideas-help" style="margin:0 0 12px">Write your work directly, attach a Word document, or use both.</p><div class="tik-ideas-field"><label for="tik-ideas-body-text">Your idea or research</label><textarea id="tik-ideas-body-text" class="tik-ideas-input" maxlength="100000" placeholder="Write your original work here..."></textarea></div>
           <div class="tik-ideas-field"><label for="tik-ideas-document">Or attach a document</label><input id="tik-ideas-document" class="tik-ideas-input" type="file" accept=".docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document"><p class="tik-ideas-help">Microsoft Word (.docx) only. Optional.</p></div>
-          <fieldset class="tik-ideas-field" style="border:0;padding:0"><legend class="tik-ideas-legend">Visibility preference</legend><div class="tik-ideas-visibility"><label class="tik-ideas-radio"><input type="radio" name="tik-ideas-visibility" value="private" checked><span><strong>Private</strong><small>Intended only for your authorized library access.</small></span></label><label class="tik-ideas-radio"><input type="radio" name="tik-ideas-visibility" value="public"><span><strong>Public</strong><small>Intended for optional sharing, never marketplace listing.</small></span></label></div></fieldset>
+          <fieldset class="tik-ideas-field" style="border:0;padding:0"><legend class="tik-ideas-legend">Visibility preference</legend><div class="tik-ideas-visibility"><label class="tik-ideas-radio"><input type="radio" name="tik-ideas-visibility" value="private" checked><span><strong>Private</strong><small>Your content is restricted to your library. Your NFT title and cover are publicly visible on XRPL.</small></span></label><label class="tik-ideas-radio"><input type="radio" name="tik-ideas-visibility" value="public"><span><strong>Public</strong><small>Intended for optional sharing, never marketplace listing.</small></span></label></div></fieldset>
           <div class="tik-ideas-divider"></div>
           <div class="tik-ideas-actions"><button id="tik-ideas-fingerprint-button" class="tik-ideas-action" type="button">Preview & Continue →</button><button id="tik-ideas-reset-button" class="tik-ideas-action secondary" type="button">Clear</button></div>
           <p id="tik-ideas-feedback" role="status" aria-live="polite"></p>
@@ -2820,6 +2820,43 @@ window.abaIdeasGetSession = async function(){
     return btoa(result);
   }
   async function tikFileBase64(file){return tikBase64(new Uint8Array(await file.arrayBuffer()));}
+  // Capture the existing Ideas & Research cover as an actual NFT image.
+  // Uses the user's chosen design, title and creator name, rather than minting
+  // a generic cover or reading a preview that has never been persisted.
+  async function tikDesignedCover(){
+    if(cover.dataset.coverMode==='image' && normalizedCoverFile){
+      return {mime:'image/jpeg',base64:await tikFileBase64(normalizedCoverFile)};
+    }
+    const canvas=document.createElement('canvas');canvas.width=600;canvas.height=600;
+    const ctx=canvas.getContext('2d');if(!ctx)throw Error('Cover image could not be generated on this device.');
+    const palette={blue:['#0e3450','#071827','#a2e4f8'],slate:['#33495c','#101925','#cee5f4'],violet:['#342e60','#101727','#d4baff']};
+    const [first,last,accent]=palette[cover.dataset.theme]||palette.blue;
+    const bg=ctx.createLinearGradient(0,0,600,600);bg.addColorStop(0,first);bg.addColorStop(1,last);
+    ctx.fillStyle=bg;ctx.fillRect(0,0,600,600);
+    const glow=ctx.createRadialGradient(420,110,5,420,110,430);glow.addColorStop(0,'rgba(135,206,235,.2)');glow.addColorStop(1,'rgba(135,206,235,0)');
+    ctx.fillStyle=glow;ctx.fillRect(0,0,600,600);
+    ctx.strokeStyle='rgba(135,204,235,.5)';ctx.lineWidth=2;ctx.strokeRect(18,18,564,564);
+    ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillStyle=accent;ctx.font='bold 19px Inter, sans-serif';ctx.fillText('ABA  /  TIK',300,90);
+    ctx.font='bold 17px Inter, sans-serif';ctx.fillText('IDEAS & RESEARCH',300,123);
+    const text=title.value.trim()||'Your idea begins here';
+    function linesFor(str,maxWidth,font){
+      ctx.font=font;const words=str.split(/\s+/),lines=[];let current='';
+      for(const word of words){
+        const trial=current?current+' '+word:word;
+        if(current&&ctx.measureText(trial).width>maxWidth){lines.push(current);current=word;}else current=trial;
+      }
+      if(current)lines.push(current);return lines;
+    }
+    let fontSize=43;let lines=[];
+    do{lines=linesFor(text,490,`bold ${fontSize}px 'Space Grotesk',sans-serif`);if(lines.length<=6)break;fontSize-=2;}while(fontSize>23);
+    ctx.font=`bold ${fontSize}px 'Space Grotesk',sans-serif`;ctx.fillStyle='#ffffff';
+    const lineHeight=fontSize*1.28;const mid=320-(lines.length-1)*lineHeight/2;
+    for(let i=0;i<lines.length;i++)ctx.fillText(lines[i],300,mid+i*lineHeight,505);
+    ctx.font='21px Inter,sans-serif';ctx.fillStyle='#d1e8f4';
+    const creator=author.value.trim()||'Creator';ctx.fillText(creator,300,520,510);
+    return {mime:'image/jpeg',base64:canvas.toDataURL('image/jpeg',.88).split(',')[1]};
+  }
   async function tikPrepareRecord(){
     const written=body.value.trim(),word=documentInput.files?.[0];
     const content=word?(written?{type:'combined',text:written,file:{filename:word.name,base64:await tikFileBase64(word)}}:
@@ -2827,9 +2864,7 @@ window.abaIdeasGetSession = async function(){
     const record={title:title.value.trim(),creator_name:author.value.trim()||'Creator',content_kind:$('tik-ideas-kind').value,
       visibility:document.querySelector('input[name="tik-ideas-visibility"]:checked')?.value||'private',
       cover_theme:cover.dataset.theme||'blue',content};
-    if(cover.dataset.coverMode==='image'&&normalizedCoverFile){
-      record.cover={mime:'image/jpeg',base64:await tikFileBase64(normalizedCoverFile)};
-    }
+    record.cover=await tikDesignedCover();
     return record;
   }
   // Reuse the same visible Xaman modal as Publish Knowledge, but never its
@@ -2845,6 +2880,8 @@ window.abaIdeasGetSession = async function(){
         if(tikCheckTimer)clearInterval(tikCheckTimer);
         closeModal('xaman-modal');
         tikSay('Your idea or research has been tokenized on XRPL.');
+        // Same confirmation modal already used by the working Publish Knowledge pathway.
+        showSuccess('&#127881;', 'Your Ideas & Research NFT is complete. You can view it in My Submissions or My Library.');
         tikStartButton.textContent='Tokenization Complete';
         tikStartButton.disabled=true;
         window.dispatchEvent(new CustomEvent('aba-ideas-minted',{detail:{id:tikRecordId}}));
@@ -2872,7 +2909,7 @@ window.abaIdeasGetSession = async function(){
     tikChecks=0;
     // Confirm against the new backend and XRPL. Never assume signing is success.
     tikCheckTimer=setInterval(()=>{
-      if(tikMintPhase!=='confirm_mint'||++tikChecks>60){clearInterval(tikCheckTimer);return;}
+      if(tikMintPhase!=='confirm_mint'||++tikChecks>60){clearInterval(tikCheckTimer);if(tikMintPhase==='confirm_mint')tikSay('Still waiting for XRPL confirmation. Use Confirm Tokenization to check this same NFT; do not mint another.');return;}
       tikCheckMint();
     },3000);
   }
