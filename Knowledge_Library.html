@@ -2089,6 +2089,24 @@ document.querySelector('.mobile-menu-btn').addEventListener('click', () => {
 })();
 </script>
 
+<script id="aba-ideas-reader-navigation">
+/* Ideas & Research only: verify the existing Reader page route before leaving this page. */
+window.abaOpenIdeasReader=async function(recordId){
+  if(!/^[0-9a-f-]{36}$/i.test(String(recordId||'')))throw Error('Invalid Ideas & Research record');
+  const paths=['/reader','/ABA_Reader'];
+  for(const path of paths){
+    try{
+      const response=await fetch(path,{method:'GET',credentials:'same-origin',cache:'no-store',headers:{Accept:'text/html'}});
+      if(!response.ok)continue;
+      const html=await response.text();
+      if(/<title>\s*ABA Interactive Reader\b/i.test(html)||html.includes('loadAbaIdeasResearch(')){
+        location.assign(path+'?ideas_id='+encodeURIComponent(recordId));return;
+      }
+    }catch(e){console.warn('Reader route check:',e.message);}
+  }
+  throw Error('The ABA Reader page could not be located. Check that the deployed Reader URL matches the working Publish Knowledge page.');
+};
+</script>
 <script id="aba-ideas-existing-my-library-integration">
 /* Additive: separate authenticated Ideas & Research records in the EXISTING My Library.
    Marketplace/Knowledge Library listings, buy flow, and CFC rewards are unchanged. */
@@ -2168,7 +2186,7 @@ document.querySelector('.mobile-menu-btn').addEventListener('click', () => {
        detail.textContent=(kind==='idea'?'Idea':kind==='research'?'Research':'Ideas & Research')+' · '+(item.status==='minted'?'Minted':item.status==='mint_pending'?'Mint pending':'Draft');card.append(detail);
        const actions=document.createElement('div');actions.style.cssText='display:flex;gap:8px;flex-wrap:wrap;margin-top:12px';
        if(item.status==='minted'){
-         actions.append(button('Open Content',()=>{location.href='/reader?ideas_id='+encodeURIComponent(item.id);}));
+         actions.append(button('Open Content',async()=>{try{await window.abaOpenIdeasReader(item.id)}catch(e){status.textContent=e.message;}}));
          if(item.reward_status==='unclaimed')actions.append(button('Claim 100 CFC',function(){claim(item,this);}));
          else if(item.reward_status==='paid'){
            const done=document.createElement('span');done.className='order-badge badge-completed';done.textContent='100 CFC Bonus Claimed';actions.append(done);
