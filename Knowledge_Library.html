@@ -2134,10 +2134,37 @@ window.abaOpenIdeasReader=async function(recordId){
    category=b.dataset.ownedCat;filters.forEach(x=>x.classList.toggle('active',x===b));filter();
  }));
  const button=(label,callback)=>{const el=document.createElement('button');el.className='btn-full-outline';el.type='button';el.textContent=label;el.addEventListener('click',callback);return el;};
+ // My Library must work on direct navigation or in a new tab: sessionStorage
+ // alone is not a shared login. Restore an Ideas-specific session from the
+ // already connected Xaman OAuth identity; never accept an unverified address.
+ async function ensureIdeasSession(force=false){
+   let token=!force&&sessionStorage.getItem(SESSION);
+   if(token)return token;
+   if(typeof getXumm!=='function')throw Error('Connect your wallet to view Ideas & Research.');
+   const member=await fetch('https://api.arkansasblockchainassociation.com/api/student-network/me',{credentials:'include'});
+   if(!member.ok)throw Error('Sign in to your ABA membership to view Ideas & Research.');
+   const xumm=getXumm();
+   const deadline=(value,ms)=>Promise.race([Promise.resolve(value),new Promise((_,reject)=>setTimeout(()=>reject(Error('Xaman session unavailable. Connect your wallet and retry.')),ms))]);
+   const account=await deadline(xumm.user.account,8000);
+   const bearer=await deadline(xumm.environment.bearer,8000);
+   if(!account||!bearer)throw Error('Connect your Xaman wallet to view Ideas & Research.');
+   if(connectedWallet&&account!==connectedWallet)throw Error('Connect the same wallet used for your Ideas & Research NFT.');
+   const response=await fetch(BASE+'/auth/existing-wallet',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({xaman_bearer:bearer})});
+   const data=await response.json().catch(()=>({}));
+   if(!response.ok||!data.token||data.wallet!==account)throw Error(data.error||'Xaman session could not be verified.');
+   sessionStorage.setItem(SESSION,data.token);
+   sessionStorage.setItem('aba_tik_ideas_session_wallet',account);
+   return data.token;
+ }
  async function api(path,options={}){
-   const token=sessionStorage.getItem(SESSION);
-   if(!token)throw Error('Open Creator Studio and connect your existing wallet to access Ideas & Research.');
-   const res=await fetch(BASE+path,{...options,headers:{Authorization:'Bearer '+token,...(options.body?{'Content-Type':'application/json'}:{})}});
+   let token=await ensureIdeasSession();
+   const send=()=>fetch(BASE+path,{...options,headers:{Authorization:'Bearer '+token,...(options.body?{'Content-Type':'application/json'}:{})}});
+   let res=await send();
+   if(res.status===401){
+     sessionStorage.removeItem(SESSION);
+     token=await ensureIdeasSession(true);
+     res=await send();
+   }
    const data=await res.json().catch(()=>({}));if(!res.ok)throw Error(data.error||'Unable to access Ideas & Research');return data;
  }
  async function claim(item,btn){
@@ -2158,11 +2185,9 @@ window.abaOpenIdeasReader=async function(recordId){
  }
  async function load(){
    const current=++generation;target.replaceChildren();
-   if(!sessionStorage.getItem(SESSION)){
-     status.textContent='To see Ideas & Research, use your existing Creator Studio wallet connection. Your purchased content remains available above.';
-     return;
-   }
    try{
+     // Restore access automatically when the user opens My Library directly.
+     // If no wallet session exists, show an actionable message without hiding purchases.
      const data=await api('/my-library');if(current!==generation)return;
      // A previously signed NFT may have validated while the browser was closed.
      // Only verify existing mint requests; this NEVER submits another NFT mint.
