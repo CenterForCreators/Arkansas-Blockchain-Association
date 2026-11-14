@@ -2989,10 +2989,23 @@ window.abaOpenIdeasReader=async function(recordId){
  let loadGeneration=0;
  const normalizedKind=item=>item.content_kind==='research'?'Research':item.content_kind==='idea'?'Idea':'Ideas & Research';
  async function addIdeas(generation){
-   const jwt=sessionStorage.getItem(SESSION);
-   if(!jwt)return;
+   // Restore the authenticated Ideas session from the already-connected Xaman wallet.
+   // No new NFT transaction or wallet signature is requested by this refresh.
+   let jwt=sessionStorage.getItem(SESSION);
+   if(!jwt && (creatorWallet || localStorage.getItem('cfcWallet')) && typeof window.abaIdeasGetSession==='function'){
+     try{jwt=await window.abaIdeasGetSession();}
+     catch(error){console.warn('Ideas & Research session restoration:',error.message);return;}
+   }
+   if(!jwt || generation!==loadGeneration)return;
    try{
-     const r=await fetch(BASE+'/my-library',{headers:{Authorization:'Bearer '+jwt}});
+     let r=await fetch(BASE+'/my-library',{headers:{Authorization:'Bearer '+jwt}});
+     // The token can expire even while the standard Creator Studio wallet stays connected.
+     if(r.status===401 && typeof window.abaIdeasGetSession==='function'){
+       sessionStorage.removeItem(SESSION);
+       jwt=await window.abaIdeasGetSession();
+       if(generation!==loadGeneration)return;
+       r=await fetch(BASE+'/my-library',{headers:{Authorization:'Bearer '+jwt}});
+     }
      if(!r.ok)throw Error('Ideas & Research records unavailable');
      const data=await r.json();
      if(generation!==loadGeneration||!Array.isArray(data.items))return;
