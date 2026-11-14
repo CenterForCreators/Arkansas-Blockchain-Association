@@ -2635,19 +2635,17 @@ window.abaIdeasGetSession = async function(){
   ]);
   await deadline(abaMemberApi('/api/student-network/me'),12000,'ABA membership verification timed out. Please retry.');
   const xumm=getXumm();
-  // Use the same authorized Xaman SDK instance as Publish Knowledge.
-  // Previously the SDK bearer promise could remain unresolved without showing any status.
-  let signedAccount=await deadline(xumm.user.account,1500,'Xaman session is initializing.').catch(()=>null);
+  // Wait for the ALREADY CONNECTED SDK session; a slow account lookup must
+  // never trigger a second sign-in. No change to the NFT signing transaction.
+  let signedAccount=await deadline(xumm.user.account,10000,'Xaman session is initializing.').catch(()=>null);
   if(!signedAccount){
-    const state=await deadline(xumm.authorize(),15000,'Xaman connection timed out. Use Connect Wallet to reconnect, then retry.');
-    signedAccount=state?.me?.account;
+    throw new Error('Your existing Xaman session is not ready. Use Connect Wallet once, then retry.');
   }
-  if(!signedAccount)throw new Error('Use the existing Creator Studio Connect Wallet button, then retry.');
   if(creatorWallet && signedAccount!==creatorWallet)throw new Error('The selected wallet does not match your Xaman connection. Reconnect the correct wallet.');
   const previous=sessionStorage.getItem(key);
   if(previous && sessionStorage.getItem('aba_tik_ideas_session_wallet')===signedAccount)return previous;
-  const bearer=await deadline(xumm.environment.bearer,8000,'Your Xaman authorization is not ready. Use Connect Wallet to reconnect, then retry.');
-  if(!bearer)throw new Error('Use the existing Creator Studio Connect Wallet button to authorize Xaman, then retry.');
+  const bearer=await deadline(xumm.environment.bearer,10000,'Your existing Xaman authorization is still initializing.').catch(()=>null);
+  if(!bearer)throw new Error('Your connected wallet needs a refreshed Xaman authorization. Use Connect Wallet once, then retry.');
   const controller=new AbortController();
   const timer=setTimeout(()=>controller.abort(),12000);
   let r;
