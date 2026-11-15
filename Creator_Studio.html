@@ -600,27 +600,7 @@ body.aba-membership-pending #aba-member-access{display:block}
 </section>
 <!-- WIZARD -->
 <section id="creator-studio">
-<div style="max-width:1100px;margin:0 auto 1.3rem;padding:0 1.2rem;display:flex;gap:.7rem;flex-wrap:wrap"><button class="btn-next" type="button" id="aba-ir-choose-publish">Publish Knowledge</button><button class="btn-back" type="button" id="aba-ir-choose-ideas">Idea or Research</button></div>
-<section id="aba-ir-panel" hidden style="margin:0 auto 3rem;max-width:1100px;padding:1.5rem;border:1px solid rgba(110,180,220,.35);background:#0b1b2a;border-radius:16px">
-<h2 style="font-size:1.45rem;margin-bottom:.5rem">Tokenize an Idea or Research</h2>
-<p style="color:#a6c5d7;margin-bottom:1.5rem">Private by default. This pathway never lists your work for sale. Only you can read private work.</p>
-<div class="form-row"><div class="form-group"><label class="form-label" for="aba-ir-kind">Content type</label><select class="form-input" id="aba-ir-kind"><option value="idea">Idea</option><option value="research">Research</option></select></div>
-<div class="form-group"><label class="form-label" for="aba-ir-visibility">Visibility</label><select class="form-input" id="aba-ir-visibility"><option value="private" selected>Private (default)</option><option value="public">Public share link (not for sale)</option></select></div></div>
-<div class="form-row"><div class="form-group"><label class="form-label" for="aba-ir-title">Title *</label><input id="aba-ir-title" class="form-input" maxlength="140" placeholder="Enter a title"></div>
-<div class="form-group"><label class="form-label" for="aba-ir-author">Creator name *</label><input id="aba-ir-author" class="form-input" maxlength="100" placeholder="Your name"></div></div>
-<div class="form-group"><label class="form-label" for="aba-ir-cover-type">Cover image</label><select class="form-input" id="aba-ir-cover-type"><option value="generated">Generate cover from title</option><option value="upload">Upload cover image</option></select></div>
-<div id="aba-ir-cover-upload-wrap" class="form-group" hidden><input id="aba-ir-cover-upload" class="form-input" type="file" accept="image/png,image/jpeg,image/webp"/><div class="form-hint">An uploaded image will be cropped to a square, then converted to JPEG.</div></div>
-<canvas id="aba-ir-cover-preview" width="400" height="400" style="display:block;width:180px;height:180px;max-width:100%;margin:.75rem 0 1.5rem;border:1px solid #56768a;border-radius:6px"></canvas>
-<div id="aba-ir-text-wrap" class="form-group"><label class="form-label" for="aba-ir-text">Your idea *</label><textarea id="aba-ir-text" class="form-input" rows="10" maxlength="500000" placeholder="Write your idea here. It is not uploaded to public IPFS."></textarea></div>
-<div class="form-group"><label class="form-label" for="aba-ir-file">Word document <span id="aba-ir-file-hint">(optional for Ideas, required for Research)</span></label><input id="aba-ir-file" class="form-input" type="file" accept=".docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document"/><div class="form-hint">Maximum 4 MB. Ideas may contain typed text or a document, or both.</div></div>
-<div class="form-group"><label style="display:flex;align-items:center;gap:.6rem"><input type="checkbox" id="aba-ir-learn"/> Include optional comprehension questions</label></div>
-<div id="aba-ir-question-wrap" hidden class="form-group"><label class="form-label" for="aba-ir-questions">Questions (optional, one per line)</label><textarea id="aba-ir-questions" class="form-input" rows="4" placeholder="What did you learn?"></textarea><div class="form-hint">Questions are for a future Learn & Earn integration. No rewards are promised for them yet.</div></div>
-<p id="aba-ir-status" role="status" style="color:#a6d5e7;margin:.7rem 0 1rem"></p>
-<div style="display:flex;flex-wrap:wrap;gap:.6rem"><button type="button" class="btn-purple" id="aba-ir-save">Save and start tokenization</button><button type="button" class="btn-next" id="aba-ir-verify" hidden>Confirm signed transaction</button><button type="button" class="btn-back" id="aba-ir-return">Return to Publish Knowledge</button></div>
-<div id="aba-ir-sign" hidden style="margin-top:1rem;padding:1rem;background:#102b43;border:1px solid #4c8eb9;border-radius:8px"><p id="aba-ir-sign-label">Approve in Xaman</p><div id="aba-ir-qr" style="margin:.6rem 0"></div><a id="aba-ir-sign-link" target="_blank" rel="noopener noreferrer" class="xaman-link-btn">Open in Xaman</a></div>
-<div id="aba-ir-results" style="margin-top:1rem"></div>
-</section>
-<div class="container" id="aba-original-publish-wizard">
+<div class="container">
 <div class="wizard-container reveal">
 <div class="wizard-header">
 <div class="wizard-title">🌟 Content Creator Studio</div>
@@ -750,7 +730,17 @@ Edit Profile
 <!-- STEP 1: UPLOAD IMAGE -->
 <div class="step-panel" id="step-1">
 <div class="step-heading">Upload Content Cover Image</div>
+<div class="form-group"><label class="form-label" for="aba-ir-early-type">Content Type</label><select class="form-input" id="aba-ir-early-type" onchange="document.getElementById('nft-category').value=this.value;abaIrCategoryChanged()">
+<option value="book">Book</option><option value="article">Article</option><option value="workshop">Workshop</option><option value="service">Service</option><option value="art">Art</option><option value="idea">Idea</option><option value="research">Research</option>
+</select></div>
 <p class="step-desc">Images must be exactly 400 × 400 pixels. Accepted formats: JPG, PNG, or GIF. Maximum file size: 2 MB.</p>
+<div id="aba-ir-cover-choice" hidden style="margin-bottom:1rem;">
+<label class="form-label" for="aba-ir-cover-mode">Cover image</label>
+<select class="form-input" id="aba-ir-cover-mode" onchange="abaIrCoverModeChanged()"><option value="upload">Upload an image</option><option value="text">Generate a cover from text</option></select>
+<div id="aba-ir-cover-text-fields" hidden style="margin-top:.8rem;">
+<input class="form-input" id="aba-ir-cover-text" maxlength="120" placeholder="Text to appear on your cover" oninput="abaIrRenderCover()"/>
+<canvas id="aba-ir-cover-canvas" width="400" height="400" style="width:200px;max-width:100%;display:block;margin-top:.8rem;border:1px solid #385c70"></canvas>
+</div></div>
 <div class="upload-zone" id="img-upload-zone" onclick="document.getElementById('img-file-input').click()">
 <input accept="image/*" id="img-file-input" onchange="handleImageUpload(event)" style="display:none" type="file"/>
 <div class="upload-icon">🖼</div>
@@ -774,6 +764,7 @@ Edit Profile
 <div class="step-panel" id="step-2">
 <div class="step-heading">Upload Content File <span style="color:var(--text-dim);font-weight:400;font-size:0.85rem;">(Optional)</span></div>
 <p (.docx)="" a="" agent="" ai="" as="" be="" cfc="" class="step-desc" content="" content.="" customized="" document="" embedded="" into="" on="" only.="" reader="" specifically="" the="" this="" trained="" upload="" will="" with="" word="" your=""> Skip this step for Art, Workshops, and Services.</p>
+<div id="aba-ir-idea-entry" hidden style="margin-bottom:1rem;"><label class="form-label" for="aba-ir-idea-text">Enter your Idea (or upload a Word document below)</label><textarea class="form-input" id="aba-ir-idea-text" rows="9" maxlength="500000" placeholder="Write your original idea here..."></textarea></div>
 <div class="upload-zone" id="content-upload-zone" onclick="document.getElementById('content-file-input').click()">
 <input accept=".docx,.pdf,.txt" id="content-file-input" onchange="handleContentUpload(event)" style="display:none" type="file"/>
 <div class="upload-icon">📄</div>
@@ -787,7 +778,7 @@ Edit Profile
 <div class="alert" id="content-upload-status" style="display:none;margin-top:1rem;"></div>
 <div class="wizard-nav">
 <button class="btn-back" onclick="goToStep(1)">← Back</button>
-<button class="btn-next" onclick="goToStep(3)">Continue →</button>
+<button class="btn-next" onclick="abaIrStep2Next()">Continue →</button>
 </div>
 </div>
 <!-- STEP 3: Content DETAILS -->
@@ -812,12 +803,14 @@ Edit Profile
 <div class="form-row">
 <div class="form-group">
 <label class="form-label">Category <span>*</span></label>
-<select class="form-input" id="nft-category">
+<select class="form-input" id="nft-category" onchange="abaIrCategoryChanged()">
 <option value="book">📖 Book</option>
 <option value="article">📄 Article</option>
 <option value="workshop">🧠 Workshop</option>
 <option value="service">⚙ Service</option>
 <option value="art">🎨 Art</option>
+<option value="idea">💡 Idea</option>
+<option value="research">🔬 Research</option>
 </select>
 </div>
 <div class="form-group">
@@ -836,6 +829,9 @@ Edit Profile
 <input class="form-input" id="nft-price-rlusd" min="0" placeholder="e.g. 25.00" step="0.01" type="number"/>
 </div>
 </div>
+<div id="aba-ir-privacy-row" hidden class="form-group"><label class="form-label" for="aba-ir-visibility">Visibility (Idea &amp; Research only)</label>
+<select class="form-input" id="aba-ir-visibility" onchange="abaIrPrivacyChanged()"><option value="private" selected>Private (only in My Library)</option><option value="public">Public (available to read, not for sale)</option></select>
+<div class="form-hint">Public content is readable by others. Neither option creates a marketplace sale offer.</div></div>
 <div class="form-group">
 <label class="form-label">Your Website (optional)</label>
 <input class="form-input" id="nft-website" placeholder="https://yourwebsite.com" type="url"/>
@@ -871,7 +867,7 @@ Edit Profile
 <div class="form-group">
 <label style="display:flex;align-items:center;gap:0.75rem;cursor:pointer;margin-bottom:1.5rem;">
 <input checked="" id="enableLearn" type="checkbox"/>
-<span>Enable Learn &amp; Earn rewards</span>
+<span id="aba-ir-learn-label">Enable Learn &amp; Earn rewards</span>
 </label>
 </div>
 <div id="visualLearnBuilder" style="background:var(--bg4); padding:1.5rem; border-radius:12px; border:1px solid var(--border);">
@@ -901,6 +897,11 @@ Edit Profile
 <div class="step-heading">Submit Your Content</div>
 <p class="step-desc">Review your details before submitting.</p>
 <div id="review-content"></div>
+<div class="alert alert-info" id="aba-ir-submit-status" hidden role="status" aria-live="polite"></div>
+<div id="aba-ir-signing" hidden style="margin:1rem 0;padding:1rem;border:1px solid #386176;border-radius:8px;">
+<p id="aba-ir-sign-label">Approve in Xaman</p><div id="aba-ir-qr"></div>
+<a id="aba-ir-sign-url" class="xaman-link-btn" target="_blank" rel="noopener noreferrer">Open Xaman</a>
+<button type="button" class="btn-next" id="aba-ir-confirm" onclick="abaIrConfirm()" style="margin-top:1rem;display:block">Confirm tokenization status</button></div>
 <div class="wizard-nav">
 <button class="btn-back" onclick="goToStep(5)">← Back</button>
 <button class="btn-purple" id="submit-btn" onclick="submitNFT()">⚡ Submit &amp; Continue</button>
@@ -1248,6 +1249,7 @@ function goToStep(n){
   document.getElementById('ws-'+n).classList.add('active');
   document.querySelector('.wizard-container').scrollIntoView({behavior:'smooth',block:'start'});
   if(n === 6) buildReview();
+  abaIrStepVisibility(n);
 }
 
 // ── STEP 0 ──
@@ -1369,6 +1371,7 @@ async function optimizeImage(file) {
 
 }
 async function processImageFile(file){
+  if(abaIrSelected()) return abaIrImageFile(file);
 
   const status = document.getElementById('img-upload-status');
   const previewArea = document.getElementById('img-preview-area');
@@ -1454,6 +1457,7 @@ fileName.textContent = optimizedFile.name;
 
 }
 function step1Next(){
+  if(abaIrSelected()){ if(!abaIrCoverReady()){ alert("Upload an image or generate a text cover before continuing."); return; } goToStep(2); return; }
   if(!imageCid){ return; }
   goToStep(2);
 }
@@ -1525,6 +1529,7 @@ async function handleContentUpload(event){
 }
 
 async function processContentFile(file){
+  if(abaIrSelected()) return abaIrContentFile(file);
   const status = document.getElementById('content-upload-status');
   const fileName = document.getElementById('content-file-name');
   const progress = document.getElementById('content-progress');
@@ -1572,6 +1577,7 @@ if(file.size > 100 * 1024 * 1024){
 
 // ── STEP 3 ──
 function step3Next(){
+  if(abaIrSelected()) return abaIrStep3Next();
   const name = document.getElementById('nft-name').value.trim();
   const desc = document.getElementById('nft-desc').value.trim();
   const qty = parseInt(document.getElementById('nft-qty').value) || 1;
@@ -1588,6 +1594,7 @@ const err = document.getElementById('step3-error');
 
 // ── STEP 7: REVIEW ──
 function buildReview(){
+  if(abaIrSelected()) return abaIrBuildReview();
   const name = document.getElementById('nft-name').value.trim();
   const desc = document.getElementById('nft-desc').value.trim();
   const cat = document.getElementById('nft-category').value;
@@ -1615,6 +1622,7 @@ function buildReview(){
 
 // ── SUBMIT ──
 async function submitNFT(){
+  if(abaIrSelected()) return abaIrSubmit();
   const btn = document.getElementById('submit-btn');
   btn.disabled = true; btn.textContent = 'Submitting...';
 
@@ -2310,6 +2318,154 @@ setTimeout(() => {
   if(document.getElementById('chapterContainer')) resetLearnBuilder();
 }, 500);
 loadDashboard();
+
+// ABA Idea / Research integration inside the EXISTING 8-step wizard.
+// Existing categories continue on the original, unmodified upload/payment/mint path.
+const ABA_IR_API = 'https://aba-tik-ideas-research-backend.onrender.com/api/ideas-research';
+const abaIrState = {image:null, file:null, token:'', recordId:'', phase:'new', signingUrl:'', pollBusy:false};
+const abaIrOriginalStep2Heading = document.getElementById('step-2').querySelector('.step-heading').innerHTML;
+function abaIrEl(id){return document.getElementById(id)}
+function abaIrSelected(){return ['idea','research'].includes(abaIrEl('nft-category').value)}
+function abaIrShow(id, yes){const el=abaIrEl(id); if(el)el.hidden=!yes}
+function abaIrStatus(message, bad=false){const el=abaIrEl('aba-ir-submit-status');el.hidden=false;el.textContent=message;el.className='alert '+(bad?'alert-error':'alert-info')}
+function abaIrCategoryChanged(){
+ abaIrEl('aba-ir-early-type').value=abaIrEl('nft-category').value;
+ const enabled=abaIrSelected(),research=abaIrEl('nft-category').value==='research';
+ abaIrShow('aba-ir-cover-choice',enabled);
+ abaIrShow('aba-ir-idea-entry',enabled&&!research);
+ abaIrShow('aba-ir-privacy-row',enabled);
+ const price=abaIrEl('nft-price-rlusd').closest('.form-group'); price.style.display=enabled?'none':'';
+ const qty=abaIrEl('nft-qty').closest('.form-group');qty.style.display=enabled?'none':'';
+ abaIrEl('nft-ai-enabled').checked=!enabled;
+ abaIrEl('enableLearn').checked=!enabled;
+ abaIrEl('aba-ir-learn-label').textContent=enabled?'Include optional questions with this content (no Learn & Earn reward)':'Enable Learn & Earn rewards';
+ abaIrEl('step1-next').disabled=enabled?!abaIrCoverReady():!imageCid;
+ if(enabled)abaIrEl('step-2').querySelector('.step-heading').textContent=research?'Upload Research Word Document':'Enter an Idea or Upload Word Document';else abaIrEl('step-2').querySelector('.step-heading').innerHTML=abaIrOriginalStep2Heading;
+ abaIrEl('step-3').querySelector('.step-desc').textContent=enabled?'Describe your original work. Privacy settings apply only to Ideas and Research.':'Fill in the details for your Digital Asset. This information will be displayed in the marketplace.';
+ abaIrEl('step-4').querySelector('.step-desc').textContent=enabled?'AI Agent setup is not required for Ideas and Research.':'Each content digital asset comes with an embedded AI Agent trained on your content.';
+ abaIrEl('step-5').querySelector('.step-desc').textContent=enabled?'Questions are optional. They will be included with the protected content; rewards are not enabled.':'Add questions for your readers to earn CFC tokens.';
+ abaIrShow('aba-ir-signing',false);abaIrShow('aba-ir-submit-status',false);
+ abaIrCoverModeChanged();abaIrPrivacyChanged();
+}
+function abaIrStepVisibility(n){if(abaIrSelected()&&n===1)abaIrCoverModeChanged();if(abaIrSelected()&&n===3)abaIrCategoryChanged()}
+function abaIrPrivacyChanged(){const en=abaIrSelected();if(!en)return;const priv=abaIrEl('aba-ir-visibility').value==='private';
+ abaIrEl('enableLearn').disabled=priv;if(priv)abaIrEl('enableLearn').checked=false;
+}
+function abaIrCoverModeChanged(){const en=abaIrSelected();if(!en)return;
+ const text=abaIrEl('aba-ir-cover-mode').value==='text';abaIrShow('aba-ir-cover-text-fields',text);
+ abaIrShow('img-upload-zone',!text);abaIrShow('img-preview-area',!text && !!abaIrState.image);
+ if(text)abaIrRenderCover();abaIrEl('step1-next').disabled=!abaIrCoverReady();
+}
+function abaIrRenderCover(){const canvas=abaIrEl('aba-ir-cover-canvas');if(!canvas)return;
+ const c=canvas.getContext('2d');c.fillStyle='#081b30';c.fillRect(0,0,400,400);c.strokeStyle='#7ec8e8';c.lineWidth=3;c.strokeRect(16,16,368,368);
+ c.fillStyle='#87ceeb';c.textAlign='center';c.font='bold 19px sans-serif';c.fillText('ARKANSAS BLOCKCHAIN ASSOCIATION',200,58,350);
+ let words=(abaIrEl('aba-ir-cover-text').value.trim()||'Original Work').split(/\s+/),lines=[],line='';
+ c.fillStyle='#fff';c.font='bold 28px sans-serif';for(const word of words){const next=(line+' '+word).trim();if(c.measureText(next).width>320&&line){lines.push(line);line=word}else line=next}if(line)lines.push(line);
+ lines.slice(0,7).forEach((part,i)=>c.fillText(part,200,165+i*34,330));
+ c.fillStyle='#87ceeb';c.font='16px sans-serif';c.fillText('TIK  •  ORIGINAL WORK',200,359);
+ abaIrEl('step1-next').disabled=!abaIrCoverReady();
+}
+function abaIrCoverReady(){if(!abaIrSelected())return !!imageCid;
+ return abaIrEl('aba-ir-cover-mode').value==='text'?!!abaIrEl('aba-ir-cover-text').value.trim():!!abaIrState.image}
+async function abaIrImageFile(file){
+ const status=abaIrEl('img-upload-status');try{
+ if(!['image/png','image/jpeg','image/webp'].includes(file.type)||file.size>2*1024*1024)throw Error('Use a JPG, PNG or WebP image under 2 MB.');
+ const resized=await optimizeImage(file);const data=await abaIrBase64(resized);
+ abaIrState.image={mime:'image/jpeg',base64:data};
+ abaIrEl('img-preview').src='data:image/jpeg;base64,'+data;abaIrEl('img-preview-area').style.display='block';
+ abaIrEl('img-file-name').textContent=file.name;status.className='alert alert-success';status.textContent='Cover ready (stored privately until submission).';status.style.display='block';
+ abaIrEl('step1-next').disabled=false;
+ }catch(e){status.className='alert alert-error';status.textContent=e.message;status.style.display='block'}
+}
+async function abaIrContentFile(file){const status=abaIrEl('content-upload-status');
+ if(!file.name.toLowerCase().endsWith('.docx')||file.size>4*1024*1024){status.className='alert alert-error';status.textContent='Please choose a Word .docx document smaller than 4 MB.';status.style.display='block';return;}
+ abaIrState.file=file;abaIrEl('content-file-name').textContent=file.name;
+ status.className='alert alert-success';status.textContent='Word document ready (not publicly uploaded).';status.style.display='block';
+}
+function abaIrStep2Next(){if(abaIrSelected()){
+ if(abaIrEl("nft-category").value==="research"&&!abaIrState.file){alert("Research requires a Word document.");return}
+ if(abaIrEl("nft-category").value==="idea"&&!abaIrState.file&&!abaIrEl("aba-ir-idea-text").value.trim()){alert("Enter your idea or upload a Word document.");return}
+ }goToStep(3)}
+function abaIrStep3Next(){const name=abaIrEl('nft-name').value.trim(),desc=abaIrEl('nft-desc').value.trim(),error=abaIrEl('step3-error');
+ if(!name||!desc){error.textContent='Title and description are required.';error.style.display='block';return}
+ if(!abaIrCoverReady()){error.textContent='Complete your cover before continuing.';error.style.display='block';return}
+ error.style.display='none';goToStep(4)}
+function abaIrBuildReview(){const box=abaIrEl('review-content');box.replaceChildren();
+ const info=[['Title',abaIrEl('nft-name').value],['Type',abaIrEl('nft-category').value],['Visibility',abaIrEl('aba-ir-visibility').value],['Cover',abaIrEl('aba-ir-cover-mode').value==='text'?'Generated from text':'Uploaded image'],['Content',abaIrEl('nft-category').value==='research'?'Word document':abaIrState.file?'Typed idea and/or Word document':'Typed idea'],['Marketplace','No sale offer']];
+ for(const [label,value] of info){const row=document.createElement('div');row.className='review-row';const key=document.createElement('span');key.className='review-key';key.textContent=label;const val=document.createElement('span');val.className='review-val';val.textContent=value;row.append(key,val);box.append(row)}
+ abaIrEl('submit-btn').textContent='Start Tokenization';abaIrEl('submit-btn').disabled=abaIrState.phase!=='new';
+}
+function abaIrFileBytes(file){return file.arrayBuffer().then(buf=>{let binary='';const bytes=new Uint8Array(buf);for(let i=0;i<bytes.length;i+=8192)binary+=String.fromCharCode(...bytes.subarray(i,i+8192));return btoa(binary)})}
+async function abaIrBase64(blob){return abaIrFileBytes(blob)}
+async function abaIrContent(){const type=abaIrEl('nft-category').value;
+ const text=type==='idea'?abaIrEl('aba-ir-idea-text').value.trim():'';
+ const qs=abaIrEl('enableLearn').checked&&abaIrEl('aba-ir-visibility').value==='public'?abaIrEl('learnText').value.trim():'';
+ const extended=text+(qs?'\n\nOptional questions\n'+qs:'');
+ const file=abaIrState.file;
+ if(type==='research'&&!file)throw Error('Research requires a Word document.');
+ if(type==='idea'&&!extended&&!file)throw Error('Type your Idea or upload a Word document.');
+ if(new TextEncoder().encode(extended).length>512000)throw Error('Text is too long.');
+ if(file){const f={filename:file.name,base64:await abaIrFileBytes(file)};
+ return extended?{type:'combined',text:extended,file:f}:{type:'file',...f};}
+ return {type:'text',text:extended};
+}
+async function abaIrCover(){if(abaIrEl('aba-ir-cover-mode').value==='upload'){
+ if(!abaIrState.image)throw Error('Upload an image first.');return abaIrState.image;}
+ const c=abaIrEl('aba-ir-cover-canvas');return {mime:'image/jpeg',base64:c.toDataURL('image/jpeg',.86).split(',')[1]};
+}
+async function abaIrRequest(path,method='GET',data){const res=await fetch(ABA_IR_API+path,{method,headers:{...(abaIrState.token?{'Authorization':'Bearer '+abaIrState.token}:{}),...(data?{'Content-Type':'application/json'}:{})},...(data?{body:JSON.stringify(data)}:{})});
+ const obj=await res.json().catch(()=>({}));if(!res.ok)throw Error(obj.error||`ABA backend returned ${res.status}`);return obj}
+async function abaIrAuth(){if(abaIrState.token)return;
+ const old=sessionStorage.getItem('aba_ideas_token'),wallet=sessionStorage.getItem('aba_ideas_wallet');
+ if(old&&wallet===creatorWallet){abaIrState.token=old;try{await abaIrRequest('/records');return}catch{abaIrState.token=''}}
+ const xumm=getXumm();let bearer=null;
+ try{bearer=await Promise.race([Promise.resolve(xumm.environment.bearer),new Promise(r=>setTimeout(()=>r(null),3000))])}catch{}
+ if(bearer){try{const res=await fetch(ABA_IR_API+'/auth/existing-wallet',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({xaman_bearer:bearer})});const v=await res.json();if(res.ok&&v.token&&v.wallet===creatorWallet){abaIrState.token=v.token;sessionStorage.setItem('aba_ideas_token',v.token);sessionStorage.setItem('aba_ideas_wallet',v.wallet);return}}catch{}}
+ abaIrStatus('Verify wallet ownership in Xaman before saving private content.');
+ const start=await abaIrRequest('/auth/start','POST',{});
+ abaIrSigning(start.xaman_url,'Verify your wallet in Xaman');
+ for(let i=0;i<18;i++){await new Promise(r=>setTimeout(r,15000));try{
+ const v=await abaIrRequest('/auth/complete','POST',{challenge_id:start.challenge_id});
+ if(v.token){if(v.wallet!==creatorWallet)throw Error('Xaman verified a different wallet.');
+ abaIrState.token=v.token;sessionStorage.setItem('aba_ideas_token',v.token);sessionStorage.setItem('aba_ideas_wallet',v.wallet);abaIrShow('aba-ir-signing',false);return}
+ }catch(e){if(e.message.includes('different wallet'))throw e}}
+ throw Error('Wallet verification timed out. Retry with Xaman.');
+}
+function abaIrSigning(url,label){abaIrEl('aba-ir-sign-label').textContent=label;abaIrEl('aba-ir-sign-url').href=url;abaIrShow('aba-ir-signing',true);const holder=abaIrEl('aba-ir-qr');holder.replaceChildren();
+ if(typeof QRCode!=='undefined'){const c=document.createElement('canvas');holder.append(c);QRCode.toCanvas(c,url,{width:176},()=>{})}}
+async function abaIrConfirm(){if(abaIrState.pollBusy||!abaIrState.recordId)return;abaIrState.pollBusy=true;
+ try{const result=await abaIrRequest('/records/'+encodeURIComponent(abaIrState.recordId)+'/mint/complete','POST',{});
+ if(result.status==='minted'){abaIrState.phase='done';abaIrStatus('Tokenization complete. Your NFT is verified on XRPL.');abaIrShow('aba-ir-signing',false);
+ abaIrEl('submit-btn').disabled=true;abaIrEl('submit-btn').textContent='Tokenized';
+ }else abaIrStatus('Awaiting signature and blockchain confirmation. Approve in Xaman, then select Confirm tokenization status.');
+ }catch(e){abaIrStatus(e.message,true)}finally{abaIrState.pollBusy=false}}
+async function abaIrSubmit(){if(!['new','saved'].includes(abaIrState.phase))return;
+ const btn=abaIrEl('submit-btn');btn.disabled=true;btn.textContent='Preparing tokenization...';
+ try{
+ if(!abaIrSelected())throw Error('Choose Idea or Research first.');
+ if(!abaIrCoverReady())throw Error('Upload an image or generate a text cover before tokenization.');
+ if(!abaIrEl('nft-name').value.trim()||!abaIrEl('nft-desc').value.trim())throw Error('Title and description are required.');
+ if(!creatorWallet)throw Error('Connect your Xaman wallet first.');
+ const kind=abaIrEl('nft-category').value;
+ const title=abaIrEl('nft-name').value.trim();
+ const author=abaIrEl('creator-profile-name').value.trim()||'ABA Creator';
+ if(abaIrState.phase==='new'){
+ const content=await abaIrContent(),cover=await abaIrCover();
+ await abaIrAuth();abaIrStatus('Saving encrypted content in your ABA library...');
+ const saved=await abaIrRequest('/records','POST',{title,creator_name:author,content_kind:kind,visibility:abaIrEl('aba-ir-visibility').value,content,cover,cover_theme:'blue'});
+ abaIrState.recordId=saved.id;abaIrState.phase='saved';
+ } else await abaIrAuth();
+ abaIrStatus('Content saved privately. Preparing a no-sale tokenization request...');
+ const mint=await abaIrRequest('/records/'+encodeURIComponent(abaIrState.recordId)+'/mint/start','POST',{});
+ abaIrState.phase='pending';abaIrSigning(mint.xaman_url,'Approve your no-sale NFT tokenization in Xaman');
+ abaIrStatus('Xaman signature requested. After signing, click Confirm tokenization status.');
+ btn.textContent='Tokenization Started';
+ }catch(e){abaIrStatus(e.message,true);if(abaIrState.phase==='new'){btn.disabled=false;btn.textContent='Start Tokenization'}
+ else if(abaIrState.phase==='saved'){btn.textContent='Retry Start Tokenization';btn.disabled=false}else {btn.textContent='Tokenization Started';btn.disabled=true}}
+}
+// Reapply chosen type when returning to earlier wizard steps. No extra creator mode.
+abaIrCategoryChanged();
+
 </script>
 <script>
   const links = document.querySelectorAll(".nav-links a");
@@ -2471,77 +2627,6 @@ else{abaMemberStatus('Checking your membership...');abaConfirmMember().catch(()=
   document.addEventListener('click',e=>{if(!header.contains(e.target)){closeGroups();if(innerWidth<=960)setMenu(false);}});
   addEventListener('resize',()=>{if(innerWidth>960)setMenu(false)});
   const y=document.getElementById('year');if(y)y.textContent=new Date().getFullYear();
-})();
-</script>
-<script id="aba-ir-only-additive">
-/* ABA-only Ideas and Research. The existing Publish Knowledge functions and CFC APIs are unchanged. */
-(()=>{'use strict';
-const API='https://aba-tik-ideas-research-backend.onrender.com/api/ideas-research';
-const $=id=>document.getElementById(id); const status=s=>{$('aba-ir-status').textContent=s};
-const panel=$('aba-ir-panel'),wizard=$('aba-original-publish-wizard');
-let token='',recordId='',phase='new',timer=null;
-function choose(idea){panel.hidden=!idea;wizard.hidden=idea;$('aba-ir-choose-publish').disabled=!idea;$('aba-ir-choose-ideas').disabled=idea;
-if(idea){drawCover();panel.scrollIntoView({behavior:'smooth',block:'start'});} }
-$('aba-ir-choose-publish').onclick=()=>choose(false);
-$('aba-ir-choose-ideas').onclick=()=>choose(true);
-$('aba-ir-return').onclick=()=>choose(false);
-function syncKind(){const research=$('aba-ir-kind').value==='research';$('aba-ir-text-wrap').hidden=research;$('aba-ir-file-hint').textContent=research?'(required for Research)':'(optional for Ideas)';drawCover();}
-$('aba-ir-kind').onchange=syncKind;
-$('aba-ir-cover-type').onchange=()=>{$('aba-ir-cover-upload-wrap').hidden=$('aba-ir-cover-type').value!=='upload';drawCover()};
-$('aba-ir-cover-upload').onchange=drawCover;
-$('aba-ir-title').oninput=drawCover;
-$('aba-ir-learn').onchange=()=>{$('aba-ir-question-wrap').hidden=!$('aba-ir-learn').checked};
-$('aba-ir-visibility').onchange=()=>{const isPublic=$('aba-ir-visibility').value==='public';$('aba-ir-learn').disabled=!isPublic;if(!isPublic)$('aba-ir-learn').checked=false;$('aba-ir-question-wrap').hidden=!isPublic||!$('aba-ir-learn').checked};$('aba-ir-visibility').dispatchEvent(new Event('change'));
-function drawCover(){const c=$('aba-ir-cover-preview'),ctx=c.getContext('2d');ctx.fillStyle='#081b30';ctx.fillRect(0,0,400,400);ctx.strokeStyle='#87ceeb';ctx.lineWidth=3;ctx.strokeRect(15,15,370,370);
-ctx.fillStyle='#87ceeb';ctx.font='bold 18px system-ui';ctx.textAlign='center';ctx.fillText('ABA   |   TIK',200,67);
-ctx.fillStyle='#ffffff';ctx.font='bold 27px system-ui';
-const words=($('aba-ir-title').value.trim()||'My Idea or Research').split(/\s+/);let lines=[],line='';for(const w of words){const v=(line+' '+w).trim();if(ctx.measureText(v).width>320&&line){lines.push(line);line=w}else line=v}if(line)lines.push(line);lines=lines.slice(0,6);const base=205-(lines.length-1)*18;
-lines.forEach((l,i)=>ctx.fillText(l,200,base+i*36,330));ctx.font='16px system-ui';ctx.fillStyle='#87ceeb';ctx.fillText('Original work',200,348);}
-async function fileBase64(file){const bytes=new Uint8Array(await file.arrayBuffer());let out='';for(let i=0;i<bytes.length;i+=8192)out+=String.fromCharCode(...bytes.subarray(i,i+8192));return btoa(out)}
-async function coverData(){const c=$('aba-ir-cover-preview');if($('aba-ir-cover-type').value==='generated')return {mime:'image/jpeg',base64:c.toDataURL('image/jpeg',.88).split(',')[1]};
-const file=$('aba-ir-cover-upload').files[0];if(!file)throw Error('Choose a cover image.');if(file.size>8e6||!['image/jpeg','image/png','image/webp'].includes(file.type))throw Error('Choose a JPG, PNG or WebP image up to 8 MB.');
-const bmp=await createImageBitmap(file);const tmp=document.createElement('canvas');tmp.width=400;tmp.height=400;const ctx=tmp.getContext('2d');const s=Math.min(bmp.width,bmp.height);ctx.drawImage(bmp,(bmp.width-s)/2,(bmp.height-s)/2,s,s,0,0,400,400);bmp.close?.();return {mime:'image/jpeg',base64:tmp.toDataURL('image/jpeg',.86).split(',')[1]};}
-async function contentData(){const kind=$('aba-ir-kind').value,file=$('aba-ir-file').files[0];let text=kind==='research'?'':$('aba-ir-text').value.trim();
-const qs=$('aba-ir-learn').checked&&$('aba-ir-visibility').value==='public'?$('aba-ir-questions').value.trim():'';
-if(qs)text+=(text?'\n\n':'')+'Comprehension questions\n'+qs;
-if(file&&(!file.name.toLowerCase().endsWith('.docx')||file.size>4e6))throw Error('Please choose a Word .docx file under 4 MB.');
-if(kind==='research'&&!file)throw Error('Research requires a Word document.');if(kind==='idea'&&!text&&!file)throw Error('Enter your idea or upload a Word document.');
-if(text&&new TextEncoder().encode(text).length>512000)throw Error('Idea text exceeds 512 KB.');
-const f=file?{filename:file.name,base64:await fileBase64(file)}:null;
-return f?(text?{type:'combined',text,file:f}:{type:'file',...f}):{type:'text',text};}
-async function api(path,method='GET',body){const response=await fetch(API+path,{method,headers:{...(token?{'Authorization':'Bearer '+token}:{}),...(body?{'Content-Type':'application/json'}:{})},...(body?{body:JSON.stringify(body)}:{}),cache:'no-store'});const data=await response.json().catch(()=>({}));if(!response.ok)throw Error(data.error||`ABA service error ${response.status}`);return data;}
-async function auth(){if(token)return;const stored=sessionStorage.getItem('aba_tik_ideas_wallet_session'),wallet=sessionStorage.getItem('aba_tik_ideas_session_wallet');
-if(stored&&wallet&&wallet===creatorWallet){token=stored;try{await api('/records');return}catch{token='';}}
-const xumm=getXumm();let bearer=null;try{bearer=await Promise.race([Promise.resolve(xumm.environment.bearer),new Promise(r=>setTimeout(()=>r(null),3000))]);}catch{}
-if(bearer){try{const result=await fetch(API+'/auth/existing-wallet',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({xaman_bearer:bearer})});const d=await result.json();if(result.ok&&d.token&&d.wallet===creatorWallet){token=d.token;sessionStorage.setItem('aba_tik_ideas_wallet_session',token);sessionStorage.setItem('aba_tik_ideas_session_wallet',d.wallet);return;}}catch{}}
-// Secure fallback: standalone verified Xaman SignIn. Never trust localStorage wallet alone.
-status('Verify your wallet in Xaman to protect your private content.');const start=await api('/auth/start','POST',{});openLink(start.xaman_url,'Verify your wallet');
-for(let n=0;n<18;n++){await new Promise(r=>setTimeout(r,15000));try{const done=await api('/auth/complete','POST',{challenge_id:start.challenge_id});if(done.token){if(done.wallet!==creatorWallet)throw Error('Xaman signed a different wallet. Please reconnect your intended wallet.');token=done.token;sessionStorage.setItem('aba_tik_ideas_wallet_session',token);sessionStorage.setItem('aba_tik_ideas_session_wallet',done.wallet);$('aba-ir-sign').hidden=true;return;}}catch(e){if(/different wallet/.test(e.message))throw e;}}
-throw Error('Wallet verification timed out. Try again.');}
-function openLink(url,label){$('aba-ir-sign').hidden=false;$('aba-ir-sign-label').textContent=label;$('aba-ir-sign-link').href=url;$('aba-ir-qr').replaceChildren();if(typeof QRCode!=='undefined'){const c=document.createElement('canvas');$('aba-ir-qr').appendChild(c);QRCode.toCanvas(c,url,{width:180},()=>{});} }
-async function confirm(){if(!recordId)return;const result=await api('/records/'+encodeURIComponent(recordId)+'/mint/complete','POST',{});
-if(result.status==='minted'){phase='done';clearInterval(timer);$('aba-ir-verify').hidden=true;$('aba-ir-sign').hidden=true;status('Tokenization complete. NFT verified on XRPL.');$('aba-ir-save').disabled=true;await submissions();return;}
-status('Waiting for Xaman signature and XRPL validation. Do not start another NFT.');}
-$('aba-ir-verify').onclick=async()=>{try{await auth();await confirm()}catch(e){status(e.message)}};
-$('aba-ir-save').onclick=async()=>{if(phase!=='new')return;const button=$('aba-ir-save');button.disabled=true;try{
-if(!creatorWallet)throw Error('Connect your Xaman wallet in Creator Studio first.');
-const title=$('aba-ir-title').value.trim(),creator=$('aba-ir-author').value.trim();if(!title||!creator)throw Error('Enter a title and creator name.');
-const content=await contentData(),cover=await coverData();await auth();status('Saving encrypted content in ABA...');
-const saved=await api('/records','POST',{title,creator_name:creator,content_kind:$('aba-ir-kind').value,visibility:$('aba-ir-visibility').value,content,cover,cover_theme:'blue'});
-recordId=saved.id;phase='saved';status('Record saved securely. Creating Xaman NFT signing request...');
-const mint=await api('/records/'+encodeURIComponent(recordId)+'/mint/start','POST',{});phase='pending';
-openLink(mint.xaman_url,'Approve this no-sale NFT mint in Xaman');$('aba-ir-verify').hidden=false;status('Approve in Xaman, then confirm. No marketplace listing is created.');
-let busy=false;timer=setInterval(async()=>{if(busy||phase!=='pending')return;busy=true;try{await confirm()}catch(e){status(e.message)}finally{busy=false}},45000);
-}catch(e){status(e.message||'Could not prepare tokenization.');if(phase==='new')button.disabled=false;
-if(phase==='saved'){$('aba-ir-verify').hidden=false;status('Record saved, but mint setup failed. Do not resubmit the same content. '+e.message);}}
-};
-async function submissions(){if(!creatorWallet)return;try{await auth();const rows=await api('/records');const box=$('aba-ir-results');box.replaceChildren();if(!rows.length)return;
-const heading=document.createElement('h3');heading.textContent='My Idea & Research Submissions';heading.style.margin='1rem 0';box.appendChild(heading);
-for(const row of rows){const item=document.createElement('div');item.style.cssText='padding:.8rem;border:1px solid #36596b;border-radius:8px;margin:.5rem 0';
-const text=document.createElement('span');text.textContent=`${row.title} · ${row.content_kind} · ${row.status} · ${row.visibility}`;item.appendChild(text);
-const link=document.createElement('a');link.textContent='  Open My Library';link.href='/Knowledge_Library?view=my-library';link.style.color='#87ceeb';item.appendChild(link);box.append(item);}}
-catch(e){status('Unable to load Idea & Research records: '+e.message)}}
-$('aba-ir-choose-ideas').addEventListener('click',()=>{if(creatorWallet)submissions()});drawCover();
 })();
 </script>
 </body>
