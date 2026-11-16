@@ -1819,7 +1819,51 @@ console.log(mine[0]);
         <div class="empty-sub">Please refresh and try again.</div>
       </div>
     `;
+  } finally {
+    // Extend the EXISTING My Submissions grid with ABA Ideas & Research.
+    // The original submission query, payment and minting logic are unchanged.
+    void abaIrAppendSubmissionCards(wallet, grid);
   }
+}
+async function abaIrAppendSubmissionCards(wallet, grid){
+  const token=sessionStorage.getItem('aba_ideas_token');
+  const verifiedWallet=sessionStorage.getItem('aba_ideas_wallet');
+  if(!token || verifiedWallet!==wallet || !grid) return;
+  try {
+    const response=await fetch('https://aba-tik-ideas-research-backend.onrender.com/api/ideas-research/my-library',{
+      headers:{Authorization:'Bearer '+token}
+    });
+    if(!response.ok) return; // Do not interfere with existing submissions on expired sessions.
+    const payload=await response.json();
+    const items=Array.isArray(payload.items)?payload.items:[];
+    if(!items.length || (creatorWallet || localStorage.getItem('cfcWallet'))!==wallet) return;
+    if(grid.querySelector('.empty-state')) grid.replaceChildren();
+    grid.querySelectorAll('[data-aba-ir-submission]').forEach(node=>node.remove());
+    for(const item of items){
+      const card=document.createElement('div');
+      card.className='dash-card';
+      card.dataset.abaIrSubmission=String(item.id||'');
+      const heading=document.createElement('div');
+      heading.className='dash-card-title';
+      heading.textContent=item.title||'Untitled';
+      const info=document.createElement('div');
+      info.className='dash-card-id';
+      info.textContent=(item.content_kind==='research'?'Research':'Idea')+' · '+(item.visibility==='public'?'Public':'Private');
+      const status=document.createElement('span');
+      status.className='dash-status '+(item.status==='minted'?'status-minted':'status-pending');
+      status.textContent=item.status==='minted'?'Minted':(item.status||'Draft');
+      const actions=document.createElement('div');
+      actions.className='dash-actions';
+      const view=document.createElement('a');
+      view.className='btn-sm-outline';
+      view.style.textDecoration='none';
+      view.href='/Knowledge_Library?view=my-library';
+      view.textContent='View My Library';
+      actions.appendChild(view);
+      card.append(heading,info,status,actions);
+      grid.appendChild(card);
+    }
+  } catch(e){console.warn('ABA Ideas & Research submissions could not be loaded:',e)}
 }
 function renderDashCard(sub){
 const normalizedStatus = (sub.status || '').toLowerCase();
