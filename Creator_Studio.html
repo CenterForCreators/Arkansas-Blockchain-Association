@@ -943,11 +943,10 @@ Edit Profile
 <p class="step-desc">Review your details before submitting.</p>
 <div id="review-content"></div>
 <div class="alert alert-info" id="aba-ir-submit-status" hidden role="status" aria-live="polite"></div>
-<div id="aba-ir-completion-links" hidden><p>Tokenization complete! Your NFT is verified on XRPL.</p><a href="/Creator_Studio#creator-dashboard">View My Submissions</a><a href="/Knowledge_Library?view=my-library">View My Library</a></div>
+<div id="aba-ir-completion-links" hidden><p>Tokenization complete! Your NFT is verified on XRPL.</p><a href="/Knowledge_Library?view=my-library">View My Library</a></div>
 <div id="aba-ir-signing" hidden style="margin:1rem 0;padding:1rem;border:1px solid #386176;border-radius:8px;">
 <p id="aba-ir-sign-label">Approve in Xaman</p><div id="aba-ir-qr"></div>
-<a id="aba-ir-sign-url" class="xaman-link-btn" target="_blank" rel="noopener noreferrer">Open Xaman</a>
-<button type="button" class="btn-next" id="aba-ir-confirm" onclick="abaIrConfirm()" style="margin-top:1rem;display:block">Confirm tokenization status</button></div>
+</div>
 <div class="wizard-nav">
 <button class="btn-back" onclick="goToStep(5)">← Back</button>
 <button class="btn-purple" id="submit-btn" onclick="submitNFT()">⚡ Submit &amp; Continue</button>
@@ -2373,7 +2372,7 @@ loadDashboard();
 // ABA Idea / Research integration inside the EXISTING 8-step wizard.
 // Existing categories continue on the original, unmodified upload/payment/mint path.
 const ABA_IR_API = 'https://aba-tik-ideas-research-backend.onrender.com/api/ideas-research';
-const abaIrState = {image:null, file:null, token:'', recordId:'', phase:'new', signingUrl:'', pollBusy:false};
+const abaIrState = {image:null, file:null, token:'', recordId:'', phase:'new', signingUrl:'', pollBusy:false, mintPollTimer:null};
 const abaIrOriginalStep2Heading = document.getElementById('step-2').querySelector('.step-heading').innerHTML;
 function abaIrEl(id){return document.getElementById(id)}
 function abaIrSelected(){return ['idea','research'].includes(abaIrEl('nft-category').value)}
@@ -2483,13 +2482,20 @@ async function abaIrAuth(){if(abaIrState.token)return;
  }catch(e){if(e.message.includes('different wallet'))throw e}}
  throw Error('Wallet verification timed out. Retry with Xaman.');
 }
-function abaIrSigning(url,label){abaIrEl('aba-ir-sign-label').textContent=label;abaIrEl('aba-ir-sign-url').href=url;abaIrShow('aba-ir-signing',true);const holder=abaIrEl('aba-ir-qr');holder.replaceChildren();
+function abaIrSigning(url,label){abaIrEl('aba-ir-sign-label').textContent=label;abaIrShow('aba-ir-signing',true);const holder=abaIrEl('aba-ir-qr');holder.replaceChildren();
  if(typeof QRCode!=='undefined'){const c=document.createElement('canvas');holder.append(c);QRCode.toCanvas(c,url,{width:176},()=>{})}}
+function abaIrBeginMintPolling(){
+ if(abaIrState.mintPollTimer)clearInterval(abaIrState.mintPollTimer);
+ abaIrState.mintPollTimer=setInterval(()=>{
+   if(abaIrState.phase!=='pending'){clearInterval(abaIrState.mintPollTimer);abaIrState.mintPollTimer=null;return;}
+   abaIrConfirm();
+ },3500);
+}
 async function abaIrConfirm(){if(abaIrState.pollBusy||!abaIrState.recordId)return;abaIrState.pollBusy=true;
  try{const result=await abaIrRequest('/records/'+encodeURIComponent(abaIrState.recordId)+'/mint/complete','POST',{});
- if(result.status==='minted'){abaIrState.phase='done';abaIrStatus('Tokenization complete. Your NFT is verified on XRPL.');abaIrShow('aba-ir-signing',false);
+ if(result.status==='minted'){abaIrState.phase='done';if(abaIrState.mintPollTimer){clearInterval(abaIrState.mintPollTimer);abaIrState.mintPollTimer=null;}abaIrStatus('Tokenization complete. Your NFT is verified on XRPL.');abaIrShow('aba-ir-signing',false);
  abaIrEl('submit-btn').disabled=true;abaIrEl('submit-btn').textContent='Tokenized';abaIrEl('aba-ir-completion-links').hidden=false;abaIrRefreshSubmissions(false);
- }else abaIrStatus('Awaiting signature and blockchain confirmation. Approve in Xaman, then select Confirm tokenization status.');
+ }else if(abaIrState.phase==='pending')abaIrStatus('Awaiting Xaman signature and blockchain confirmation. This page will update automatically.');
  }catch(e){abaIrStatus(e.message,true)}finally{abaIrState.pollBusy=false}}
 async function abaIrSubmit(){if(!['new','saved'].includes(abaIrState.phase))return;
  const btn=abaIrEl('submit-btn');btn.disabled=true;btn.textContent='Preparing tokenization...';
@@ -2509,8 +2515,9 @@ async function abaIrSubmit(){if(!['new','saved'].includes(abaIrState.phase))retu
  } else await abaIrAuth();
  abaIrStatus('Content saved privately. Preparing a no-sale tokenization request...');
  const mint=await abaIrRequest('/records/'+encodeURIComponent(abaIrState.recordId)+'/mint/start','POST',{});
- abaIrState.phase='pending';abaIrSigning(mint.xaman_url,'Approve your no-sale NFT tokenization in Xaman');
- abaIrStatus('Xaman signature requested. After signing, click Confirm tokenization status.');
+ abaIrState.phase='pending';abaIrSigning(mint.xaman_url,'Scan the QR code to approve your no-sale NFT tokenization in Xaman');
+ abaIrStatus('Xaman signature requested. After signing, this page will update automatically.');
+ abaIrBeginMintPolling();
  btn.textContent='Tokenization Started';
  }catch(e){abaIrStatus(e.message,true);if(abaIrState.phase==='new'){btn.disabled=false;btn.textContent='Start Tokenization'}
  else if(abaIrState.phase==='saved'){btn.textContent='Retry Start Tokenization';btn.disabled=false}else {btn.textContent='Tokenization Started';btn.disabled=true}}
