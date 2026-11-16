@@ -465,6 +465,17 @@ body.aba-membership-pending #aba-member-access{display:block}
   letter-spacing:normal;
   text-transform:none;
 }
+
+/* Ideas & Research: clarify required and optional fields without changing validation. */
+.aba-ir-clarity { display:none; }
+#creator-studio.aba-ir-visual-mode .aba-ir-clarity { display:block; margin:.38rem 0 .75rem; font-size:.8rem; line-height:1.5; color:#d1dbe5; }
+#creator-studio.aba-ir-visual-mode .aba-ir-inline-clarity { display:inline; margin-left:.45rem; font-size:.78rem; font-weight:500; color:#d1dbe5; }
+.aba-ir-inline-clarity { display:none; }
+#aba-ir-completion-links[hidden] { display:none !important; }
+#aba-ir-completion-links { margin-top:1rem; padding:1rem; border:1px solid rgba(101,195,180,.45); background:rgba(101,195,180,.08); border-radius:8px; }
+#aba-ir-completion-links p { margin-bottom:.75rem; color:#e6f3ed; font-weight:600; }
+#aba-ir-completion-links a { display:inline-block; margin:.25rem .65rem .25rem 0; padding:.55rem .9rem; border:1px solid #E8BF70; border-radius:6px; color:#E8BF70; font-weight:700; text-decoration:none; }
+#aba-ir-completion-links a:hover { background:rgba(232,191,112,.12); }
 </style>
 </head>
 <body class="aba-membership-pending">
@@ -767,6 +778,7 @@ Edit Profile
 <p class="step-desc">Images must be exactly 400 × 400 pixels. Accepted formats: JPG, PNG, or GIF. Maximum file size: 2 MB.</p>
 <div id="aba-ir-cover-choice" hidden style="margin-bottom:1rem;">
 <label class="form-label" for="aba-ir-cover-mode">Choose Cover Image Design</label>
+<div class="aba-ir-clarity">Required: Upload your own cover image or generate one from text.</div>
 <select class="form-input" id="aba-ir-cover-mode" onchange="abaIrCoverModeChanged()"><option value="upload">Upload an image</option><option value="text">Generate a cover from text</option></select>
 <div id="aba-ir-cover-text-fields" hidden style="margin-top:.8rem;">
 <input class="form-input" id="aba-ir-cover-text" maxlength="120" placeholder="Text to appear on your cover" oninput="abaIrRenderCover()"/>
@@ -794,6 +806,7 @@ Edit Profile
 <!-- STEP 2: UPLOAD CONTENT -->
 <div class="step-panel" id="step-2">
 <div class="step-heading">Upload Content File <span style="color:var(--text-dim);font-weight:400;font-size:0.85rem;">(Optional)</span></div>
+<div class="aba-ir-clarity">Required content: For an Idea, enter your text or upload a Word document. For Research, upload a Word document.</div>
 <p (.docx)="" a="" agent="" ai="" as="" be="" cfc="" class="step-desc" content="" content.="" customized="" document="" embedded="" into="" on="" only.="" reader="" specifically="" the="" this="" trained="" upload="" will="" with="" word="" your=""> Skip this step for Art, Workshops, and Services.</p>
 <div id="aba-ir-idea-entry" hidden style="margin-bottom:1rem;"><label class="form-label" for="aba-ir-idea-text">Enter your Idea (or upload a Word document below)</label><textarea class="form-input" id="aba-ir-idea-text" rows="9" maxlength="500000" placeholder="Write your original idea here..."></textarea></div>
 <div class="upload-zone" id="content-upload-zone" onclick="document.getElementById('content-file-input').click()">
@@ -817,15 +830,15 @@ Edit Profile
 <div class="step-heading">Content Details</div>
 <p class="step-desc">Fill in the details for your Digital Asset. This information will be displayed in the marketplace.</p>
 <div class="form-group">
-<label class="form-label">Content Title <span>*</span></label>
+<label class="form-label">Content Title <span>*</span><span class="aba-ir-inline-clarity">Required</span></label>
 <input class="form-input" id="nft-name" maxlength="100" placeholder="e.g. Blockchain Made Simple" type="text"/>
 </div>
 <div class="form-group">
-<label class="form-label">Description <span>*</span></label>
+<label class="form-label">Description <span>*</span><span class="aba-ir-inline-clarity">Required</span></label>
 <textarea class="form-input" id="nft-desc" maxlength="1000" placeholder="Describe your content and what buyers will receive..."></textarea>
 </div>
 <div class="form-group">
-<label class="form-label">Terms &amp; Conditions</label>
+<label class="form-label">Terms &amp; Conditions<span class="aba-ir-inline-clarity">Optional</span></label>
 <textarea class="form-input" id="nft-terms" placeholder="Add any licensing terms, access terms, resale terms, usage rights, or conditions for buyers." rows="4"></textarea>
 <div class="form-hint">
     Optional marketplace terms attached to this Digital Asset.
@@ -862,7 +875,7 @@ Edit Profile
 </div>
 <div id="aba-ir-privacy-row" hidden class="form-group"><label class="form-label" for="aba-ir-visibility">Visibility (Idea &amp; Research only)</label>
 <select class="form-input" id="aba-ir-visibility" onchange="abaIrPrivacyChanged()"><option value="private" selected>Private (only in My Library)</option><option value="public">Public (available to read, not for sale)</option></select>
-<div class="form-hint">Public content is readable by others. Neither option creates a marketplace sale offer.</div></div>
+<div class="form-hint">Private (default): Only you can access this from My Library with your verified wallet. Public: Others can discover and read it in the Knowledge Library. Neither choice lists your NFT for sale.</div></div>
 <div class="form-group">
 <label class="form-label">Your Website (optional)</label>
 <input class="form-input" id="nft-website" placeholder="https://yourwebsite.com" type="url"/>
@@ -880,7 +893,7 @@ Edit Profile
 <div class="form-group">
 <label style="display:flex;align-items:center;gap:0.75rem;cursor:pointer;">
 <input checked="" id="nft-ai-enabled" type="checkbox"/>
-<span>Enable Customized AI Agent for content</span>
+<span>Enable Customized AI Agent for content<span class="aba-ir-inline-clarity">Optional for Ideas &amp; Research</span></span>
 </label>
 </div>
 <div class="alert alert-info">
@@ -929,6 +942,7 @@ Edit Profile
 <p class="step-desc">Review your details before submitting.</p>
 <div id="review-content"></div>
 <div class="alert alert-info" id="aba-ir-submit-status" hidden role="status" aria-live="polite"></div>
+<div id="aba-ir-completion-links" hidden><p>Tokenization complete! Your NFT is verified on XRPL.</p><a href="/Creator_Studio#creator-dashboard">View My Submissions</a><a href="/Knowledge_Library?view=my-library">View My Library</a></div>
 <div id="aba-ir-signing" hidden style="margin:1rem 0;padding:1rem;border:1px solid #386176;border-radius:8px;">
 <p id="aba-ir-sign-label">Approve in Xaman</p><div id="aba-ir-qr"></div>
 <a id="aba-ir-sign-url" class="xaman-link-btn" target="_blank" rel="noopener noreferrer">Open Xaman</a>
@@ -2473,7 +2487,7 @@ function abaIrSigning(url,label){abaIrEl('aba-ir-sign-label').textContent=label;
 async function abaIrConfirm(){if(abaIrState.pollBusy||!abaIrState.recordId)return;abaIrState.pollBusy=true;
  try{const result=await abaIrRequest('/records/'+encodeURIComponent(abaIrState.recordId)+'/mint/complete','POST',{});
  if(result.status==='minted'){abaIrState.phase='done';abaIrStatus('Tokenization complete. Your NFT is verified on XRPL.');abaIrShow('aba-ir-signing',false);
- abaIrEl('submit-btn').disabled=true;abaIrEl('submit-btn').textContent='Tokenized';abaIrRefreshSubmissions(false);
+ abaIrEl('submit-btn').disabled=true;abaIrEl('submit-btn').textContent='Tokenized';abaIrEl('aba-ir-completion-links').hidden=false;abaIrRefreshSubmissions(false);
  }else abaIrStatus('Awaiting signature and blockchain confirmation. Approve in Xaman, then select Confirm tokenization status.');
  }catch(e){abaIrStatus(e.message,true)}finally{abaIrState.pollBusy=false}}
 async function abaIrSubmit(){if(!['new','saved'].includes(abaIrState.phase))return;
