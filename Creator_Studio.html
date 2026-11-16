@@ -435,6 +435,26 @@ body.aba-membership-pending #aba-member-access{display:block}
   border-color: #126795 !important;
 }
 </style>
+
+<style id="aba-ideas-research-visual-polish">
+/* Presentation only, scoped to Idea and Research content types. */
+#creator-studio.aba-ir-visual-mode .step-heading,
+#creator-studio.aba-ir-visual-mode .form-label,
+#creator-studio.aba-ir-visual-mode #nft-ai-enabled + span,
+#creator-studio.aba-ir-visual-mode #aba-ir-learn-label,
+#creator-studio.aba-ir-visual-mode #step-4 label > span,
+#creator-studio.aba-ir-visual-mode #step-5 label > span {
+  color:#f0b429 !important;
+  font-size:1.05rem !important;
+  font-weight:700 !important;
+  letter-spacing:normal;
+  text-transform:none;
+}
+#creator-studio.aba-ir-visual-mode #step-1 .step-heading,
+#creator-studio.aba-ir-visual-mode #step-6 .step-heading {
+  font-size:1.35rem !important;
+}
+</style>
 </head>
 <body class="aba-membership-pending">
 <canvas id="canvas"></canvas>
@@ -730,12 +750,12 @@ Edit Profile
 <!-- STEP 1: UPLOAD IMAGE -->
 <div class="step-panel" id="step-1">
 <div class="step-heading">Upload Content Cover Image</div>
-<div class="form-group"><label class="form-label" for="aba-ir-early-type">Content Type</label><select class="form-input" id="aba-ir-early-type" onchange="document.getElementById('nft-category').value=this.value;abaIrCategoryChanged()">
+<div class="form-group"><label class="form-label" for="aba-ir-early-type">Choose Content Type</label><select class="form-input" id="aba-ir-early-type" onchange="document.getElementById('nft-category').value=this.value;abaIrCategoryChanged()">
 <option value="book">Book</option><option value="article">Article</option><option value="workshop">Workshop</option><option value="service">Service</option><option value="art">Art</option><option value="idea">Idea</option><option value="research">Research</option>
 </select></div>
 <p class="step-desc">Images must be exactly 400 × 400 pixels. Accepted formats: JPG, PNG, or GIF. Maximum file size: 2 MB.</p>
 <div id="aba-ir-cover-choice" hidden style="margin-bottom:1rem;">
-<label class="form-label" for="aba-ir-cover-mode">Cover image</label>
+<label class="form-label" for="aba-ir-cover-mode">Choose Cover Image Design</label>
 <select class="form-input" id="aba-ir-cover-mode" onchange="abaIrCoverModeChanged()"><option value="upload">Upload an image</option><option value="text">Generate a cover from text</option></select>
 <div id="aba-ir-cover-text-fields" hidden style="margin-top:.8rem;">
 <input class="form-input" id="aba-ir-cover-text" maxlength="120" placeholder="Text to appear on your cover" oninput="abaIrRenderCover()"/>
@@ -2336,6 +2356,7 @@ function abaIrStatus(message, bad=false){const el=abaIrEl('aba-ir-submit-status'
 function abaIrCategoryChanged(){
  abaIrEl('aba-ir-early-type').value=abaIrEl('nft-category').value;
  const enabled=abaIrSelected(),research=abaIrEl('nft-category').value==='research';
+ abaIrEl('creator-studio').classList.toggle('aba-ir-visual-mode',enabled);
  abaIrShow('aba-ir-cover-choice',enabled);
  abaIrShow('aba-ir-idea-entry',enabled&&!research);
  abaIrShow('aba-ir-privacy-row',enabled);
@@ -2363,11 +2384,11 @@ function abaIrCoverModeChanged(){const en=abaIrSelected();if(!en)return;
 }
 function abaIrRenderCover(){const canvas=abaIrEl('aba-ir-cover-canvas');if(!canvas)return;
  const c=canvas.getContext('2d');c.fillStyle='#081b30';c.fillRect(0,0,400,400);c.strokeStyle='#7ec8e8';c.lineWidth=3;c.strokeRect(16,16,368,368);
- c.fillStyle='#87ceeb';c.textAlign='center';c.font='bold 19px sans-serif';c.fillText('ARKANSAS BLOCKCHAIN ASSOCIATION',200,58,350);
+ c.textAlign='center';
  let words=(abaIrEl('aba-ir-cover-text').value.trim()||'Original Work').split(/\s+/),lines=[],line='';
  c.fillStyle='#fff';c.font='bold 28px sans-serif';for(const word of words){const next=(line+' '+word).trim();if(c.measureText(next).width>320&&line){lines.push(line);line=word}else line=next}if(line)lines.push(line);
- lines.slice(0,7).forEach((part,i)=>c.fillText(part,200,165+i*34,330));
- c.fillStyle='#87ceeb';c.font='16px sans-serif';c.fillText('TIK  •  ORIGINAL WORK',200,359);
+ lines.slice(0,7).forEach((part,i)=>c.fillText(part,200,Math.max(120,200-(Math.min(lines.length,7)-1)*17)+i*34,330));
+
  abaIrEl('step1-next').disabled=!abaIrCoverReady();
 }
 function abaIrCoverReady(){if(!abaIrSelected())return !!imageCid;
