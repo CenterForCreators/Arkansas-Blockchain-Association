@@ -939,12 +939,10 @@ Edit Profile
 <div class="dash-grid" id="dash-grid">
 <!-- Populated by JS from localStorage -->
 </div>
-<!-- ABA Ideas & Research submissions. Existing Publish Knowledge dashboard unchanged. -->
-<div id="aba-ir-my-submissions" style="margin-top:2rem">
-  <h3 style="font-family:'Space Grotesk',sans-serif;font-size:1.15rem;margin:0 0 .65rem">My Ideas &amp; Research</h3>
-  <p id="aba-ir-my-submissions-status" style="font-size:.85rem;color:#87CEEB;margin-bottom:.75rem">Connect your wallet and verify access to view your Ideas &amp; Research.</p>
-  <button type="button" class="btn-sm-outline" id="aba-ir-refresh-submissions">Refresh Ideas &amp; Research</button>
-  <div class="dash-grid" id="aba-ir-my-submissions-grid" style="margin-top:1rem"></div>
+<!-- ABA Ideas & Research cards within My Submissions; existing dashboard unchanged. -->
+<div id="aba-ir-my-submissions">
+  <p id="aba-ir-my-submissions-status" style="font-size:.85rem;color:#87CEEB"></p>
+  <div class="dash-grid" id="aba-ir-my-submissions-grid" style="margin-top:1.5rem"></div>
 </div>
 </div>
 </section>
@@ -2482,14 +2480,15 @@ async function abaIrRefreshSubmissions(requestAuth=false){
    try{await abaIrAuth();token=abaIrState.token;}
    catch(e){status.textContent=e.message||'Wallet verification failed.';return;}
  }
- if(!token||sessionStorage.getItem('aba_ideas_wallet')!==creatorWallet){status.textContent='Select Refresh Ideas & Research to verify your wallet and view your records.';return;}
+ if(!token||sessionStorage.getItem('aba_ideas_wallet')!==creatorWallet){status.textContent='Wallet verification is required to view Ideas & Research.';return;}
  status.textContent='Loading your Ideas & Research...';
  try{
    const r=await fetch(ABA_IR_API+'/my-library',{headers:{Authorization:'Bearer '+token}});
    const data=await r.json().catch(()=>({}));
-   if(!r.ok)throw Error(data.error||'Session expired. Select Refresh to verify your wallet again.');
+   if(!r.ok)throw Error(data.error||'Wallet session expired. Verify your wallet to view Ideas & Research.');
    const items=Array.isArray(data.items)?data.items:[];
-   status.textContent=items.length?'Your Ideas & Research submissions':'No Ideas & Research submissions found for this wallet.';
+   status.textContent=items.length?'':'No Ideas & Research submissions found for this wallet.';
+   if(items.length && abaIrEl('dash-grid')?.querySelector('.empty-state')) abaIrEl('dash-grid').querySelector('.empty-state').style.display='none';
    for(const item of items){
      const card=document.createElement('div');card.className='dash-card';
      const title=document.createElement('div');title.className='dash-card-title';title.textContent=item.title||'Untitled';
@@ -2508,11 +2507,10 @@ async function abaIrRefreshSubmissions(requestAuth=false){
 const abaIrOriginalLoadDashboard=loadDashboard;
 loadDashboard=async function(...args){
  const result=await abaIrOriginalLoadDashboard(...args);
- await abaIrRefreshSubmissions(false);
+ await abaIrRefreshSubmissions(true);
  return result;
 };
-abaIrEl('aba-ir-refresh-submissions').addEventListener('click',()=>abaIrRefreshSubmissions(true));
-abaIrRefreshSubmissions(false);
+
 
 // Reapply chosen type when returning to earlier wizard steps. No extra creator mode.
 abaIrCategoryChanged();
