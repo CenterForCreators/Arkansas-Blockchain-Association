@@ -784,21 +784,7 @@ async function loadAbaIdeasResearch(id,statusEl,content){
       }else throw Error('This document format cannot be displayed');
       resultBox.textContent=readable;
       info('Content loaded');setupPager();
-      const actionBar=document.createElement('div');actionBar.style.cssText='display:flex;flex-wrap:wrap;gap:8px;padding:12px';
-      const bonus=await request('/records/'+encodeURIComponent(id)+'/reward').catch(()=>null);
-      if(record.status==='minted'){
-        if(bonus?.status==='paid'){
-          const done=document.createElement('span');done.style.color='#34D399';done.textContent='100 CFC bonus claimed';actionBar.append(done);
-        }else if(bonus?.status==='unclaimed'){
-          const b=makeButton('Claim 100 CFC',async()=>{
-            b.disabled=true;try{const result=await request('/records/'+encodeURIComponent(id)+'/reward/claim',{method:'POST'});info(result.status==='paid'?'100 CFC bonus confirmed.':'Bonus submitted. Awaiting XRPL confirmation; no second claim is needed.');b.textContent='Check CFC Bonus';b.onclick=async()=>{try{const check=await request('/records/'+encodeURIComponent(id)+'/reward/verify',{method:'POST'});info(check.status==='paid'?'100 CFC bonus confirmed.':'Reward status: '+check.status)}catch(err){info(err.message)}};b.disabled=false;}
-            catch(e){info(e.message);b.disabled=false;}
-          });actionBar.append(b);
-        }else if(bonus){actionBar.append(makeButton('Check CFC Bonus',async()=>{
-          try{const result=await request('/records/'+encodeURIComponent(id)+'/reward/verify',{method:'POST'});info(result.status==='paid'?'100 CFC bonus confirmed.':'Reward status: '+result.status);}catch(e){info(e.message);}
-        }));}
-      }
-      document.getElementById('statusBar').after(actionBar);
+
       // Existing AI guide works with the visible content but original publication reward tracking is not invoked.
       document.getElementById('aiButton').style.display='block';
     }catch(e){info('Ideas & Research Reader: '+e.message);resultBox.replaceChildren();if(/session|sign-in|unauthoriz|401|expired/i.test(e.message)){sessionStorage.removeItem(SESSION);if(await signIn())return showIdea();}}
