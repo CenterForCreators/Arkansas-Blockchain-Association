@@ -2477,13 +2477,12 @@ async function abaIrRefreshSubmissions(requestAuth=false){
  if(!grid||!status)return;
  grid.replaceChildren();
  if(!creatorWallet){status.textContent='Connect your wallet to view Ideas & Research.';return;}
- const verifiedWallet=sessionStorage.getItem('aba_ideas_wallet');
  let token=sessionStorage.getItem('aba_ideas_token');
  if(requestAuth){
    try{await abaIrAuth();token=abaIrState.token;}
    catch(e){status.textContent=e.message||'Wallet verification failed.';return;}
  }
- if(!token||verifiedWallet!==creatorWallet){status.textContent='Select Refresh Ideas & Research to verify your wallet and view your records.';return;}
+ if(!token||sessionStorage.getItem('aba_ideas_wallet')!==creatorWallet){status.textContent='Select Refresh Ideas & Research to verify your wallet and view your records.';return;}
  status.textContent='Loading your Ideas & Research...';
  try{
    const r=await fetch(ABA_IR_API+'/my-library',{headers:{Authorization:'Bearer '+token}});
