@@ -939,6 +939,13 @@ Edit Profile
 <div class="dash-grid" id="dash-grid">
 <!-- Populated by JS from localStorage -->
 </div>
+<!-- ABA Ideas & Research submissions. Existing Publish Knowledge dashboard unchanged. -->
+<div id="aba-ir-my-submissions" style="margin-top:2rem">
+  <h3 style="font-family:'Space Grotesk',sans-serif;font-size:1.15rem;margin:0 0 .65rem">My Ideas &amp; Research</h3>
+  <p id="aba-ir-my-submissions-status" style="font-size:.85rem;color:#87CEEB;margin-bottom:.75rem">Connect your wallet and verify access to view your Ideas &amp; Research.</p>
+  <button type="button" class="btn-sm-outline" id="aba-ir-refresh-submissions">Refresh Ideas &amp; Research</button>
+  <div class="dash-grid" id="aba-ir-my-submissions-grid" style="margin-top:1rem"></div>
+</div>
 </div>
 </section>
 </div><!-- page-content -->
@@ -1819,51 +1826,7 @@ console.log(mine[0]);
         <div class="empty-sub">Please refresh and try again.</div>
       </div>
     `;
-  } finally {
-    // Extend the EXISTING My Submissions grid with ABA Ideas & Research.
-    // The original submission query, payment and minting logic are unchanged.
-    void abaIrAppendSubmissionCards(wallet, grid);
   }
-}
-async function abaIrAppendSubmissionCards(wallet, grid){
-  const token=sessionStorage.getItem('aba_ideas_token');
-  const verifiedWallet=sessionStorage.getItem('aba_ideas_wallet');
-  if(!token || verifiedWallet!==wallet || !grid) return;
-  try {
-    const response=await fetch('https://aba-tik-ideas-research-backend.onrender.com/api/ideas-research/my-library',{
-      headers:{Authorization:'Bearer '+token}
-    });
-    if(!response.ok) return; // Do not interfere with existing submissions on expired sessions.
-    const payload=await response.json();
-    const items=Array.isArray(payload.items)?payload.items:[];
-    if(!items.length || (creatorWallet || localStorage.getItem('cfcWallet'))!==wallet) return;
-    if(grid.querySelector('.empty-state')) grid.replaceChildren();
-    grid.querySelectorAll('[data-aba-ir-submission]').forEach(node=>node.remove());
-    for(const item of items){
-      const card=document.createElement('div');
-      card.className='dash-card';
-      card.dataset.abaIrSubmission=String(item.id||'');
-      const heading=document.createElement('div');
-      heading.className='dash-card-title';
-      heading.textContent=item.title||'Untitled';
-      const info=document.createElement('div');
-      info.className='dash-card-id';
-      info.textContent=(item.content_kind==='research'?'Research':'Idea')+' · '+(item.visibility==='public'?'Public':'Private');
-      const status=document.createElement('span');
-      status.className='dash-status '+(item.status==='minted'?'status-minted':'status-pending');
-      status.textContent=item.status==='minted'?'Minted':(item.status||'Draft');
-      const actions=document.createElement('div');
-      actions.className='dash-actions';
-      const view=document.createElement('a');
-      view.className='btn-sm-outline';
-      view.style.textDecoration='none';
-      view.href='/Knowledge_Library?view=my-library';
-      view.textContent='View My Library';
-      actions.appendChild(view);
-      card.append(heading,info,status,actions);
-      grid.appendChild(card);
-    }
-  } catch(e){console.warn('ABA Ideas & Research submissions could not be loaded:',e)}
 }
 function renderDashCard(sub){
 const normalizedStatus = (sub.status || '').toLowerCase();
@@ -2480,7 +2443,7 @@ function abaIrSigning(url,label){abaIrEl('aba-ir-sign-label').textContent=label;
 async function abaIrConfirm(){if(abaIrState.pollBusy||!abaIrState.recordId)return;abaIrState.pollBusy=true;
  try{const result=await abaIrRequest('/records/'+encodeURIComponent(abaIrState.recordId)+'/mint/complete','POST',{});
  if(result.status==='minted'){abaIrState.phase='done';abaIrStatus('Tokenization complete. Your NFT is verified on XRPL.');abaIrShow('aba-ir-signing',false);
- abaIrEl('submit-btn').disabled=true;abaIrEl('submit-btn').textContent='Tokenized';
+ abaIrEl('submit-btn').disabled=true;abaIrEl('submit-btn').textContent='Tokenized';abaIrRefreshSubmissions(false);
  }else abaIrStatus('Awaiting signature and blockchain confirmation. Approve in Xaman, then select Confirm tokenization status.');
  }catch(e){abaIrStatus(e.message,true)}finally{abaIrState.pollBusy=false}}
 async function abaIrSubmit(){if(!['new','saved'].includes(abaIrState.phase))return;
@@ -2507,6 +2470,51 @@ async function abaIrSubmit(){if(!['new','saved'].includes(abaIrState.phase))retu
  }catch(e){abaIrStatus(e.message,true);if(abaIrState.phase==='new'){btn.disabled=false;btn.textContent='Start Tokenization'}
  else if(abaIrState.phase==='saved'){btn.textContent='Retry Start Tokenization';btn.disabled=false}else {btn.textContent='Tokenization Started';btn.disabled=true}}
 }
+// ABA-only dashboard extension. No modification to the original submissions / mint workflow.
+async function abaIrRefreshSubmissions(requestAuth=false){
+ const grid=abaIrEl('aba-ir-my-submissions-grid');
+ const status=abaIrEl('aba-ir-my-submissions-status');
+ if(!grid||!status)return;
+ grid.replaceChildren();
+ if(!creatorWallet){status.textContent='Connect your wallet to view Ideas & Research.';return;}
+ const verifiedWallet=sessionStorage.getItem('aba_ideas_wallet');
+ let token=sessionStorage.getItem('aba_ideas_token');
+ if(requestAuth){
+   try{await abaIrAuth();token=abaIrState.token;}
+   catch(e){status.textContent=e.message||'Wallet verification failed.';return;}
+ }
+ if(!token||verifiedWallet!==creatorWallet){status.textContent='Select Refresh Ideas & Research to verify your wallet and view your records.';return;}
+ status.textContent='Loading your Ideas & Research...';
+ try{
+   const r=await fetch(ABA_IR_API+'/my-library',{headers:{Authorization:'Bearer '+token}});
+   const data=await r.json().catch(()=>({}));
+   if(!r.ok)throw Error(data.error||'Session expired. Select Refresh to verify your wallet again.');
+   const items=Array.isArray(data.items)?data.items:[];
+   status.textContent=items.length?'Your Ideas & Research submissions':'No Ideas & Research submissions found for this wallet.';
+   for(const item of items){
+     const card=document.createElement('div');card.className='dash-card';
+     const title=document.createElement('div');title.className='dash-card-title';title.textContent=item.title||'Untitled';
+     const meta=document.createElement('div');meta.className='dash-card-id';
+     meta.textContent=(item.content_kind==='research'?'Research':'Idea')+' · '+(item.visibility||'private');
+     const badge=document.createElement('span');badge.className='dash-status '+(item.status==='minted'?'status-minted':'status-pending');
+     badge.textContent=item.status==='minted'?'Minted':(item.status||'Draft').replace(/_/g,' ');
+     const actions=document.createElement('div');actions.className='dash-actions';
+     const link=document.createElement('a');link.className='btn-sm-outline';link.style.textDecoration='none';
+     link.href='/Knowledge_Library?view=my-library';link.textContent='View My Library';
+     actions.append(link);card.append(title,meta,badge,actions);grid.append(card);
+   }
+ }catch(e){status.textContent=e.message||'Unable to load Ideas & Research.';}
+}
+// Existing dashboard remains the authority for all original categories.
+const abaIrOriginalLoadDashboard=loadDashboard;
+loadDashboard=async function(...args){
+ const result=await abaIrOriginalLoadDashboard(...args);
+ await abaIrRefreshSubmissions(false);
+ return result;
+};
+abaIrEl('aba-ir-refresh-submissions').addEventListener('click',()=>abaIrRefreshSubmissions(true));
+abaIrRefreshSubmissions(false);
+
 // Reapply chosen type when returning to earlier wizard steps. No extra creator mode.
 abaIrCategoryChanged();
 
