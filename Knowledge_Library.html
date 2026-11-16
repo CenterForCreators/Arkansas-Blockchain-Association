@@ -2084,11 +2084,83 @@ document.querySelector('.mobile-menu-btn').addEventListener('click', () => {
 /* Separate ABA-only library extension; existing listings, purchases, RLUSD and XRP functions untouched. */
 (()=>{'use strict';const API='https://aba-tik-ideas-research-backend.onrender.com/api/ideas-research';
 const $=id=>document.getElementById(id);let active=false;
-function card(item,publicView){const div=document.createElement('div');div.className=publicView?'nft-card':'order-card';div.style.padding='1rem';
-if(item.cover?.base64&&item.cover?.mime){const img=document.createElement('img');img.src=`data:${item.cover.mime};base64,${item.cover.base64}`;img.alt='Cover';img.style.cssText='max-width:140px;width:100%;aspect-ratio:1;object-fit:cover;border-radius:8px;display:block;margin-bottom:.7rem';div.appendChild(img)}
-const title=document.createElement('div');title.style.cssText='font-weight:700;font-size:1rem';title.textContent=item.title||'Untitled';div.appendChild(title);
-const meta=document.createElement('p');meta.style.cssText='color:#a6c5d7;font-size:.8rem;margin:.5rem 0';meta.textContent=`${item.content_kind==='research'?'Research':'Idea'} · ${publicView?'Public':item.visibility+' · '+item.status}`;div.append(meta);
-const link=document.createElement('a');link.href='/ABA_Reader.html?ideas_id='+encodeURIComponent(item.id);link.textContent='Open in Reader';link.className='btn-view';link.style.cssText='display:inline-block;text-decoration:none';div.append(link);return div;}
+function card(item,publicView){
+  const div=document.createElement('div');
+  div.className=publicView?'nft-card':'order-card';
+  if(publicView)div.style.padding='1rem';
+  if(item.cover?.base64&&item.cover?.mime){
+    const img=document.createElement('img');
+    img.src=`data:${item.cover.mime};base64,${item.cover.base64}`;
+    img.alt='Cover';img.className=publicView?'nft-img':'buy-nft-img';
+    if(publicView)img.style.cssText='max-width:140px;width:100%;aspect-ratio:1;object-fit:cover;border-radius:8px;display:block;margin-bottom:.7rem';
+    div.appendChild(img);
+  }
+  const title=document.createElement('div');title.className=publicView?'nft-title':'order-name';
+  title.textContent=item.title||'Untitled';div.appendChild(title);
+  const meta=document.createElement('div');meta.className=publicView?'nft-desc':'order-meta';
+  meta.textContent=publicView?`${item.content_kind==='research'?'Research':'Idea'} · Public`:
+    `Status: ${String(item.status||'draft').toUpperCase()} · ${item.content_kind==='research'?'Research':'Idea'} · ${item.visibility||'private'}`;
+  div.appendChild(meta);
+  const actions=document.createElement('div');
+  if(!publicView){actions.style.cssText='margin-top:0.75rem;display:flex;gap:0.5rem;flex-wrap:wrap';
+    const reward=document.createElement('button');reward.type='button';reward.className='btn-full-gold';
+    if(item.reward_status==='paid'){
+      const done=document.createElement('span');done.className='order-badge badge-completed';done.textContent='Reward Claimed';actions.appendChild(done);
+    }else if(item.status==='minted'){
+      reward.textContent='Checking CFC bonus availability...';reward.disabled=true;actions.appendChild(reward);
+      checkIdeaBonus(item.id,reward);
+    }
+  }
+  const link=document.createElement('a');link.href='/ABA_Reader.html?ideas_id='+encodeURIComponent(item.id);
+  link.textContent=publicView?'Open in Reader':'Open Content';
+  link.className=publicView?'btn-view':'btn-full-outline';
+  link.style.cssText='display:inline-block;text-align:center;text-decoration:none';
+  actions.appendChild(link);div.appendChild(actions);return div;
+}
+async function checkIdeaBonus(id,button){
+  const token=sessionStorage.getItem('aba_ideas_token');
+  if(!token){button.textContent='Verify wallet to check CFC bonus';return;}
+  try{
+    const r=await fetch(API+'/records/'+encodeURIComponent(id)+'/reward',{headers:{Authorization:'Bearer '+token}});
+    const data=await r.json();if(!r.ok)throw Error(data.error||'Unable to check bonus');
+    if(data.status==='paid'){const done=document.createElement('span');done.className='order-badge badge-completed';done.textContent='Reward Claimed';button.replaceWith(done);return;}
+    if(!data.enabled){button.textContent='CFC bonus currently unavailable';button.title='Rewards have not been enabled for Ideas & Research';return;}
+    if(!data.eligible){button.textContent='Available after tokenization';return;}
+    if(data.status!=='unclaimed'){
+      button.textContent='Verify CFC bonus status';button.disabled=false;
+      button.onclick=()=>verifyIdeaBonus(id,button);return;
+    }
+    button.textContent='Claim Your Bonus CFC Rewards';button.disabled=false;
+    button.onclick=()=>claimIdeaBonus(id,button);
+  }catch(e){button.textContent='CFC bonus status unavailable';button.title=e.message;}
+}
+function ideaBonusPaid(button){
+  const done=document.createElement('span');done.className='order-badge badge-completed';done.textContent='Reward Claimed';button.replaceWith(done);
+}
+async function verifyIdeaBonus(id,button){
+  button.disabled=true;button.textContent='Verifying CFC bonus...';
+  try{
+    const token=sessionStorage.getItem('aba_ideas_token');
+    const r=await fetch(API+'/records/'+encodeURIComponent(id)+'/reward/verify',{
+      method:'POST',headers:{Authorization:'Bearer '+token}});
+    const d=await r.json();if(!r.ok)throw Error(d.error||'Verification failed');
+    if(d.status==='paid')ideaBonusPaid(button);
+    else {button.textContent='Verify CFC bonus status';button.disabled=false;}
+  }catch(e){button.textContent=e.message||'Bonus verification unavailable';button.disabled=false;}
+}
+async function claimIdeaBonus(id,button){
+  button.disabled=true;button.textContent='Processing CFC bonus...';
+  try{
+    const token=sessionStorage.getItem('aba_ideas_token');
+    const r=await fetch(API+'/records/'+encodeURIComponent(id)+'/reward/claim',{
+      method:'POST',headers:{Authorization:'Bearer '+token}});
+    const d=await r.json();if(!r.ok)throw Error(d.error||'Bonus claim failed');
+    if(d.status==='paid')ideaBonusPaid(button);
+    else {button.textContent='Verify CFC bonus status';button.disabled=false;
+      button.onclick=()=>verifyIdeaBonus(id,button);}
+  }catch(e){button.textContent=e.message||'Bonus claim unavailable';button.disabled=false;}
+}
+
 async function publicLibrary(){try{const r=await fetch(API+'/public-library');if(!r.ok)throw Error('Public records unavailable');const d=await r.json();const box=$('aba-ir-public-grid');box.replaceChildren();for(const it of d.items||[])box.appendChild(card(it,true));if(!(d.items||[]).length)box.textContent='No public Ideas & Research yet.';}catch(e){$('aba-ir-public-grid').textContent=e.message}}
 async function owned(){const box=$('aba-ir-owned-grid'),msg=$('aba-ir-owned-status');box.replaceChildren();const token=sessionStorage.getItem('aba_ideas_token');const savedWallet=sessionStorage.getItem('aba_ideas_wallet');const activeWallet=localStorage.getItem('cfcWallet');if(!token||!savedWallet||(activeWallet&&savedWallet!==activeWallet)){msg.textContent='To access private records, verify your wallet in Creator Studio, then open My Library in this tab.';return}
 try{const r=await fetch(API+'/my-library',{headers:{Authorization:'Bearer '+token}});const d=await r.json();if(!r.ok)throw Error(d.error||'Session expired');msg.textContent='';for(const it of d.items||[])box.appendChild(card(it,false));if(!(d.items||[]).length)msg.textContent='No Ideas & Research records yet.';}catch(e){msg.textContent=e.message+' Reconnect your wallet in Creator Studio.'}}
