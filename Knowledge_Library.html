@@ -172,7 +172,7 @@ nav {
 .nft-footer { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:0.5rem; }
 .nft-prices { display:flex; flex-direction:column; gap:0.15rem; }
 .nft-price-xrp { font-size:0.85rem; font-weight:700; color:var(--gold); }
-.nft-price-rlusd { font-size:0.75rem; color:var(--text-muted); }
+.nft-price-rlusd { font-size:0.85rem; font-weight:700; color:var(--gold); }
 .nft-buy-btns { display:flex; gap:0.4rem; flex-wrap:wrap; }
 .btn-buy-xrp { padding:0.4rem 0.85rem; border-radius:8px; background:linear-gradient(135deg,var(--gold),var(--gold-dark)); color:#000; font-size:0.72rem; font-weight:700; cursor:pointer; border:none; transition:all 0.2s; font-family:inherit; white-space:nowrap; }
 .btn-buy-xrp:hover { transform:scale(1.05); }
@@ -1444,7 +1444,6 @@ ${nft.terms ? `
     <div class="nft-qty">${available} available${nft.sold_count ? ' &middot; '+nft.sold_count+' sold' : ''}</div>
     <div class="nft-footer">
       <div class="nft-prices">
-        ${nft.price_xrp ? `<div class="nft-price-xrp">${nft.price_xrp} XRP</div>` : ''}
         ${nft.price_rlusd ? `<div class="nft-price-rlusd">${nft.price_rlusd} RLUSD</div>` : ''}
       </div>
       <div class="nft-buy-btns">
