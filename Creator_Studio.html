@@ -456,6 +456,8 @@ body.menu-open{overflow:hidden}
 @media(max-width:960px){
 .site-header .nav-wrap{height:88px}
 .site-header .menu-toggle{display:block;position:relative;z-index:2}
+/* Avoid scrolled-header blur trapping the fixed mobile menu inside the header. */
+.site-header,.site-header.scrolled{backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
 body.menu-open .site-header{background:#06152f;backdrop-filter:none}
 #aba-primary-nav{position:fixed;inset:88px 0 0;display:flex;flex-direction:column;align-items:stretch;justify-content:flex-start;gap:0;padding:18px 24px calc(30px + env(safe-area-inset-bottom));background:#06152f;overflow-y:auto;overscroll-behavior:contain;max-height:calc(100dvh - 88px);transform:translateX(100%);visibility:hidden;pointer-events:none;transition:transform .25s ease,visibility .25s}
 #aba-primary-nav.open{transform:none;visibility:visible;pointer-events:auto}
