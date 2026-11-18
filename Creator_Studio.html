@@ -2483,7 +2483,10 @@ async function abaIrAuth(){if(abaIrState.token)return;
  throw Error('Wallet verification timed out. Retry with Xaman.');
 }
 function abaIrSigning(url,label){abaIrEl('aba-ir-sign-label').textContent=label;abaIrShow('aba-ir-signing',true);const holder=abaIrEl('aba-ir-qr');holder.replaceChildren();
- if(typeof QRCode!=='undefined'){const c=document.createElement('canvas');holder.append(c);QRCode.toCanvas(c,url,{width:176},()=>{})}}
+ if(/Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent)){
+   const link=document.createElement('a');link.href=url;link.className='xaman-link-btn';link.textContent='Open in XAMAN App';link.style.display='inline-flex';link.style.marginTop='.75rem';holder.append(link);
+   window.location.assign(url);
+ }else if(typeof QRCode!=='undefined'){const c=document.createElement('canvas');holder.append(c);QRCode.toCanvas(c,url,{width:176},()=>{})}}
 function abaIrBeginMintPolling(){
  if(abaIrState.mintPollTimer)clearInterval(abaIrState.mintPollTimer);
  abaIrState.mintPollTimer=setInterval(()=>{
