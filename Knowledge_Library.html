@@ -2070,7 +2070,6 @@ const abaRestore=abaCachedMember();
 abaRequestForm.classList.add('aba-member-hidden');
 if(abaRestore){abaShowKnowledgeLibrary();abaConfirmMember().catch(()=>{abaForgetMember();abaShowMemberSignIn()})}else{abaMemberStatus('Checking your membership...');abaConfirmMember().catch(()=>{abaRequestForm.classList.remove('aba-member-hidden');abaMemberStatus('')})}
 </script>
-
 <script id="aba-site-nav-script">
 (() => {
   const header = document.querySelector('.site-header');
