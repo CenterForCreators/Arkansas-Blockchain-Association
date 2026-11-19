@@ -2517,7 +2517,7 @@ function abaIrCategoryChanged(){
  if(enabled)abaIrEl('step-2').querySelector('.step-heading').textContent=research?'Upload Research Word Document':'Enter an Idea or Upload Word Document';else abaIrEl('step-2').querySelector('.step-heading').innerHTML=abaIrOriginalStep2Heading;
  abaIrEl('step-3').querySelector('.step-desc').textContent=enabled?'Describe your original work. Privacy settings apply only to Ideas and Research.':'Fill in the details for your Digital Asset. This information will be displayed in the marketplace.';
  abaIrEl('step-4').querySelector('.step-desc').textContent=enabled?'No AI Agent setup is needed for Ideas and Research.':'Each content digital asset comes with an embedded AI Agent trained on your content.';
- abaIrEl('step-5').querySelector('.step-desc').textContent=enabled?'Questions are optional. They will be included with the protected content; rewards are not enabled.':'Add questions for your readers to earn CFC tokens.';
+ abaIrEl('step-5').querySelector('.step-desc').textContent=enabled?'Questions are optional. Learn and Earn is not available for Ideas and Research.':'Add questions for your readers to earn CFC tokens.';
  abaIrShow('aba-ir-signing',false);abaIrShow('aba-ir-submit-status',false);
  abaIrCoverModeChanged();abaIrPrivacyChanged();
 }
