@@ -2785,7 +2785,7 @@ const abaMemberApi=async(path,options={})=>{const r=await fetch(ABA_MEMBER_API+p
 function abaMemberStatus(msg,bad=false){const e=document.getElementById('aba-member-auth-status');if(!e)return;e.textContent=msg||'';e.classList.toggle('error',bad)}
 function abaShowCreatorStudio(){document.body.classList.remove('aba-membership-pending')}
 function abaShowMemberSignIn(){document.body.classList.add('aba-membership-pending');document.getElementById('aba-member-request-form').classList.remove('aba-member-hidden');document.getElementById('aba-member-verify-form').classList.add('aba-member-hidden');abaMemberStatus('')}
-async function abaConfirmMember(){const d=await abaMemberApi('/api/student-network/me');abaRememberMember(d.profile);abaShowCreatorStudio();if(creatorWallet){updateNavWallet(creatorWallet);loadCreatorProfile().catch(e=>console.error('Creator profile load error:',e));}return d.profile}
+async function abaConfirmMember(){const d=await abaMemberApi('/api/student-network/me');abaRememberMember(d.profile);window.dispatchEvent(new Event('aba:session-confirmed'));abaShowCreatorStudio();if(creatorWallet){updateNavWallet(creatorWallet);loadCreatorProfile().catch(e=>console.error('Creator profile load error:',e));}return d.profile}
 const abaRequestForm=document.getElementById('aba-member-request-form');
 const abaVerifyForm=document.getElementById('aba-member-verify-form');
 abaRequestForm.onsubmit=async e=>{e.preventDefault();const button=abaRequestForm.querySelector('button[type="submit"]');abaMemberEmail=document.getElementById('aba-member-email').value;button.disabled=true;button.textContent='Sending Verification Code...';abaMemberStatus('Please wait while we send your verification code.');try{await abaMemberApi('/api/student-auth/request-code',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:abaMemberEmail})});abaRequestForm.classList.add('aba-member-hidden');abaVerifyForm.classList.remove('aba-member-hidden');abaMemberStatus('If this address is eligible, a verification code has been sent.')}catch(x){abaMemberStatus(x.message,true)}finally{button.disabled=false;button.textContent='Send Verification Code'}};
@@ -2845,6 +2845,7 @@ const year=document.getElementById('year');if(year)year.textContent=new Date().g
  const join=nav.querySelector('.nav-join');nav.insertBefore(wrap,join||null);
  const api='https://api.arkansasblockchainassociation.com';
  function showSignedIn(){
+   if(wrap.querySelector('.aba-account-trigger'))return;
    wrap.replaceChildren();
    const b=document.createElement('button');b.type='button';b.className='aba-account-trigger';b.setAttribute('aria-label','Profile options');b.setAttribute('aria-expanded','false');
    const avatar=document.createElement('span');avatar.className='aba-account-avatar';avatar.textContent='●';avatar.setAttribute('aria-hidden','true');
@@ -2868,6 +2869,7 @@ const year=document.getElementById('year');if(year)year.textContent=new Date().g
    document.addEventListener('click',e=>{if(!wrap.contains(e.target)){menu.hidden=true;b.setAttribute('aria-expanded','false');}});
    document.addEventListener('keydown',e=>{if(e.key==='Escape'){menu.hidden=true;b.setAttribute('aria-expanded','false');}});
  }
+  window.addEventListener('aba:session-confirmed',showSignedIn);
  fetch(api+'/api/student-network/me',{credentials:'include',headers:{Accept:'application/json'},cache:'no-store'})
  .then(r=>r.ok?r.json():null).then(d=>{if(d?.profile)showSignedIn();}).catch(()=>{});
 })();
