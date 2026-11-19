@@ -2118,7 +2118,7 @@ document.getElementById('aba-member-resend').onclick=()=>abaRequestForm.dispatch
 document.getElementById('aba-member-change-email').onclick=()=>{abaVerifyForm.classList.add('aba-member-hidden');abaRequestForm.classList.remove('aba-member-hidden');abaMemberStatus('')};
 const abaRestore=abaCachedMember();
 abaRequestForm.classList.add('aba-member-hidden');
-if(abaRestore){abaShowKnowledgeLibrary();abaConfirmMember().catch(()=>{abaForgetMember();abaShowMemberSignIn()})}else{abaMemberStatus('Checking your membership...');abaConfirmMember().catch(()=>{abaRequestForm.classList.remove('aba-member-hidden');abaMemberStatus('')})}
+if(abaRestore){abaMemberStatus('Checking your membership...');abaConfirmMember().catch(()=>{abaForgetMember();abaShowMemberSignIn()})}else{abaMemberStatus('Checking your membership...');abaConfirmMember().catch(()=>{abaRequestForm.classList.remove('aba-member-hidden');abaMemberStatus('')})}
 </script>
 <script id="aba-site-nav-script">
 (() => {
