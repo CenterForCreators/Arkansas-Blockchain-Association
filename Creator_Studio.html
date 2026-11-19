@@ -554,6 +554,13 @@ body.menu-open .site-header{background:#06152f;backdrop-filter:none}
 </style>
 </head>
 <body class="aba-membership-pending">
+<script id="aba-member-cached-entry">
+// Display the previously confirmed session immediately; server verification still runs below.
+try {
+  const member = JSON.parse(localStorage.getItem('aba_member_session') || 'null');
+  if (member && member.verifiedAt) document.body.classList.remove('aba-membership-pending');
+} catch (_) {}
+</script>
 <canvas id="canvas"></canvas>
 <!-- NAV -->
 <header class="site-header" id="top">
@@ -772,8 +779,6 @@ Edit Profile
   </div>
 </div>
 <div id="creator-trustlines" class="alert alert-info" style="margin-top:0.8rem;" aria-live="polite">
-  <div style="font-weight:700;margin-bottom:.5rem;font-size:1.05rem;color:#fff;">Complete Your Wallet Setup</div>
-  <p style="font-size:.85rem;line-height:1.6;color:#e4eff9;margin:.35rem 0 .8rem;">After connecting Xaman, check both items below. <strong>CFC</strong> lets your wallet receive participation rewards; <strong>RLUSD</strong> enables supported stablecoin transactions. If an item says <strong>Setup required</strong>, select its existing setup button, approve the trustline in Xaman, and return here. Only missing trustlines need approval.</p>
   <div id="trustline-cfc-status">CFC: Connect wallet to check</div>
   <div id="trustline-rlusd-status" style="margin-top:.3rem;">RLUSD: Connect wallet to check</div>
   <div id="trustline-actions" style="display:flex;flex-wrap:wrap;gap:.6rem;margin-top:.8rem;"></div>
@@ -846,15 +851,16 @@ Edit Profile
 <div class="form-group"><label class="form-label" for="aba-ir-early-type">Choose Content Type</label><select class="form-input" id="aba-ir-early-type" onchange="document.getElementById('nft-category').value=this.value;abaIrCategoryChanged()">
 <option value="book">Book</option><option value="article">Article</option><option value="workshop">Workshop</option><option value="service">Service</option><option value="art">Art</option><option value="idea">Idea</option><option value="research">Research</option>
 </select></div>
-<p class="step-desc">Images must be exactly 400 × 400 pixels. Accepted formats: JPG, PNG, or GIF. Maximum file size: 2 MB.</p>
 <div id="aba-ir-cover-choice" hidden style="margin-bottom:1rem;">
 <label class="form-label" for="aba-ir-cover-mode">Choose Cover Image Design</label>
-<div class="aba-ir-clarity">Required: Upload your own cover image or generate one from text.</div>
+<div class="aba-ir-clarity">Required: Choose to upload your own cover image or generate one from text.</div>
 <select class="form-input" id="aba-ir-cover-mode" onchange="abaIrCoverModeChanged()"><option value="upload">Upload an image</option><option value="text">Generate a cover from text</option></select>
+<p class="form-hint">Uploaded images must be 400 × 400 pixels. Maximum 2 MB. JPG, PNG or GIF.</p>
 <div id="aba-ir-cover-text-fields" hidden style="margin-top:.8rem;">
 <input class="form-input" id="aba-ir-cover-text" maxlength="120" placeholder="Text to appear on your cover" oninput="abaIrRenderCover()"/>
 <canvas id="aba-ir-cover-canvas" width="400" height="400" style="width:200px;max-width:100%;display:block;margin-top:.8rem;border:1px solid #385c70"></canvas>
 </div></div>
+<p id="standard-cover-guidance" class="step-desc">Required: Upload your cover image. Images must be 400 × 400 pixels. Maximum 2 MB. JPG, PNG or GIF.</p>
 <div class="upload-zone" id="img-upload-zone" onclick="document.getElementById('img-file-input').click()">
 <input accept="image/*" id="img-file-input" onchange="handleImageUpload(event)" style="display:none" type="file"/>
 <div class="upload-icon">🖼</div>
@@ -877,7 +883,7 @@ Edit Profile
 <!-- STEP 2: UPLOAD CONTENT -->
 <div class="step-panel" id="step-2">
 <div class="step-heading">Upload Content File <span style="color:var(--text-dim);font-weight:400;font-size:0.85rem;">(Optional)</span></div>
-<div class="aba-ir-clarity">Required content: For an Idea, enter your text or upload a Word document. For Research, upload a Word document.</div>
+<div id="aba-content-type-guidance" class="form-hint" style="margin-bottom:0.8rem;">Upload your content as a Word document.</div>
 <p (.docx)="" a="" agent="" ai="" as="" be="" cfc="" class="step-desc" content="" content.="" customized="" document="" embedded="" into="" on="" only.="" reader="" specifically="" the="" this="" trained="" upload="" will="" with="" word="" your=""> Skip this step for Art, Workshops, and Services.</p>
 <div id="aba-ir-idea-entry" hidden style="margin-bottom:1rem;"><label class="form-label" for="aba-ir-idea-text">Enter your Idea (or upload a Word document below)</label><textarea class="form-input" id="aba-ir-idea-text" rows="9" maxlength="500000" placeholder="Write your original idea here..."></textarea></div>
 <div class="upload-zone" id="content-upload-zone" onclick="document.getElementById('content-file-input').click()">
@@ -2487,8 +2493,19 @@ function abaIrStatus(message, bad=false){const el=abaIrEl('aba-ir-submit-status'
 function abaIrCategoryChanged(){
  abaIrEl('aba-ir-early-type').value=abaIrEl('nft-category').value;
  const enabled=abaIrSelected(),research=abaIrEl('nft-category').value==='research';
+ const kind=abaIrEl('nft-category').value;
+ const guidance=abaIrEl('aba-content-type-guidance');
+ if(guidance) guidance.textContent=kind==='idea'?'Required: Enter your idea or upload a Word document.':kind==='research'?'Required: Upload your research as a Word document.':(kind==='article'||kind==='book')?'Upload your content as a Word document.':'Optional: Upload a content file, or continue without one.';
  abaIrEl('creator-studio').classList.toggle('aba-ir-visual-mode',enabled);
  abaIrShow('aba-ir-cover-choice',enabled);
+ abaIrShow('standard-cover-guidance',!enabled);
+ if(!enabled){
+   abaIrShow('img-upload-zone',true);
+   abaIrShow('aba-ir-cover-text-fields',false);
+   // The generated-cover mode must not hide the regular image uploader.
+   abaIrEl('img-preview-area').hidden=false;
+   abaIrEl('img-preview-area').style.display=imageCid?'block':'none';
+ }
  abaIrShow('aba-ir-idea-entry',enabled&&!research);
  abaIrShow('aba-ir-privacy-row',enabled);
  const price=abaIrEl('nft-price-rlusd').closest('.form-group'); price.style.display=enabled?'none':'';
@@ -2508,7 +2525,11 @@ function abaIrStepVisibility(n){if(abaIrSelected()&&n===1)abaIrCoverModeChanged(
 function abaIrPrivacyChanged(){const en=abaIrSelected();if(!en)return;const priv=abaIrEl('aba-ir-visibility').value==='private';
  abaIrEl('enableLearn').disabled=priv;if(priv)abaIrEl('enableLearn').checked=false;
 }
-function abaIrCoverModeChanged(){const en=abaIrSelected();if(!en)return;
+function abaIrCoverModeChanged(){const en=abaIrSelected();if(!en){
+  abaIrShow('img-upload-zone',true);
+  abaIrShow('aba-ir-cover-text-fields',false);
+  return;
+ }
  const text=abaIrEl('aba-ir-cover-mode').value==='text';abaIrShow('aba-ir-cover-text-fields',text);
  abaIrShow('img-upload-zone',!text);abaIrShow('img-preview-area',!text && !!abaIrState.image);
  if(text)abaIrRenderCover();abaIrEl('step1-next').disabled=!abaIrCoverReady();
@@ -2896,8 +2917,11 @@ const year=document.getElementById('year');if(year)year.textContent=new Date().g
    document.addEventListener('keydown',e=>{if(e.key==='Escape'){menu.hidden=true;b.setAttribute('aria-expanded','false');}});
  }
   window.addEventListener('aba:session-confirmed',showSignedIn);
+ // Read only the existing member cache, no changes to sign-in or token handling.
+ try { const cached=JSON.parse(localStorage.getItem('aba_member_session')||'null'); if(cached?.verifiedAt) showSignedIn(); } catch (_) {}
+ const resetSignedOut=()=>{if(wrap.querySelector('.aba-account-trigger')) wrap.replaceChildren(login);};
  fetch(api+'/api/student-network/me',{credentials:'include',headers:{Accept:'application/json'},cache:'no-store'})
- .then(r=>r.ok?r.json():null).then(d=>{if(d?.profile)showSignedIn();}).catch(()=>{});
+ .then(r=>r.ok?r.json():null).then(d=>{if(d?.profile)showSignedIn();else resetSignedOut();}).catch(()=>{ /* Keep cached navigation during temporary network failures. */ });
 })();
 </script>
 </body>
