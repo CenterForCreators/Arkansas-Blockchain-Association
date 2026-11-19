@@ -730,6 +730,9 @@ body.menu-open .site-header{background:#06152f;backdrop-filter:none}
 </style>
 </head>
 <body class="aba-membership-pending">
+<script id="aba-member-cached-entry">
+try { const member=JSON.parse(localStorage.getItem('aba_member_session')||'null'); if(member?.verifiedAt) document.body.classList.remove('aba-membership-pending'); } catch (_) {}
+</script>
 
 <canvas id="canvas"></canvas>
 
@@ -848,8 +851,6 @@ body.menu-open .site-header{background:#06152f;backdrop-filter:none}
 
 <!-- ABA trustline status; no change to existing wallet sign-in -->
 <div id="aba-trustline-panel" style="display:none;padding:.9rem 1.4rem;background:#081522;border-bottom:1px solid rgba(155,216,239,.17);text-align:center;color:#bdd3e1;font-size:.83rem;position:relative;z-index:2">
-  <div class="aba-trustline-instructions" style="font-size:1.02rem;font-weight:800;color:#fff;margin-bottom:.35rem;">Complete Your Wallet Setup</div>
-  <p class="aba-trustline-instructions" style="font-size:.83rem;line-height:1.6;color:#dceaf5;margin:0 auto .65rem;max-width:790px;">Once Xaman is connected, review both trustlines. <strong>CFC</strong> enables token rewards; <strong>RLUSD</strong> supports stablecoin purchases. If setup is needed, tap the matching button, approve in Xaman, then return to this page. No action is needed for trustlines already connected.</p>
   <div id="aba-trustline-status" role="status">Checking wallet trustlines...</div>
   <div id="aba-trustline-buttons" style="display:flex;flex-wrap:wrap;gap:.6rem;justify-content:center;margin-top:.65rem"></div>
 </div>
@@ -2325,8 +2326,10 @@ if(new URLSearchParams(location.search).get('view')==='my-library')setTimeout(()
    document.addEventListener('keydown',e=>{if(e.key==='Escape'){menu.hidden=true;b.setAttribute('aria-expanded','false');}});
  }
   window.addEventListener('aba:session-confirmed',showSignedIn);
+ try { const cached=JSON.parse(localStorage.getItem('aba_member_session')||'null'); if(cached?.verifiedAt) showSignedIn(); } catch (_) {}
+ const resetSignedOut=()=>{if(wrap.querySelector('.aba-account-trigger')) wrap.replaceChildren(login);};
  fetch(api+'/api/student-network/me',{credentials:'include',headers:{Accept:'application/json'},cache:'no-store'})
- .then(r=>r.ok?r.json():null).then(d=>{if(d?.profile)showSignedIn();}).catch(()=>{});
+ .then(r=>r.ok?r.json():null).then(d=>{if(d?.profile)showSignedIn();else resetSignedOut();}).catch(()=>{ /* Keep cached navigation during temporary network failures. */ });
 })();
 </script>
 </body>
