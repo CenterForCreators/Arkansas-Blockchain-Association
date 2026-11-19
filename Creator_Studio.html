@@ -669,36 +669,8 @@ body.menu-open .site-header{background:#06152f;backdrop-filter:none}
 <div class="hero-tag reveal">⚡ Content Creator Studio</div>
 <h1 class="hero-title reveal">Creator Studio</h1>
 <p class="hero-sub reveal">Create and tokenize ideas, research, articles, blogs, books, workshops, and other knowledge using the ABA Tokenized Interactive Knowledge ecosystem.</p>
-<p class="aba-intro-help reveal">The steps below explain the process. To begin, use the Content Creator Studio form farther down this page.</p>
-<a class="aba-intro-start reveal" href="#creator-studio">Start in Content Creator Studio ↓</a>
-</div>
-</section>
-<!-- HOW IT WORKS -->
-<section id="how-it-works">
-<div class="container">
-<p class="aba-steps-caption reveal"><strong>How it works</strong> · These are informational steps, not buttons. Start in the form below.</p>
-<div class="steps-row">
-<div class="step-card reveal">
-<div class="step-num sn-purple">01</div>
-<h4>1. Add Your Content</h4>
-<p>Choose a content type, then add your cover and content in the Creator Studio form below.</p>
-</div>
-<div class="step-card reveal">
-<div class="step-num sn-gold">02</div>
-<h4>2. Review & Submit</h4>
-<p>Check your information and submit using the form. Some published content may require approval.</p>
-</div>
-<div class="step-card reveal">
-<div class="step-num sn-purple">03</div>
-<h4>3. Sign in Xaman</h4>
-<p>When prompted, approve the required blockchain transaction in your Xaman wallet.</p>
-</div>
-<div class="step-card reveal">
-<div class="step-num sn-green">04</div>
-<h4>4. Access Your Content</h4>
-<p>Find your submissions in your dashboard. Publishing, access, and CFC rewards depend on the content type.</p>
-</div>
-</div>
+<p class="aba-intro-help reveal">Choose your content type in the form below, then follow the steps to submit it.</p>
+<a class="aba-intro-start reveal" href="#creator-studio">Start Creating ↓</a>
 </div>
 </section>
 <!-- SPECIFICATIONS SECTION -->
@@ -959,7 +931,7 @@ Edit Profile
 <div class="form-group">
 <label class="form-label">Quantity (editions) <span>*</span></label>
 <input class="form-input" id="nft-qty" max="25" min="1" type="number" value="1"/>
-<div class="form-hint">Number of Digital Asset editions to mint.</div>
+<div class="form-hint">Number of digital copies to create, for content offered in the library.</div>
 </div>
 </div>
 <div class="form-row">
@@ -973,8 +945,8 @@ Edit Profile
 </div>
 </div>
 <div id="aba-ir-privacy-row" hidden class="form-group"><label class="form-label" for="aba-ir-visibility">Visibility (Idea &amp; Research only)</label>
-<select class="form-input" id="aba-ir-visibility" onchange="abaIrPrivacyChanged()"><option value="private" selected>Private (only in My Library)</option><option value="public">Public (available to read, not for sale)</option></select>
-<div class="form-hint">Private (default): Only you can access this from My Library with your verified wallet. Public: Others can discover and read it in the Knowledge Library. Neither choice lists your NFT for sale.</div></div>
+<select class="form-input" id="aba-ir-visibility" onchange="abaIrPrivacyChanged()"><option value="private" selected>Private (only in My Library)</option><option value="public">Public (listed in Knowledge Library, not for sale)</option></select>
+<div class="form-hint">Private (default): Only you can access your record in My Library using your verified wallet. Public: Your record appears in the Knowledge Library for others to discover. Neither choice offers the record for sale. Reader access is handled separately.</div></div>
 <div class="form-group">
 <label class="form-label">Your Website (optional)</label>
 <input class="form-input" id="nft-website" placeholder="https://yourwebsite.com" type="url"/>
@@ -2527,7 +2499,7 @@ function abaIrCategoryChanged(){
  abaIrEl('step1-next').disabled=enabled?!abaIrCoverReady():!imageCid;
  if(enabled)abaIrEl('step-2').querySelector('.step-heading').textContent=research?'Upload Research Word Document':'Enter an Idea or Upload Word Document';else abaIrEl('step-2').querySelector('.step-heading').innerHTML=abaIrOriginalStep2Heading;
  abaIrEl('step-3').querySelector('.step-desc').textContent=enabled?'Describe your original work. Privacy settings apply only to Ideas and Research.':'Fill in the details for your Digital Asset. This information will be displayed in the marketplace.';
- abaIrEl('step-4').querySelector('.step-desc').textContent=enabled?'AI Agent setup is not required for Ideas and Research.':'Each content digital asset comes with an embedded AI Agent trained on your content.';
+ abaIrEl('step-4').querySelector('.step-desc').textContent=enabled?'No AI Agent setup is needed for Ideas and Research.':'Each content digital asset comes with an embedded AI Agent trained on your content.';
  abaIrEl('step-5').querySelector('.step-desc').textContent=enabled?'Questions are optional. They will be included with the protected content; rewards are not enabled.':'Add questions for your readers to earn CFC tokens.';
  abaIrShow('aba-ir-signing',false);abaIrShow('aba-ir-submit-status',false);
  abaIrCoverModeChanged();abaIrPrivacyChanged();
