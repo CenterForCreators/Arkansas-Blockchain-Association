@@ -1396,8 +1396,14 @@ if(
   err.style.display = "block";
   return;
 }
-  // Trustlines are checked and offered without blocking the existing submission flow.
-  checkCreatorTrustlines(wallet);
+  // Allow the existing trustline setup controls to use this wallet before progressing.
+  creatorWallet = wallet;
+  // Require both existing trustlines before continuing to tokenization.
+  if(!(await checkCreatorTrustlines(wallet))){
+    err.textContent = 'Set up both CFC and RLUSD trustlines above, then select Continue again.';
+    err.style.display = 'block';
+    return;
+  }
   creatorWallet = wallet;
   creatorEmail = email;
   localStorage.setItem('cfcWallet', wallet);
@@ -2773,7 +2779,7 @@ document.getElementById('aba-member-resend').onclick=()=>abaRequestForm.dispatch
 document.getElementById('aba-member-change-email').onclick=()=>{abaVerifyForm.classList.add('aba-member-hidden');abaRequestForm.classList.remove('aba-member-hidden');abaMemberStatus('')};
 const abaRestore=abaCachedMember();
 abaRequestForm.classList.add('aba-member-hidden');
-if(abaRestore){abaShowCreatorStudio();abaConfirmMember().catch(()=>{abaForgetMember();abaShowMemberSignIn()})}
+if(abaRestore){abaMemberStatus('Checking your membership...');abaConfirmMember().catch(()=>{abaForgetMember();abaShowMemberSignIn()})}
 else{abaMemberStatus('Checking your membership...');abaConfirmMember().catch(()=>{abaRequestForm.classList.remove('aba-member-hidden');abaMemberStatus('')})}
 </script>
 <script id="aba-site-nav-script">
