@@ -409,6 +409,15 @@ html{scroll-behavior:smooth}body{margin:0;background:var(--p-bg);color:var(--p-t
 @media(max-width:960px){.profile-shell{padding-top:132px}.profile-grid>.profile-card{grid-column:span 12}.profile-quick{grid-template-columns:repeat(2,minmax(0,1fr))}.profile-top{align-items:flex-start}}
 @media(max-width:600px){.profile-shell{padding-top:118px}.profile-card{padding:19px}.profile-title{font-size:40px}.profile-quick{gap:9px}.quick-link{min-height:94px}.profile-identity{align-items:flex-start}.profile-avatar{width:55px;height:55px;flex-basis:55px}.identity-title{font-size:19px!important}.metric strong{font-size:15px}.metric{padding:10px}.profile-top{flex-wrap:wrap}.profile-orbit{top:90px}}
 @media(prefers-reduced-motion:reduce){.profile-glow,.profile-orbit{animation:none!important}.reveal-profile{opacity:1!important;transform:none!important;transition:none!important}*{scroll-behavior:auto!important}}
+
+/* My Knowledge and My Creations: compact, expandable records within the existing cards. */
+.profile-records{display:grid;gap:9px;margin-top:15px}
+.profile-record{border:1px solid rgba(126,183,240,.16);background:rgba(4,18,38,.48);border-radius:10px;padding:12px 13px;min-width:0}
+.profile-record strong{display:block;color:#edf6ff;font-size:13px;line-height:1.45;overflow-wrap:anywhere}
+.profile-record span{display:block;color:#9cb6d1;font-size:11px;margin-top:5px;line-height:1.5}
+.profile-see-more{display:inline-block;margin-top:13px;border:0;background:transparent;padding:7px 0;color:#9ed4fc;font-weight:800;font-size:12px;cursor:pointer}
+.profile-see-more:hover{text-decoration:underline}
+.profile-see-more[hidden]{display:none!important}
 </style></head><body>
 <header class="site-header" id="top">
 <div class="nav-wrap">
@@ -466,9 +475,9 @@ html{scroll-behavior:smooth}body{margin:0;background:var(--p-bg);color:var(--p-t
 <div class="profile-grid">
 <section class="profile-card reveal-profile"><h2>Account Setup</h2><p>Your current account and wallet readiness.</p><div class="status-row"><span>ABA membership</span><span class="status-pill good">Verified</span></div><div class="status-row"><span>Xaman wallet</span><span class="status-pill" id="wallet-status">Not detected</span></div><div class="status-row"><span>CFC trustline</span><span class="status-pill" id="cfc-status">Connect wallet</span></div><div class="status-row"><span>RLUSD trustline</span><span class="status-pill" id="rlusd-status">Connect wallet</span></div><div class="notice" id="setup-notice">Connect your Xaman wallet in the Knowledge Library or Creator Studio to complete wallet setup.</div><div class="profile-actions"><a class="action primary" href="/Knowledge_Library">Manage Wallet Setup ↗</a></div></section>
 <section class="profile-card reveal-profile"><h2>My Wallet</h2><p id="wallet-address" class="wallet-address">No connected wallet detected on this device.</p><div class="metric-grid"><div class="metric"><strong id="xrp-balance">—</strong><span>XRP</span></div><div class="metric"><strong id="cfc-balance">—</strong><span>CFC</span></div><div class="metric"><strong id="rlusd-balance">—</strong><span>RLUSD</span></div></div><p class="subtle" id="wallet-note">Balances and trustline status appear when an existing connected wallet is detected and network checks are available.</p><div class="profile-actions"><a class="action" href="/Knowledge_Library">Open Wallet Tools ↗</a><button id="refresh-wallet" class="action" type="button">Refresh Status</button></div></section>
-<section class="profile-card reveal-profile"><h2>My Knowledge</h2><p>Find content you purchased and return to the reader through the existing Knowledge Library.</p><div class="profile-actions"><a class="action primary" href="/Knowledge_Library">View My Library ↗</a><a class="action" href="/Knowledge_Library">Explore Knowledge ↗</a></div></section>
-<section class="profile-card reveal-profile"><h2>My Creations</h2><p>Continue a submission, check approvals, or access content you have tokenized.</p><div class="profile-actions"><a class="action primary" href="/Creator_Studio">My Submissions ↗</a><a class="action" href="/Creator_Studio">Create Content ↗</a></div></section>
-<section class="profile-card reveal-profile"><h2>My Rewards</h2><p>Follow your CFC rewards, activities, and participation through the existing leaderboard.</p><div class="profile-actions"><a class="action primary" href="/Leaderboard">View Leaderboard ↗</a><a class="action" href="/Knowledge_Library">Learn and Earn ↗</a></div></section>
+<section class="profile-card reveal-profile"><h2>My Knowledge</h2><p>Your purchased NFTs and content available in My Library.</p><div id="profile-knowledge-items" class="profile-records" aria-live="polite"><p class="subtle">Checking your library…</p></div><button id="profile-knowledge-more" class="profile-see-more" type="button" hidden aria-expanded="false">See More</button><div class="profile-actions"><a class="action primary" href="/Knowledge_Library?view=my-library">View My Library ↗</a></div></section>
+<section class="profile-card reveal-profile"><h2>My Creations</h2><p>Your submissions, their status, and tokenized content.</p><div id="profile-creation-items" class="profile-records" aria-live="polite"><p class="subtle">Checking your submissions…</p></div><button id="profile-creation-more" class="profile-see-more" type="button" hidden aria-expanded="false">See More</button><div class="profile-actions"><a class="action primary" href="/Creator_Studio#creator-dashboard">My Submissions ↗</a></div></section>
+<section class="profile-card reveal-profile"><h2>My Rewards</h2><p>Follow your CFC rewards, activities, and participation through the existing leaderboard.</p><div class="profile-actions"><a class="action primary" href="/Leaderboard">View Leaderboard ↗</a></div></section>
 <section class="profile-card reveal-profile"><h2>Membership &amp; Community</h2><p id="membership-detail">Your ABA membership is verified. Community access follows your existing membership eligibility.</p><div class="profile-actions"><a class="action primary" href="/member-network">Member Network ↗</a><a class="action" href="/global-student-network">Global Student Network ↗</a></div></section>
 <section class="profile-card wide reveal-profile"><h2>Continue Where You Left Off</h2><p>Return to the library to continue reading or to Creator Studio to resume your work. Your existing pages manage reading progress and drafts.</p><div class="profile-actions"><a class="action gold" href="/Knowledge_Library">Continue Reading ↗</a><a class="action gold" href="/Creator_Studio">Continue Creating ↗</a></div></section>
 </div></div></div></main>
@@ -515,7 +524,7 @@ function renderHeader(signed){
  const nav=$('aba-primary-nav');let old=$('aba-profile-entry');if(old)old.remove();
  const wrap=document.createElement('div');wrap.className='profile-menu-wrap';wrap.id='aba-profile-entry';
  if(signed){const btn=document.createElement('button');btn.type='button';btn.className='profile-account-button';btn.setAttribute('aria-label','Profile options');btn.setAttribute('aria-expanded','false');btn.innerHTML='<span class="profile-mini-avatar" aria-hidden="true">●</span><span>My Profile</span><span aria-hidden="true">⌄</span>';
- const menu=document.createElement('div');menu.className='profile-menu';menu.hidden=true;const profileLink=document.createElement('a');profileLink.href='/profile';profileLink.textContent='My Profile';const signout=document.createElement('button');signout.type='button';signout.textContent='Sign Out';signout.onclick=logout;menu.append(profileLink,signout);wrap.append(btn,menu);btn.onclick=()=>{menu.hidden=!menu.hidden;btn.setAttribute('aria-expanded',String(!menu.hidden))};document.addEventListener('click',e=>{if(!wrap.contains(e.target)){menu.hidden=true;btn.setAttribute('aria-expanded','false')}},{signal:headerController.signal});}
+ const menu=document.createElement('div');menu.className='profile-menu';menu.hidden=true;const profileLink=document.createElement('a');profileLink.href='/profile.html';profileLink.textContent='My Profile';const signout=document.createElement('button');signout.type='button';signout.textContent='Sign Out';signout.onclick=logout;menu.append(profileLink,signout);wrap.append(btn,menu);btn.onclick=()=>{menu.hidden=!menu.hidden;btn.setAttribute('aria-expanded',String(!menu.hidden))};document.addEventListener('click',e=>{if(!wrap.contains(e.target)){menu.hidden=true;btn.setAttribute('aria-expanded','false')}},{signal:headerController.signal});}
 
  if(signed){const join=nav.querySelector('.nav-join');nav.insertBefore(wrap,join);}
 }
@@ -525,7 +534,7 @@ function showProfile(){ $('profile-panel').hidden=false;setText('profile-top-sta
  const name=[member.firstName,member.lastName].filter(Boolean).join(' ').trim();setText('profile-name',name||'ABA Member');setText('profile-email',member.email||'Verified ABA member');
  const avatar=$('profile-avatar');avatar.replaceChildren();if(member.profilePhotoUrl){const img=document.createElement('img');img.src=member.profilePhotoUrl;img.alt='Your profile photo';img.onerror=()=>{avatar.textContent=(member.firstName?.[0]||'A')+(member.lastName?.[0]||'B')};avatar.append(img)}else avatar.textContent=(member.firstName?.[0]||'A')+(member.lastName?.[0]||'B');
  const info=[member.organization||member.university,member.role,member.country].filter(Boolean).join(' · ');if(info)setText('membership-detail',info+'. Your ABA membership is verified. Access is determined by existing membership eligibility.');
- walletRefresh();reveal();}
+ walletRefresh();loadProfileActivity();reveal();}
 async function logout(){try{await api('/api/student-auth/logout',{method:'POST'})}catch(e){console.warn('Sign-out request could not be confirmed',e)}finally{try{localStorage.removeItem(cacheKey)}catch{}member=null;walletAddress='';showAuth('Please sign in to access your profile.')}}
 function detectWallet(){for(const key of ['cfcWallet','xrpl_account','connectedAccount','xummAccount','aba_ideas_wallet']){let v;try{v=localStorage.getItem(key)||sessionStorage.getItem(key)}catch{}if(v&&/^r[1-9A-HJ-NP-Za-km-z]{24,34}$/.test(v.trim()))return v.trim()}return ''}
 async function walletRefresh(){walletAddress=detectWallet();const w=walletAddress;if(!w){setStatus('wallet-status','Not connected','needs');setStatus('cfc-status','Connect wallet','needs');setStatus('rlusd-status','Connect wallet','needs');setText('wallet-address','No connected wallet detected on this device.');$('setup-notice').hidden=false;return}
@@ -539,6 +548,49 @@ async function readWalletBalances(wallet){const ws=new WebSocket('wss://xrplclus
  const drops=Number(info.account_data?.Balance);setText('xrp-balance',Number.isFinite(drops)?(drops/1000000).toLocaleString(undefined,{maximumFractionDigits:3}):'—');const list=lines.lines||[];const cfc=list.find(l=>l.currency==='CFC'&&l.account==='rsxUkmjnAn8PRDz8RYrPusb9mTDYn5NqG8');setText('cfc-balance',cfc?Number(cfc.balance).toLocaleString(undefined,{maximumFractionDigits:2}):'0');
  // RLUSD balance: recognized native three-letter USD currency with a trustline from Ripple's issuer.
  const rlusd=list.find(l=>l.currency==='USD'&&l.account==='rMxCKbEDwqr76QuheSUMdEGf4B9xJ8m5De');setText('rlusd-balance',rlusd?Number(rlusd.balance).toLocaleString(undefined,{maximumFractionDigits:2}):'0');setText('wallet-note','Read-only balances from the XRP Ledger. No transaction is initiated.');}finally{ws.close()}}
+
+// Read-only ABA profile activity. Uses the same endpoints as the existing Knowledge Library
+// and Creator Studio, without creating new purchases, submissions, or wallet signatures.
+const PROFILE_MARKET_API='https://cfc-nft-shared-mint-backend.onrender.com';
+const PROFILE_CREATOR_API='https://cfc-nft-creator-backend.onrender.com';
+const PROFILE_IDEAS_API='https://aba-tik-ideas-research-backend.onrender.com/api/ideas-research';
+function profileStatus(container,message){const root=$(container);root.replaceChildren();const p=document.createElement('p');p.className='subtle';p.textContent=message;root.append(p);}
+function profileActivityCard(entry){const card=document.createElement('div');card.className='profile-record';const title=document.createElement('strong');title.textContent=entry.title||'Untitled content';card.append(title);if(entry.meta){const subtitle=document.createElement('span');subtitle.textContent=entry.meta;card.append(subtitle)}return card;}
+function profileActivityList(containerId,buttonId,entries,empty){
+ const root=$(containerId),more=$(buttonId);root.replaceChildren();more.hidden=true;
+ if(!entries.length){profileStatus(containerId,empty);return;}
+ entries.forEach((entry,index)=>{const el=profileActivityCard(entry);if(index>0)el.hidden=true;root.append(el)});
+ if(entries.length>1){more.hidden=false;more.textContent=`See More (${entries.length-1})`;more.setAttribute('aria-expanded','false');more.onclick=()=>{const expanded=more.getAttribute('aria-expanded')!=='true';Array.from(root.children).slice(1).forEach(el=>el.hidden=!expanded);more.setAttribute('aria-expanded',String(expanded));more.textContent=expanded?'See Less':`See More (${entries.length-1})`;};}
+}
+function profileRecordDate(obj){const raw=obj.created_at||obj.updated_at||obj.purchased_at||obj.date||obj.createdAt;const millis=raw?new Date(raw).getTime():NaN;return Number.isFinite(millis)?millis:(Number(obj.id)||0);}
+async function loadProfileActivity(){
+ const w=detectWallet();
+ if(!w){profileStatus('profile-knowledge-items','Connect your Xaman wallet through Knowledge Library to display purchases.');profileStatus('profile-creation-items','Connect your Xaman wallet through Creator Studio to display submissions.');return;}
+ const loadKnowledge=async()=>{
+  try{
+   const res=await fetch(PROFILE_MARKET_API+'/api/orders/by-wallet/'+encodeURIComponent(w),{cache:'no-store'});
+   if(!res.ok)throw Error('Orders unavailable');const data=await res.json();if(!Array.isArray(data))throw Error('Unexpected orders response');
+   const orders=data.filter(o=>!o.tenant_id||String(o.tenant_id).toLowerCase()==='aba').sort((a,b)=>profileRecordDate(b)-profileRecordDate(a));
+   let items=orders.map(o=>({title:o.name||o.title||o.marketplace_nft?.name||('NFT #'+(o.marketplace_nft_id||o.id||'')),meta:'Purchased NFT · '+(o.status||'Paid')}));
+   // Private Ideas & Research records are accessible only with the user's existing wallet proof.
+   const token=sessionStorage.getItem('aba_ideas_token');
+   if(token&&sessionStorage.getItem('aba_ideas_wallet')===w){try{const r=await fetch(PROFILE_IDEAS_API+'/my-library',{headers:{Authorization:'Bearer '+token},cache:'no-store'});if(r.ok){const d=await r.json();for(const it of d.items||[])if(it.status==='minted')items.push({title:it.title||'Untitled',meta:(it.content_kind==='research'?'Research':'Idea')+' · Owned'});}}catch{}}
+   profileActivityList('profile-knowledge-items','profile-knowledge-more',items,'No purchased NFTs yet. Your library will appear here after a purchase.');
+  }catch{profileStatus('profile-knowledge-items','Your purchases could not be loaded. Use View My Library to check your content.');}
+ };
+ const loadCreations=async()=>{
+  try{
+   const res=await fetch(PROFILE_CREATOR_API+'/api/submissions/by-wallet/'+encodeURIComponent(w),{cache:'no-store'});
+   if(!res.ok)throw Error('Submissions unavailable');const data=await res.json();if(!Array.isArray(data))throw Error('Unexpected submissions response');
+   const entries=data.filter(o=>!o.tenant_id||String(o.tenant_id).toLowerCase()==='aba').sort((a,b)=>profileRecordDate(b)-profileRecordDate(a)).map(o=>({title:o.title||o.name||o.nft_name||'Untitled submission',meta:'Submission · '+(o.mint_status==='minted'?'Tokenized':(o.status||o.approval_status||'Pending'))}));
+   const token=sessionStorage.getItem('aba_ideas_token');
+   if(token&&sessionStorage.getItem('aba_ideas_wallet')===w){try{const r=await fetch(PROFILE_IDEAS_API+'/my-library',{headers:{Authorization:'Bearer '+token},cache:'no-store'});if(r.ok){const d=await r.json();for(const it of d.items||[])entries.push({title:it.title||'Untitled',meta:(it.content_kind==='research'?'Research':'Idea')+' · '+(it.status||'Draft')});}}catch{}}
+   profileActivityList('profile-creation-items','profile-creation-more',entries,'No submissions found for this wallet.');
+  }catch{profileStatus('profile-creation-items','Your submissions could not be loaded. Use My Submissions to check your creations.');}
+ };
+ await Promise.all([loadKnowledge(),loadCreations()]);
+}
+
 $('refresh-wallet').onclick=walletRefresh;
 function reveal(){if(!('IntersectionObserver'in window)){document.querySelectorAll('.reveal-profile').forEach(x=>x.classList.add('in-view'));return}const o=new IntersectionObserver(items=>items.forEach(item=>{if(item.isIntersecting){item.target.classList.add('in-view');o.unobserve(item.target)} }),{threshold:.06});document.querySelectorAll('.reveal-profile').forEach((x,i)=>{x.style.transitionDelay=Math.min(i%4*70,210)+'ms';o.observe(x)})}
 function navigation(){const header=document.querySelector('.site-header'),toggle=document.querySelector('.menu-toggle'),nav=$('aba-primary-nav');const onScroll=()=>header.classList.toggle('scrolled',scrollY>24);window.addEventListener('scroll',onScroll,{passive:true});onScroll();toggle.onclick=()=>{const open=nav.classList.toggle('open');document.body.classList.toggle('menu-open',open);toggle.setAttribute('aria-expanded',String(open))};nav.querySelectorAll('.aba-nav-trigger').forEach(btn=>btn.onclick=e=>{e.stopPropagation();nav.querySelectorAll('.aba-nav-trigger').forEach(other=>{if(other!==btn){other.setAttribute('aria-expanded','false');$(other.getAttribute('aria-controls')).hidden=true}});const open=btn.getAttribute('aria-expanded')!=='true';btn.setAttribute('aria-expanded',String(open));$(btn.getAttribute('aria-controls')).hidden=!open});nav.addEventListener('click',e=>{if(e.target.closest('a')){nav.classList.remove('open');document.body.classList.remove('menu-open');toggle.setAttribute('aria-expanded','false')}});document.addEventListener('click',e=>{if(!nav.contains(e.target))nav.querySelectorAll('.aba-nav-trigger').forEach(btn=>{btn.setAttribute('aria-expanded','false');$(btn.getAttribute('aria-controls')).hidden=true})})}
