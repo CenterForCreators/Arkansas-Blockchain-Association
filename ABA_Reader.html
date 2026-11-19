@@ -446,6 +446,28 @@ footer{background:#06101c;border-top:1px solid var(--aba-line);color:#7892a4;mar
 .reader-wallet-tools{position:fixed;top:96px;right:20px;z-index:4999;display:flex;align-items:center;gap:.65rem}#ticker-banner{top:88px}.read-progress{top:126px}.reader-shell{margin-top:148px!important}
 @media(max-width:960px){.site-header .menu-toggle{display:block;position:relative;z-index:2}body.menu-open{overflow:hidden}#aba-primary-nav{position:fixed;inset:88px 0 0;height:auto;display:flex;flex-direction:column;align-items:stretch;justify-content:flex-start;gap:0;padding:18px 24px calc(30px + env(safe-area-inset-bottom));background:#06152f;overflow-y:auto;max-height:calc(100dvh - 88px);transform:translateX(100%);visibility:hidden;pointer-events:none;transition:transform .25s ease,visibility .25s}#aba-primary-nav.open{transform:none;visibility:visible;pointer-events:auto}#aba-primary-nav>a:not(.nav-join),#aba-primary-nav .aba-nav-trigger{font-size:1rem;padding:17px 0;width:100%;border-bottom:1px solid rgba(126,183,240,.18);border-radius:0}#aba-primary-nav>a:after{display:none}#aba-primary-nav .aba-nav-submenu{position:static;min-width:0;max-width:none;padding:0 0 8px 14px;border:0;border-left:1px solid rgba(126,183,240,.28);border-radius:0;box-shadow:none;background:transparent;margin:0 0 8px 6px}#aba-primary-nav .aba-nav-submenu a{font-size:.9rem;padding:12px 14px}#aba-primary-nav>.nav-join{font-size:.78rem;justify-content:center;align-self:flex-start;margin-top:22px;padding:12px 22px}}
 @media(max-width:700px){.site-header .nav-wrap{width:calc(100% - 26px);height:74px}.site-header .brand img{height:43px}#aba-primary-nav{top:74px;max-height:calc(100dvh - 74px);padding-left:20px;padding-right:20px}.reader-wallet-tools{top:81px;right:10px}.reader-wallet-tools .nav-pills{display:none}#ticker-banner{top:74px}.read-progress{top:112px}.reader-shell{margin-top:136px!important}}
+
+/* ===== MOBILE READING LAYOUT ONLY =====
+   Keep the desktop paginated columns; on phones use a full-width,
+   natural vertical reading flow to prevent narrow/clipped text. */
+@media (max-width:700px){
+  .reader-shell{width:100%;min-width:0;}
+  #pageViewport{
+    width:100%;min-width:0;height:auto;min-height:0;
+    overflow:visible;
+  }
+  #content{
+    width:100%;min-width:0;height:auto;
+    column-count:1;column-width:auto;column-gap:normal;column-fill:balance;
+    padding:1.25rem 1rem;
+    font-size:1rem;line-height:1.8;
+    overflow-wrap:anywhere;
+  }
+  #content img,#content video,#content iframe,#content svg{max-width:100%;height:auto;}
+  #content pre,#content table{max-width:100%;overflow-x:auto;display:block;}
+  #content .cfc-learn-box,#content .cfc-learn-item{max-width:100%;min-width:0;}
+  .pagerbar{display:none;}
+}
 </style>
 </head>
 <body>
