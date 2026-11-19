@@ -831,8 +831,8 @@ body.menu-open .site-header{background:#06152f;backdrop-filter:none}
 
 <!-- ABA trustline status; no change to existing wallet sign-in -->
 <div id="aba-trustline-panel" style="display:none;padding:.9rem 1.4rem;background:#081522;border-bottom:1px solid rgba(155,216,239,.17);text-align:center;color:#bdd3e1;font-size:.83rem;position:relative;z-index:2">
-  <div style="font-size:1.02rem;font-weight:800;color:#fff;margin-bottom:.35rem;">Complete Your Wallet Setup</div>
-  <p style="font-size:.83rem;line-height:1.6;color:#dceaf5;margin:0 auto .65rem;max-width:790px;">Once Xaman is connected, review both trustlines. <strong>CFC</strong> enables token rewards; <strong>RLUSD</strong> supports stablecoin purchases. If setup is needed, tap the matching button, approve in Xaman, then return to this page. No action is needed for trustlines already connected.</p>
+  <div class="aba-trustline-instructions" style="font-size:1.02rem;font-weight:800;color:#fff;margin-bottom:.35rem;">Complete Your Wallet Setup</div>
+  <p class="aba-trustline-instructions" style="font-size:.83rem;line-height:1.6;color:#dceaf5;margin:0 auto .65rem;max-width:790px;">Once Xaman is connected, review both trustlines. <strong>CFC</strong> enables token rewards; <strong>RLUSD</strong> supports stablecoin purchases. If setup is needed, tap the matching button, approve in Xaman, then return to this page. No action is needed for trustlines already connected.</p>
   <div id="aba-trustline-status" role="status">Checking wallet trustlines...</div>
   <div id="aba-trustline-buttons" style="display:flex;flex-wrap:wrap;gap:.6rem;justify-content:center;margin-top:.65rem"></div>
 </div>
@@ -1211,6 +1211,8 @@ async function abaCheckTrustlines(wallet){
     const data=await response.json();
     if(!response.ok||data.success!==true) throw Error(data.error||'Unable to verify trustlines');
     if(connectedWallet!==wallet) return;
+    const complete=data.cfc===true && data.rlusd===true;
+    panel.querySelectorAll('.aba-trustline-instructions').forEach(el=>{el.style.display=complete?'none':'';});
     status.textContent='CFC: '+(data.cfc?'Connected':'Setup required')+'   |   RLUSD: '+(data.rlusd?'Connected':'Setup required');
     for(const [kind,exists] of [['cfc',data.cfc],['rlusd',data.rlusd]]){
       if(exists) continue;
@@ -2266,7 +2268,7 @@ async function claimIdeaBonus(id,button){
   }catch(e){button.textContent=e.message||'Bonus claim unavailable';button.disabled=false;}
 }
 
-async function publicLibrary(){try{const r=await fetch(API+'/public-library');if(!r.ok)throw Error('Public records unavailable');const d=await r.json();const box=$('aba-ir-public-grid');box.replaceChildren();for(const it of d.items||[])box.appendChild(card(it,true));if(!(d.items||[]).length)box.textContent='No public Ideas & Research yet.';}catch(e){$('aba-ir-public-grid').textContent=e.message}}
+async function publicLibrary(){try{const r=await fetch(API+'/public-library');if(!r.ok)throw Error('Unable to load public records');const d=await r.json();const box=$('aba-ir-public-grid');box.replaceChildren();for(const it of d.items||[])box.appendChild(card(it,true));if(!(d.items||[]).length)box.textContent='No public Ideas & Research yet.';}catch(e){console.warn('Public Ideas & Research loading:',e);$('aba-ir-public-grid').replaceChildren()}}
 async function owned(){const box=$('aba-ir-owned-grid'),msg=$('aba-ir-owned-status');box.replaceChildren();const token=sessionStorage.getItem('aba_ideas_token');const savedWallet=sessionStorage.getItem('aba_ideas_wallet');const activeWallet=localStorage.getItem('cfcWallet');if(!token||!savedWallet||(activeWallet&&savedWallet!==activeWallet)){msg.textContent='To access private records, verify your wallet in Creator Studio, then open My Library in this tab.';return}
 try{const r=await fetch(API+'/my-library',{headers:{Authorization:'Bearer '+token}});const d=await r.json();if(!r.ok)throw Error(d.error||'Session expired');msg.textContent='';for(const it of d.items||[])box.appendChild(card(it,false));if(!(d.items||[]).length)msg.textContent='No Ideas & Research records yet.';}catch(e){msg.textContent=e.message+' Reconnect your wallet in Creator Studio.'}}
 publicLibrary();
