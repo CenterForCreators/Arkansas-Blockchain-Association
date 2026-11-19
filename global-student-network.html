@@ -667,7 +667,7 @@ $('#requestForm').onsubmit=async e=>{e.preventDefault();const button=$('#request
    const chevron=document.createElement('span');chevron.textContent='⌄';chevron.setAttribute('aria-hidden','true');
    b.append(avatar,caption,chevron);
    const menu=document.createElement('div');menu.className='aba-account-dropdown';menu.hidden=true;
-   const profile=document.createElement('a');profile.href='/profile';profile.textContent='My Profile';
+   const profile=document.createElement('a');profile.href='/profile.html';profile.textContent='My Profile';
    const signout=document.createElement('button');signout.type='button';signout.textContent='Sign Out';
    signout.addEventListener('click',async()=>{
      signout.disabled=true;signout.textContent='Signing out…';
