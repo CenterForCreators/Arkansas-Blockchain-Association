@@ -1224,6 +1224,16 @@ function openWalletModal(){
 }
 
 async function navConnectWallet(){
+  // A wallet restored from this site's existing session is already connected.
+  // Do not repeatedly launch the Xaman authorization screen on mobile.
+  const saved = creatorWallet || localStorage.getItem('cfcWallet') || localStorage.getItem('xrpl_account');
+  if(saved && /^r[1-9A-HJ-NP-Za-km-z]{24,}$/.test(saved)){
+    creatorWallet = saved;
+    const creatorInput = document.getElementById('creator-wallet');
+    if(creatorInput) creatorInput.value = saved;
+    updateNavWallet(saved);
+    return;
+  }
 
   try{
 
@@ -2792,7 +2802,7 @@ function showProfileEditor(){
 
 }
 // ── INIT ──
-const savedWallet = localStorage.getItem('cfcWallet');
+const savedWallet = localStorage.getItem('cfcWallet') || localStorage.getItem('xrpl_account');
 
 if(savedWallet){
   creatorWallet = savedWallet;
