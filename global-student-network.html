@@ -601,7 +601,7 @@ async function signed(parallelRestore=false){
 const mePromise=api('/api/student-network/me');
 const preparedDirectory=parallelRestore?api('/api/student-network/students?search=&page=1').then(data=>({data}),error=>({error})):null;
 const preparedGroups=parallelRestore?api('/api/student-network/working-groups').then(data=>({data}),error=>({error})):null;
-const d=await mePromise;profile=d.profile;rememberMember(profile);text($('#studentName'),profile.firstName);
+const d=await mePromise;profile=d.profile;rememberMember(profile);window.dispatchEvent(new Event('aba:session-confirmed'));text($('#studentName'),profile.firstName);
 $('#authView').closest('.network-section').classList.add('hidden');$('#memberApp').classList.remove('hidden');
 // Directory remains independent of working groups: a slow groups call must never delay student cards.
 void directory(true,preparedDirectory);void groups(preparedGroups).catch(()=>{});
@@ -660,6 +660,7 @@ $('#requestForm').onsubmit=async e=>{e.preventDefault();const button=$('#request
  const join=nav.querySelector('.nav-join');nav.insertBefore(wrap,join||null);
  const api='https://api.arkansasblockchainassociation.com';
  function showSignedIn(){
+   if(wrap.querySelector('.aba-account-trigger'))return;
    wrap.replaceChildren();
    const b=document.createElement('button');b.type='button';b.className='aba-account-trigger';b.setAttribute('aria-label','Profile options');b.setAttribute('aria-expanded','false');
    const avatar=document.createElement('span');avatar.className='aba-account-avatar';avatar.textContent='●';avatar.setAttribute('aria-hidden','true');
@@ -683,6 +684,7 @@ $('#requestForm').onsubmit=async e=>{e.preventDefault();const button=$('#request
    document.addEventListener('click',e=>{if(!wrap.contains(e.target)){menu.hidden=true;b.setAttribute('aria-expanded','false');}});
    document.addEventListener('keydown',e=>{if(e.key==='Escape'){menu.hidden=true;b.setAttribute('aria-expanded','false');}});
  }
+  window.addEventListener('aba:session-confirmed',showSignedIn);
  fetch(api+'/api/student-network/me',{credentials:'include',headers:{Accept:'application/json'},cache:'no-store'})
  .then(r=>r.ok?r.json():null).then(d=>{if(d?.profile)showSignedIn();}).catch(()=>{});
 })();
