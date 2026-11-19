@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ABA Masterclasses | Arkansas Blockchain Association</title>
-<meta property="og:title" content="ABA Masterclasses | Arkansas Blockchain Association">
+  <title>Knowledge Library | Arkansas Blockchain Association</title>
+<meta property="og:title" content="Knowledge Library | Arkansas Blockchain Association">
 <meta property="og:description" content="Tokenized Interactive Masterclasses for Arkansas Blockchain Association members">
 <meta property="og:image" content="https://centerforcreators.com/creator-preview.png">
 <meta property="og:image:secure_url" content="https://centerforcreators.com/creator-preview.png">
@@ -15,7 +15,7 @@
 <meta property="og:type" content="website">
 
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="ABA Masterclasses | Arkansas Blockchain Association">
+<meta name="twitter:title" content="Knowledge Library | Arkansas Blockchain Association">
 <meta name="twitter:description" content="Tokenized Interactive Masterclasses for Arkansas Blockchain Association members">
 <meta name="twitter:image" content="https://centerforcreators.com/creator-preview.png">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
@@ -708,6 +708,26 @@ body.menu-open .site-header{background:#06152f;backdrop-filter:none}
 #aba-primary-nav .aba-account-dropdown>a:hover,#aba-primary-nav .aba-account-dropdown>button:hover{background:#123760;color:white}
 @media(max-width:960px){#aba-primary-nav .aba-account-entry{display:block;width:100%;padding:13px 0;border-bottom:1px solid rgba(126,183,240,.18)}#aba-primary-nav .aba-account-signin{font-size:1rem;padding:4px 0}#aba-primary-nav .aba-account-dropdown{position:static;margin-top:8px;box-shadow:none;width:100%}}
 </style>
+<style id="aba-library-ux-clarity">
+/* Presentation-only consolidation: navigation, wallet, claim and category tabs. */
+#market-hero { min-height:0!important; padding:2.3rem 0 1.5rem!important; display:block!important; }
+#market-hero .market-hero-title {font-size:clamp(1.8rem,4vw,3rem)!important;letter-spacing:-.025em!important;line-height:1.12!important;margin:0 0 .7rem!important;}
+#market-hero .market-hero-sub {max-width:780px;margin:0!important;font-size:.94rem!important;line-height:1.6!important;}
+.aba-library-controls {border-bottom:1px solid rgba(155,216,239,.17);background:#081522;}
+.aba-library-controls-inner {display:flex;align-items:center;justify-content:space-between;gap:.8rem 1.1rem;flex-wrap:wrap;padding-top:.8rem!important;padding-bottom:.8rem!important;}
+.aba-library-controls .view-tabs {margin:0!important;flex-wrap:wrap;min-width:0;}
+.aba-library-controls #wallet-banner {border:0!important;padding:0!important;background:transparent!important;gap:.5rem!important;}
+.aba-library-controls #banner-connected {gap:.45rem!important;}
+.aba-library-controls .aba-rewards-strip {display:flex!important;align-items:center!important;gap:.4rem!important;padding:0!important;background:transparent!important;border:0!important;flex-direction:column!important;text-align:center!important;}
+.aba-library-controls #aba-trustline-panel {width:auto;min-width:180px;border:0!important;background:transparent!important;padding:.35rem!important;flex:0 1 auto;}
+.aba-library-controls #aba-trustline-status {font-size:.75rem;white-space:normal;}
+.aba-library-controls #aba-trustline-panel:has(.aba-trustline-instructions:not([style*="display: none"])) {flex-basis:100%;order:4;}
+.aba-library-controls #faucet-msg:empty {display:none;}
+.aba-library-controls #faucet-msg {font-size:.73rem;max-width:250px;}
+#listings {padding-top:1.8rem!important;}
+#listings .listings-header {margin-bottom:1.3rem!important;}
+@media(max-width:760px){.aba-library-controls-inner{justify-content:center;}.aba-library-controls .view-tabs{width:100%;justify-content:center;}.aba-library-controls .view-tab{flex:1;padding:.7rem .45rem;font-size:.68rem;}.aba-library-controls #wallet-banner{width:100%;justify-content:center;}.aba-library-controls .aba-rewards-strip{width:100%;}.aba-library-controls #aba-trustline-panel{width:100%;text-align:center;}.aba-library-controls #banner-connected{justify-content:center;}#market-hero{padding:1.6rem 0 1.1rem!important;}}
+</style>
 </head>
 <body class="aba-membership-pending">
 
@@ -793,30 +813,26 @@ body.menu-open .site-header{background:#06152f;backdrop-filter:none}
 
 <!-- HERO -->
 <section id="market-hero">
-  <div class="aba-hero-orbit aba-orbit-one"></div>
-  <div class="aba-hero-orbit aba-orbit-two"></div>
   <div class="container">
-    <div class="market-hero-tag reveal">ARKANSAS BLOCKCHAIN ASSOCIATION</div>
-    <h1 class="market-hero-title reveal">Tokenized Interactive Knowledge</h1>
-    <p class="market-hero-sub reveal">Explore articles, books, workshops, masterclasses, research, projects, and other interactive learning experiences across blockchain, digital assets, AI, tokenization, and emerging technology. ABA Tokenized Interactive Knowledge is powered by Center for Creators.</p>
-    <div class="hero-actions reveal">
-      <a class="btn-secondary-aba" href="#listings">Explore Knowledge Library</a>
-      <a class="btn-secondary-aba" href="/TIK_Overview#works-title">How It Works</a>
-    </div>
-    <div class="market-hero-stats reveal">
-      <div><div class="mh-stat-num" id="stat-nfts">--</div><div class="mh-stat-label">Available Experiences</div></div>
-      <div><div class="mh-stat-num">Interactive</div><div class="mh-stat-label">AI-Guided Learning</div></div>
-      <div><div class="mh-stat-num">Measurable</div><div class="mh-stat-label">Participation & Progress</div></div>
-      <div><div class="mh-stat-num">XRPL</div><div class="mh-stat-label">Blockchain-Enabled</div></div>
-    </div>
+    <h1 class="market-hero-title reveal">Explore Tokenized Interactive Knowledge</h1>
+    <p class="market-hero-sub reveal">Browse articles, books, workshops, research, and other knowledge. Open content you can access in the Reader.</p>
   </div>
 </section>
 
+<!-- LIBRARY CONTROLS -->
+<div class="aba-library-controls">
+<!-- VIEW TABS -->
+<div class="container aba-library-controls-inner">
+  <div class="view-tabs">
+    <button class="view-tab active" onclick="switchView('listings')">Knowledge Library</button>
+    <button class="view-tab" onclick="switchView('my-orders')">My Library</button>
+    <button class="view-tab" onclick="switchView('redeem')">Redeem</button>
+  </div>
 <!-- WALLET BANNER -->
 <div id="wallet-banner">
   <!-- Disconnected state -->
   <div id="banner-disconnected" style="display:flex;align-items:center;justify-content:center;gap:1rem;flex-wrap:wrap;">
-    <button onclick="xamanConnect()" style="background:linear-gradient(135deg,#B8860B,#FFD700);color:#0C0C1D;font-weight:700;font-size:1rem;padding:0.65rem 2rem;border:none;border-radius:10px;cursor:pointer;font-family:inherit;box-shadow:0 0 18px rgba(255,215,0,0.45);transition:all 0.2s;">Connect Wallet</button>
+    <button onclick="xamanConnect()" style="background:linear-gradient(135deg,#B8860B,#FFD700);color:#0C0C1D;font-weight:700;font-size:1rem;padding:0.65rem 2rem;border:none;border-radius:10px;cursor:pointer;font-family:inherit;box-shadow:0 0 18px rgba(255,215,0,0.45);transition:all 0.2s;">Connect Xaman Wallet</button>
   </div>
   <!-- Connected state -->
   <div id="banner-connected" style="display:none;align-items:center;justify-content:center;gap:1rem;flex-wrap:wrap;">
@@ -829,6 +845,7 @@ body.menu-open .site-header{background:#06152f;backdrop-filter:none}
   </div>
 </div>
 
+
 <!-- ABA trustline status; no change to existing wallet sign-in -->
 <div id="aba-trustline-panel" style="display:none;padding:.9rem 1.4rem;background:#081522;border-bottom:1px solid rgba(155,216,239,.17);text-align:center;color:#bdd3e1;font-size:.83rem;position:relative;z-index:2">
   <div class="aba-trustline-instructions" style="font-size:1.02rem;font-weight:800;color:#fff;margin-bottom:.35rem;">Complete Your Wallet Setup</div>
@@ -837,32 +854,21 @@ body.menu-open .site-header{background:#06152f;backdrop-filter:none}
   <div id="aba-trustline-buttons" style="display:flex;flex-wrap:wrap;gap:.6rem;justify-content:center;margin-top:.65rem"></div>
 </div>
 
-<!-- OPTIONAL CFC REWARDS -->
+
+
+<!-- DAILY CFC CLAIM -->
 <div id="faucet-section" class="aba-rewards-strip">
-  <div>
-    <div class="rewards-eyebrow">OPTIONAL CFC REWARDS</div>
-    <p class="faucet-text">Connect your wallet to participate in eligible blockchain-enabled rewards.</p>
-  </div>
-  <button class="btn-faucet" onclick="claimFaucet()">Claim CFC</button>
-  <div id="faucet-msg"></div>
+  <button class="btn-faucet" onclick="claimFaucet()">Claim Daily CFC</button>
+  <div id="faucet-msg" role="status" aria-live="polite"></div>
+</div>
 </div>
 
-<!-- VIEW TABS -->
-<div class="container" style="padding-top:2rem;">
-  <div class="view-tabs">
-    <button class="view-tab active" onclick="switchView('listings')">Knowledge Library</button>
-    <button class="view-tab" onclick="switchView('my-orders')">My Library</button>
-    <button class="view-tab" onclick="switchView('redeem')">Redeem</button>
-  </div>
-</div>
 
+</div>
 <!-- NFT LISTINGS -->
 <section id="listings">
   <div class="container">
     <div class="listings-header reveal">
-      <div class="section-tag tag-gold">KNOWLEDGE LIBRARY</div>
-      <h2 class="section-title">Explore Tokenized Interactive Knowledge</h2>
-      <p class="section-sub">Browse available books, articles, workshops, masterclasses, programs, research, projects, and other interactive knowledge experiences.</p>
       <div class="filter-tabs" id="filter-tabs">
         <button class="filter-tab active" data-cat="all">All</button>
         <button class="filter-tab" data-cat="book">Books</button>
@@ -872,7 +878,7 @@ body.menu-open .site-header{background:#06152f;backdrop-filter:none}
         <button class="filter-tab" data-cat="art">Other</button>
       </div>
     </div>
-    <div style="margin-top:2.5rem"><h3 style="color:#87ceeb;margin-bottom:.8rem">Public Ideas & Research</h3><p style="color:#a6c5d7;margin-bottom:1rem">These records were explicitly made public by their creators and are not for sale.</p><div id="aba-ir-public-grid" class="nft-grid"></div></div>
+    <div style="margin-top:2.5rem"><h3 style="color:#87ceeb;margin-bottom:.8rem">Public Ideas & Research</h3><p style="color:#a6c5d7;margin-bottom:1rem">Creators chose to list these Ideas and Research publicly. They are not for sale. Opening the full content depends on Reader access.</p><div id="aba-ir-public-grid" class="nft-grid"></div></div>
 <div id="nft-grid" class="nft-grid">
       <div class="nft-loading"><div class="nft-loading-spinner"></div><div>Loading knowledge library...</div></div>
     </div>
@@ -1566,7 +1572,7 @@ async function loadNFTs(){
     allNFTs = await r.json();
     // Update stat
     const listed = allNFTs.filter(n=>!n.is_delisted && (n.quantity > 0)).length;
-    document.getElementById('stat-nfts').textContent = allNFTs.length;
+    const statNFTs = document.getElementById('stat-nfts'); if (statNFTs) statNFTs.textContent = allNFTs.length;
     renderFilteredNFTs();
   } catch(e){
     grid.innerHTML = `<div class="empty-state">
