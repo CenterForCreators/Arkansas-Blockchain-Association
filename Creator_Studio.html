@@ -640,38 +640,63 @@ body.menu-open .site-header{background:#06152f;backdrop-filter:none}
 <!-- TICKER -->
 
 <div class="page-content">
+<style id="aba-creator-intro-clarity">
+/* Intro-only presentation; no Creator Studio form, navigation, or backend changes. */
+#creator-hero .hero-sub{max-width:740px}
+#creator-hero .aba-intro-help{max-width:680px;margin:1rem auto 0;color:#cbdced;font-size:.95rem;line-height:1.7}
+#creator-hero .aba-intro-start{display:inline-flex;align-items:center;justify-content:center;margin-top:1.4rem;padding:.85rem 1.5rem;border-radius:10px;background:#1678B0;color:#fff;text-decoration:none;font-weight:700;box-shadow:0 8px 24px rgba(22,120,176,.25);transition:transform .25s ease,box-shadow .25s ease}
+#creator-hero .aba-intro-start:hover,#creator-hero .aba-intro-start:focus-visible{transform:translateY(-3px);box-shadow:0 12px 30px rgba(22,120,176,.4)}
+#how-it-works .aba-steps-caption{text-align:center;color:#d7e6f5;font-size:.92rem;line-height:1.6;margin-bottom:1.2rem}
+#how-it-works .step-card{cursor:default;border:1px solid rgba(135,206,235,.22);background:rgba(135,206,235,.035);transform:none!important;box-shadow:none!important;animation:abaIntroFloat 6s ease-in-out infinite}
+#how-it-works .step-card:nth-child(2){animation-delay:.35s}
+#how-it-works .step-card:nth-child(3){animation-delay:.7s}
+#how-it-works .step-card:nth-child(4){animation-delay:1.05s}
+#how-it-works .step-card:hover{border-color:rgba(135,206,235,.22)}
+#how-it-works .step-card h4{color:#f7faff}
+#how-it-works .step-card p{line-height:1.6}
+#specs-trigger .aba-specs-trigger{border:2px dashed #F3C45A!important;color:#F3C45A!important;background:rgba(243,196,90,.085)!important;box-shadow:0 0 0 3px rgba(243,196,90,.06);font-weight:800!important;transition:background .2s ease,box-shadow .2s ease}
+#specs-trigger .aba-specs-trigger:hover,#specs-trigger .aba-specs-trigger:focus-visible{background:rgba(243,196,90,.16)!important;box-shadow:0 0 0 4px rgba(243,196,90,.13)}
+#creator-hero .hero-glow{animation:abaIntroGlow 8s ease-in-out infinite alternate}
+@keyframes abaIntroFloat{0%,100%{translate:0 0}50%{translate:0 -5px}}
+@keyframes abaIntroGlow{from{opacity:.55;scale:.95}to{opacity:1;scale:1.12}}
+@media(max-width:600px){#how-it-works .step-card{padding:1.35rem 1.2rem}#how-it-works .steps-row{gap:.75rem}#creator-hero .aba-intro-start{width:100%;max-width:340px}}
+@media(prefers-reduced-motion:reduce){#creator-hero .hero-glow,#how-it-works .step-card{animation:none!important}#creator-hero .aba-intro-start{transition:none}}
+</style>
 <!-- HERO -->
 <section id="creator-hero">
 <div class="hero-glow"></div>
 <div class="container">
 <div class="hero-tag reveal">⚡ Content Creator Studio</div>
 <h1 class="hero-title reveal">Creator Studio</h1>
-<p class="hero-sub reveal">Create and tokenize knowledge, research, articles, workshops, and other approved content using the ABA Tokenized Interactive Knowledge ecosystem.</p>
+<p class="hero-sub reveal">Create and tokenize ideas, research, articles, blogs, books, workshops, and other knowledge using the ABA Tokenized Interactive Knowledge ecosystem.</p>
+<p class="aba-intro-help reveal">The steps below explain the process. To begin, use the Content Creator Studio form farther down this page.</p>
+<a class="aba-intro-start reveal" href="#creator-studio">Start in Content Creator Studio ↓</a>
 </div>
 </section>
 <!-- HOW IT WORKS -->
 <section id="how-it-works">
 <div class="container">
+<p class="aba-steps-caption reveal"><strong>How it works</strong> · These are informational steps, not buttons. Start in the form below.</p>
 <div class="steps-row">
 <div class="step-card reveal">
 <div class="step-num sn-purple">01</div>
-<h4>Upload Your Content</h4>
-<p>Books, articles, workshops, services or original art. We host on IPFS for permanent decentralized storage.</p>
+<h4>1. Add Your Content</h4>
+<p>Choose a content type, then add your cover and content in the Creator Studio form below.</p>
 </div>
 <div class="step-card reveal">
 <div class="step-num sn-gold">02</div>
-<h4>Submit Your Content</h4>
-<p>Review your details and submit your content to begin the minting process.</p>
+<h4>2. Review & Submit</h4>
+<p>Check your information and submit using the form. Some published content may require approval.</p>
 </div>
 <div class="step-card reveal">
 <div class="step-num sn-purple">03</div>
-<h4>Mint Content</h4>
-<p>Sign with your XAMAN wallet on XRPL.</p>
+<h4>3. Sign in Xaman</h4>
+<p>When prompted, approve the required blockchain transaction in your Xaman wallet.</p>
 </div>
 <div class="step-card reveal">
 <div class="step-num sn-green">04</div>
-<h4>Mint and Earn</h4>
-<p>Your Content goes live on the marketplace. You and your buyers earn CFC tokens with every interaction.</p>
+<h4>4. Access Your Content</h4>
+<p>Find your submissions in your dashboard. Publishing, access, and CFC rewards depend on the content type.</p>
 </div>
 </div>
 </div>
@@ -679,11 +704,11 @@ body.menu-open .site-header{background:#06152f;backdrop-filter:none}
 <!-- SPECIFICATIONS SECTION -->
 <section id="specs-trigger" style="padding: 20px 0;">
 <div class="container" style="text-align: center;">
-<button class="btn-sm-outline" onclick="toggleSpecs()" style="padding: 1rem 2rem; border-radius: 12px; font-size: 1rem; border: 2px dashed var(--gold); color: var(--gold); width: 100%; max-width: 600px; cursor: pointer; background: transparent; font-family: inherit;" type="button">
+<button class="btn-sm-outline aba-specs-trigger" onclick="toggleSpecs()" style="padding: 1rem 2rem; border-radius: 12px; font-size: 1rem; border: 2px dashed var(--gold); color: var(--gold); width: 100%; max-width: 600px; cursor: pointer; background: transparent; font-family: inherit;" type="button">
   📋 View Submission Specifications &amp; Requirements
 </button>
 <div id="specs-content" style="display: none; margin-top: 1.5rem; text-align: left; background: var(--bg3); border: 1px solid var(--purple-light); border-radius: 16px; padding: 2rem; animation: slideInRight 0.3s ease;">
-<h3 style="font-family: 'Space Grotesk', sans-serif; color: var(--gold); margin-bottom: 1.5rem;">Ready to Mint? Here is what you need:</h3>
+<h3 style="font-family: 'Space Grotesk', sans-serif; color: var(--gold); margin-bottom: 1.5rem;">Submission Requirements</h3>
 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem;">
 <div>
 <h4 style="font-size: 0.9rem; color: var(--purple-light); text-transform: uppercase; margin-bottom: 0.5rem;">👤 Profile Image</h4>
@@ -706,12 +731,10 @@ body.menu-open .site-header{background:#06152f;backdrop-filter:none}
 </div>
 </div>
 <div>
-<h4 style="font-size: 0.9rem; color: var(--purple-light); text-transform: uppercase; margin-bottom: 0.5rem;">🚀 Post-Approval Process</h4>
-<p style="font-size: 0.82rem; color: var(--text-muted);"><strong>Mandatory:</strong> Once approved, complete the XAMAN signing flow from your "My Submissions" dashboard. Each edition requires its own mint signature and marketplace listing signature.</p>
+<h4 style="font-size: 0.9rem; color: var(--purple-light); text-transform: uppercase; margin-bottom: 0.5rem;">🚀 Signing Your Content</h4>
+<p style="font-size: 0.82rem; color: var(--text-muted);">When signing is required, follow the prompts in My Submissions. Marketplace listing applies only to content offered for sale.</p>
 </div>
-<div style="margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid var(--border); font-size: 0.78rem; color: var(--text-dim);">
-        Note: Admin review takes 24-48 hours. Once approved, you will return to pay the fee and mint.
-      </div>
+
 </div>
 </div>
 </section>
