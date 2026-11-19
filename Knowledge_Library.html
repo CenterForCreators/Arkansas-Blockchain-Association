@@ -2124,7 +2124,7 @@ function abaMemberStatus(msg,bad=false){const e=document.getElementById('aba-mem
 function abaStartKnowledgeLibrary(){if(abaKnowledgeStarted)return;abaKnowledgeStarted=true;loadWallet();loadNFTs();}
 function abaShowKnowledgeLibrary(){document.body.classList.remove('aba-membership-pending');abaStartKnowledgeLibrary()}
 function abaShowMemberSignIn(){document.body.classList.add('aba-membership-pending');document.getElementById('aba-member-request-form').classList.remove('aba-member-hidden');document.getElementById('aba-member-verify-form').classList.add('aba-member-hidden');abaMemberStatus('')}
-async function abaConfirmMember(){const d=await abaMemberApi('/api/student-network/me');abaRememberMember(d.profile);abaShowKnowledgeLibrary();return d.profile}
+async function abaConfirmMember(){const d=await abaMemberApi('/api/student-network/me');abaRememberMember(d.profile);window.dispatchEvent(new Event('aba:session-confirmed'));abaShowKnowledgeLibrary();return d.profile}
 const abaRequestForm=document.getElementById('aba-member-request-form');
 const abaVerifyForm=document.getElementById('aba-member-verify-form');
 abaRequestForm.onsubmit=async e=>{e.preventDefault();const button=abaRequestForm.querySelector('button[type="submit"]');abaMemberEmail=document.getElementById('aba-member-email').value;button.disabled=true;button.textContent='Sending Verification Code...';abaMemberStatus('Please wait while we send your verification code.');try{await abaMemberApi('/api/student-auth/request-code',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:abaMemberEmail})});abaRequestForm.classList.add('aba-member-hidden');abaVerifyForm.classList.remove('aba-member-hidden');abaMemberStatus('If this address is eligible, a verification code has been sent.')}catch(x){abaMemberStatus(x.message,true)}finally{button.disabled=false;button.textContent='Send Verification Code'}};
@@ -2272,6 +2272,7 @@ if(new URLSearchParams(location.search).get('view')==='my-library')setTimeout(()
  const join=nav.querySelector('.nav-join');nav.insertBefore(wrap,join||null);
  const api='https://api.arkansasblockchainassociation.com';
  function showSignedIn(){
+   if(wrap.querySelector('.aba-account-trigger'))return;
    wrap.replaceChildren();
    const b=document.createElement('button');b.type='button';b.className='aba-account-trigger';b.setAttribute('aria-label','Profile options');b.setAttribute('aria-expanded','false');
    const avatar=document.createElement('span');avatar.className='aba-account-avatar';avatar.textContent='●';avatar.setAttribute('aria-hidden','true');
@@ -2295,6 +2296,7 @@ if(new URLSearchParams(location.search).get('view')==='my-library')setTimeout(()
    document.addEventListener('click',e=>{if(!wrap.contains(e.target)){menu.hidden=true;b.setAttribute('aria-expanded','false');}});
    document.addEventListener('keydown',e=>{if(e.key==='Escape'){menu.hidden=true;b.setAttribute('aria-expanded','false');}});
  }
+  window.addEventListener('aba:session-confirmed',showSignedIn);
  fetch(api+'/api/student-network/me',{credentials:'include',headers:{Accept:'application/json'},cache:'no-store'})
  .then(r=>r.ok?r.json():null).then(d=>{if(d?.profile)showSignedIn();}).catch(()=>{});
 })();
