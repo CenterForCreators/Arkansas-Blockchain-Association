@@ -831,6 +831,8 @@ body.menu-open .site-header{background:#06152f;backdrop-filter:none}
 
 <!-- ABA trustline status; no change to existing wallet sign-in -->
 <div id="aba-trustline-panel" style="display:none;padding:.9rem 1.4rem;background:#081522;border-bottom:1px solid rgba(155,216,239,.17);text-align:center;color:#bdd3e1;font-size:.83rem;position:relative;z-index:2">
+  <div style="font-size:1.02rem;font-weight:800;color:#fff;margin-bottom:.35rem;">Complete Your Wallet Setup</div>
+  <p style="font-size:.83rem;line-height:1.6;color:#dceaf5;margin:0 auto .65rem;max-width:790px;">Once Xaman is connected, review both trustlines. <strong>CFC</strong> enables token rewards; <strong>RLUSD</strong> supports stablecoin purchases. If setup is needed, tap the matching button, approve in Xaman, then return to this page. No action is needed for trustlines already connected.</p>
   <div id="aba-trustline-status" role="status">Checking wallet trustlines...</div>
   <div id="aba-trustline-buttons" style="display:flex;flex-wrap:wrap;gap:.6rem;justify-content:center;margin-top:.65rem"></div>
 </div>
@@ -1173,6 +1175,24 @@ function updateWalletUI(){
     document.getElementById('my-orders').style.display = 'none';
   }
 }
+// Return to the Knowledge Library position occupied before opening Xaman.
+// Existing trustline API requests and signing logic remain unchanged.
+function abaRememberLibraryTrustlinePosition(){
+  try{sessionStorage.setItem('aba_library_trustline_return',JSON.stringify({path:location.pathname,scrollY:window.scrollY,at:Date.now()}));}catch(e){}
+}
+function abaRestoreLibraryTrustlinePosition(){
+  try{
+    const key='aba_library_trustline_return',raw=sessionStorage.getItem(key);if(!raw)return;
+    const state=JSON.parse(raw);
+    if(state.path!==location.pathname||Date.now()-state.at>20*60*1000){sessionStorage.removeItem(key);return;}
+    sessionStorage.removeItem(key);
+    requestAnimationFrame(()=>window.scrollTo({top:Math.max(0,Number(state.scrollY)||0),behavior:'instant'}));
+    if(connectedWallet)abaCheckTrustlines(connectedWallet);
+  }catch(e){}
+}
+window.addEventListener('pageshow',()=>setTimeout(abaRestoreLibraryTrustlinePosition,350));
+window.addEventListener('focus',()=>setTimeout(abaRestoreLibraryTrustlinePosition,350));
+
 // ABA wallet trustline readiness; uses existing shared trustline endpoints.
 const ABA_TRUSTLINE_API = 'https://cfc-nft-shared-mint-backend.onrender.com';
 let abaTrustlineRequestActive = false;
@@ -1194,9 +1214,9 @@ async function abaCheckTrustlines(wallet){
     status.textContent='CFC: '+(data.cfc?'Connected':'Setup required')+'   |   RLUSD: '+(data.rlusd?'Connected':'Setup required');
     for(const [kind,exists] of [['cfc',data.cfc],['rlusd',data.rlusd]]){
       if(exists) continue;
-      const btn=document.createElement('button');btn.type='button';btn.className='btn-faucet';
+      const btn=document.createElement('button');btn.type='button';btn.className='btn-faucet';btn.style.fontWeight='800';btn.style.padding='.7rem 1.25rem';btn.style.boxShadow='0 0 0 2px rgba(88,199,232,.35)';
       btn.textContent='Set up '+kind.toUpperCase()+' trustline';
-      btn.onclick=()=>abaOpenTrustlineRequest(wallet,kind);
+      btn.onclick=()=>{abaRememberLibraryTrustlinePosition();abaOpenTrustlineRequest(wallet,kind);};
       buttons.appendChild(btn);
     }
   }catch(e){
@@ -2133,7 +2153,7 @@ document.getElementById('aba-member-resend').onclick=()=>abaRequestForm.dispatch
 document.getElementById('aba-member-change-email').onclick=()=>{abaVerifyForm.classList.add('aba-member-hidden');abaRequestForm.classList.remove('aba-member-hidden');abaMemberStatus('')};
 const abaRestore=abaCachedMember();
 abaRequestForm.classList.add('aba-member-hidden');
-if(abaRestore){abaMemberStatus('Checking your membership...');abaConfirmMember().catch(()=>{abaForgetMember();abaShowMemberSignIn()})}else{abaMemberStatus('Checking your membership...');abaConfirmMember().catch(()=>{abaRequestForm.classList.remove('aba-member-hidden');abaMemberStatus('')})}
+if(abaRestore){document.body.classList.remove('aba-membership-pending');abaConfirmMember().catch(()=>{abaForgetMember();abaShowMemberSignIn()})}else{abaMemberStatus('Checking your membership...');abaConfirmMember().catch(()=>{abaRequestForm.classList.remove('aba-member-hidden');abaMemberStatus('')})}
 </script>
 <script id="aba-site-nav-script">
 (() => {
