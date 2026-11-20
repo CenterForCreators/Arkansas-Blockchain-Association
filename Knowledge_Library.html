@@ -2276,8 +2276,56 @@ async function claimIdeaBonus(id,button){
 }
 
 async function publicLibrary(){try{const r=await fetch(API+'/public-library');if(!r.ok)throw Error('Unable to load public records');const d=await r.json();const box=$('aba-ir-public-grid');box.replaceChildren();for(const it of d.items||[])box.appendChild(card(it,true));if(!(d.items||[]).length)box.textContent='No public Ideas & Research yet.';}catch(e){console.warn('Public Ideas & Research loading:',e);$('aba-ir-public-grid').replaceChildren()}}
-async function owned(){const box=$('aba-ir-owned-grid'),msg=$('aba-ir-owned-status');box.replaceChildren();const token=sessionStorage.getItem('aba_ideas_token');const savedWallet=sessionStorage.getItem('aba_ideas_wallet');const activeWallet=localStorage.getItem('cfcWallet');if(!token||!savedWallet||(activeWallet&&savedWallet!==activeWallet)){msg.textContent='To access private records, verify your wallet in Creator Studio, then open My Library in this tab.';return}
-try{const r=await fetch(API+'/my-library',{headers:{Authorization:'Bearer '+token}});const d=await r.json();if(!r.ok)throw Error(d.error||'Session expired');msg.textContent='';for(const it of d.items||[])box.appendChild(card(it,false));if(!(d.items||[]).length)msg.textContent='No Ideas & Research records yet.';}catch(e){msg.textContent=e.message+' Reconnect your wallet in Creator Studio.'}}
+async function owned(){
+ const box=$('aba-ir-owned-grid'),msg=$('aba-ir-owned-status');
+ box.replaceChildren();
+ const activeWallet=localStorage.getItem('cfcWallet')||localStorage.getItem('xrpl_account');
+ let token=sessionStorage.getItem('aba_ideas_token');
+ const savedWallet=sessionStorage.getItem('aba_ideas_wallet');
+ if(!activeWallet){msg.textContent='Connect your wallet to access your private Ideas & Research.';return;}
+ if(savedWallet&&savedWallet!==activeWallet){msg.textContent='Verify this wallet in Creator Studio to access its private Ideas & Research.';return;}
+ async function requestLibrary(authToken){
+   const r=await fetch(API+'/my-library',{headers:{Authorization:'Bearer '+authToken}});
+   const d=await r.json().catch(()=>({}));
+   if(!r.ok){const e=new Error(d.error||'Unable to load My Library');e.status=r.status;throw e;}
+   return d;
+ }
+ async function renewExistingSession(){
+   // Reuse an already authorized Xaman session; never call authorize() or open the wallet here.
+   let bearer=null;
+   try{
+     const xumm=getXumm();
+     bearer=await Promise.race([Promise.resolve(xumm.environment.bearer),new Promise(resolve=>setTimeout(()=>resolve(null),3000))]);
+   }catch(_){return null;}
+   if(!bearer)return null;
+   try{
+     const r=await fetch(API+'/auth/existing-wallet',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({xaman_bearer:bearer})});
+     const d=await r.json().catch(()=>({}));
+     if(!r.ok||!d.token||d.wallet!==activeWallet)return null;
+     sessionStorage.setItem('aba_ideas_token',d.token);
+     sessionStorage.setItem('aba_ideas_wallet',d.wallet);
+     return d.token;
+   }catch(_){return null;}
+ }
+ try{
+   let data;
+   if(token&&savedWallet===activeWallet){
+     try{data=await requestLibrary(token)}
+     catch(e){if(e.status!==401&&e.status!==403&&!/session expired|session invalid|token expired|invalid token/i.test(e.message))throw e;token=null;}
+   }
+   if(!data){
+     msg.textContent='Checking your wallet session...';
+     token=await renewExistingSession();
+     if(!token){msg.textContent='To access private Ideas & Research, verify your wallet in Creator Studio, then return to My Library.';return;}
+     data=await requestLibrary(token);
+   }
+   msg.textContent='';
+   for(const it of data.items||[])box.appendChild(card(it,false));
+   if(!(data.items||[]).length)msg.textContent='No Ideas & Research records yet.';
+ }catch(e){
+   msg.textContent=(e.status===401||e.status===403)?'Wallet verification is needed for private Ideas & Research. Verify in Creator Studio, then return here.':(e.message||'Unable to load My Library.');
+ }
+}
 publicLibrary();
 // Wrap view switch only: do not alter existing purchases or listing code.
 const original=window.switchView;if(typeof original==='function')window.switchView=function(v){original(v);if(v==='my-orders')owned()};
