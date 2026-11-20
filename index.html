@@ -466,6 +466,9 @@ body{color:#d7e3f1;background:var(--navy)}
 #aba-primary-nav .aba-account-dropdown>a,#aba-primary-nav .aba-account-dropdown>button{display:block;width:100%;border:none;background:transparent;border-radius:6px;text-align:left;color:#e3edf7;text-decoration:none;font-family:inherit;font-size:13px;font-weight:600;padding:11px 12px;cursor:pointer}
 #aba-primary-nav .aba-account-dropdown>a:hover,#aba-primary-nav .aba-account-dropdown>button:hover{background:#123760;color:white}
 @media(max-width:960px){#aba-primary-nav .aba-account-entry{display:block;width:100%;padding:13px 0;border-bottom:1px solid rgba(126,183,240,.18)}#aba-primary-nav .aba-account-signin{font-size:1rem;padding:4px 0}#aba-primary-nav .aba-account-dropdown{position:static;margin-top:8px;box-shadow:none;width:100%}}
+
+/* Home actions: retain existing buttons and allow all four pathways to wrap on mobile. */
+.aba-hero-actions{flex-wrap:wrap}
 </style>
 </head>
 <body>
@@ -525,8 +528,8 @@ body{color:#d7e3f1;background:var(--navy)}
         <div class="hero-copy reveal">
           <div class="eyebrow"><span></span> ARKANSAS-BASED • NATIONAL AND GLOBAL REACH</div>
           <h1 id="hero-title">Connecting <span>emerging technologies</span> with real-world innovation</h1>
-          <p>Connecting emerging technologies, industry, policy, and global talent to advance practical innovation. Through its five initiatives, ABA creates opportunities to apply blockchain, AI, quantum, and cybersecurity expertise across industries and communities.</p>
-          <div class="hero-proof"><span>Industry &amp; innovation</span><span>Applied research</span><span>National &amp; global collaboration</span></div><div class="aba-hero-actions"><a class="btn btn-primary" href="#aba-initiatives">Explore Our Initiatives <span aria-hidden="true">↗</span></a><a class="btn btn-outline" href="/join">Join ABA <span aria-hidden="true">↗</span></a></div>
+          <p>ABA connects industry, technology leaders, policymakers, and global talent to advance practical innovation. Explore five initiatives spanning blockchain, AI, quantum, cybersecurity, and real-world applications.</p>
+          <div class="hero-proof"><span>Industry &amp; innovation</span><span>Applied research</span><span>National &amp; global collaboration</span></div><div class="aba-hero-actions"><a class="btn btn-primary" href="#aba-initiatives">Explore Our Initiatives <span aria-hidden="true">↗</span></a><a class="btn btn-outline" href="/join">Join ABA <span aria-hidden="true">↗</span></a><a class="btn btn-outline" href="/Knowledge_Library">Explore Knowledge Library <span aria-hidden="true">↗</span></a><a class="btn btn-outline" href="/Creator_Studio">Create &amp; Share Knowledge <span aria-hidden="true">↗</span></a></div>
         </div>
         <div class="hero-visual reveal" aria-label="Animated connections surrounding the Arkansas Blockchain Association logo">
   <div class="aba-hero-web" aria-hidden="true">
@@ -747,7 +750,7 @@ body{color:#d7e3f1;background:var(--navy)}
   <span class="aba-initiative-num">04</span><span class="aba-initiative-heading"><small>KNOWLEDGE &amp; ENGAGEMENT</small><strong>Tokenized Interactive Knowledge (TIK)</strong></span><span class="aba-initiative-chevron" aria-hidden="true">⌄</span>
  </button>
  <div class="aba-initiative-panel" id="aba-initiative-panel-tik" hidden>
- <p>A live ecosystem for tokenizing and sharing knowledge through embedded AI guidance, interactive reading, gamification, and CFC utility-token engagement.</p><a class="aba-initiative-link" href="/TIK_Overview">Explore this initiative <span aria-hidden="true">↗</span></a>
+ <p>Explore articles, books, and other knowledge in the live Knowledge Library. Create and tokenize your own content in Creator Studio. Eligible reading and activities can earn CFC rewards.</p><a class="aba-initiative-link" href="/TIK_Overview">Explore this initiative <span aria-hidden="true">↗</span></a><a class="aba-initiative-link" href="/Knowledge_Library">Explore Knowledge Library <span aria-hidden="true">↗</span></a><a class="aba-initiative-link" href="/Creator_Studio">Create &amp; Share Knowledge <span aria-hidden="true">↗</span></a>
  </div></article>    <article class="aba-initiative" id="aba-initiative-qiga" data-aba-index="4">
       <button type="button" class="aba-initiative-toggle" aria-expanded="false" aria-controls="aba-initiative-panel-qiga">
         <span class="aba-initiative-num">05</span><span class="aba-initiative-heading"><small>QUANTUM &amp; TECHNOLOGY CONVERGENCE</small><strong>Quantum Innovation Global Alliance (QIGA)</strong></span><span class="aba-initiative-chevron" aria-hidden="true">⌄</span>
@@ -827,7 +830,7 @@ body{color:#d7e3f1;background:var(--navy)}
 
   <div class="container executive-programs" aria-labelledby="executive-title">
   <div class="executive-intro reveal">
-    <span class="kicker">ABA MASTERCLASSES</span>
+    <span class="kicker">TOKENIZED INTERACTIVE KNOWLEDGE</span>
     <h2 id="executive-title">Interactive Knowledge Built for Practical Understanding</h2>
     <p>ABA’s Tokenized Interactive Knowledge (TIK) ecosystem is live, with a Knowledge Library and Creator Studio that support tokenized content, embedded AI guidance, interactive participation, gamification, and CFC utility-token rewards.</p>
   </div>
@@ -836,7 +839,7 @@ body{color:#d7e3f1;background:var(--navy)}
     <article class="executive-card featured reveal">
       <span class="program-index">01</span>
       <h3>Tokenized Interactive Knowledge</h3>
-      <p>Members can tokenize research, articles, books, workshops, and other educational content for interactive engagement.</p>
+      <p>Creators can tokenize research, articles, books, workshops, and other educational content for interactive engagement.</p>
     </article>
 
     <article class="executive-card featured reveal">
@@ -921,7 +924,7 @@ body{color:#d7e3f1;background:var(--navy)}
   <b>Explore</b> 
   <a href="/#about">About</a> 
   <a href="/#focus">Focus Areas</a> 
-  <a href="/masterclasses">Masterclasses</a> 
+  <a href="/Knowledge_Library">Knowledge Library</a> 
   <a href="/#education">Education</a> 
   <a href="/#innovation">Industry &amp; Innovation</a> 
 </div>
@@ -1990,6 +1993,7 @@ body{color:#d7e3f1;background:var(--navy)}
    document.addEventListener('keydown',e=>{if(e.key==='Escape'){menu.hidden=true;b.setAttribute('aria-expanded','false');}});
  }
   window.addEventListener('aba:session-confirmed',showSignedIn);
+ try { const cached=JSON.parse(localStorage.getItem('aba_member_session')||'null'); if(cached?.verifiedAt)showSignedIn(); } catch (_) {}
  fetch(api+'/api/student-network/me',{credentials:'include',headers:{Accept:'application/json'},cache:'no-store'})
  .then(r=>r.ok?r.json():null).then(d=>{if(d?.profile)showSignedIn();}).catch(()=>{});
 })();
