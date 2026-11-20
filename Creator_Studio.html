@@ -2691,7 +2691,7 @@ async function abaIrRefreshSubmissions(requestAuth=false){
 const abaIrOriginalLoadDashboard=loadDashboard;
 loadDashboard=async function(...args){
  const result=await abaIrOriginalLoadDashboard(...args);
- await abaIrRefreshSubmissions(true);
+ await abaIrRefreshSubmissions(false);
  return result;
 };
 
