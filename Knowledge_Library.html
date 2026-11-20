@@ -876,10 +876,10 @@ try { const member=JSON.parse(localStorage.getItem('aba_member_session')||'null'
         <button class="filter-tab" data-cat="article">Articles</button>
         <button class="filter-tab" data-cat="workshop">Workshops</button>
         <button class="filter-tab" data-cat="service">Programs</button>
-        <button class="filter-tab" data-cat="art">Other</button>
+        <button class="filter-tab" data-cat="ideas-research">Ideas &amp; Research</button>
       </div>
     </div>
-    <div style="margin-top:2.5rem"><h3 style="color:#87ceeb;margin-bottom:.8rem">Public Ideas & Research</h3><p style="color:#a6c5d7;margin-bottom:1rem">Creators chose to list these Ideas and Research publicly. They are not for sale. Opening the full content depends on Reader access.</p><div id="aba-ir-public-grid" class="nft-grid"></div></div>
+    <div id="aba-ir-public-section" style="display:none;margin-top:2.5rem"><h3 style="color:#87ceeb;margin-bottom:.8rem">Public Ideas &amp; Research</h3><p style="color:#a6c5d7;margin-bottom:1rem">Creators chose to list these Ideas and Research publicly. They are not for sale. Opening the full content depends on Reader access.</p><div id="aba-ir-public-grid" class="nft-grid"></div></div>
 <div id="nft-grid" class="nft-grid">
       <div class="nft-loading"><div class="nft-loading-spinner"></div><div>Loading knowledge library...</div></div>
     </div>
@@ -1672,7 +1672,10 @@ document.querySelectorAll('.filter-tab').forEach(tab=>{
     document.querySelectorAll('.filter-tab').forEach(t=>t.classList.remove('active'));
     tab.classList.add('active');
     activeCategory = tab.dataset.cat;
-    renderFilteredNFTs();
+    const ideasTab = activeCategory === 'ideas-research';
+    document.getElementById('aba-ir-public-section').style.display = ideasTab ? 'block' : 'none';
+    document.getElementById('nft-grid').style.display = ideasTab ? 'none' : '';
+    if (!ideasTab) renderFilteredNFTs();
 
   });
 });
@@ -2282,8 +2285,8 @@ async function owned(){
  const activeWallet=localStorage.getItem('cfcWallet')||localStorage.getItem('xrpl_account');
  let token=sessionStorage.getItem('aba_ideas_token');
  const savedWallet=sessionStorage.getItem('aba_ideas_wallet');
- if(!activeWallet){msg.textContent='Connect your wallet to access your private Ideas & Research.';return;}
- if(savedWallet&&savedWallet!==activeWallet){msg.textContent='Verify this wallet in Creator Studio to access its private Ideas & Research.';return;}
+ if(!activeWallet){return;}
+ if(savedWallet&&savedWallet!==activeWallet){return;}
  async function requestLibrary(authToken){
    const r=await fetch(API+'/my-library',{headers:{Authorization:'Bearer '+authToken}});
    const d=await r.json().catch(()=>({}));
@@ -2314,19 +2317,22 @@ async function owned(){
      catch(e){if(e.status!==401&&e.status!==403&&!/session expired|session invalid|token expired|invalid token/i.test(e.message))throw e;token=null;}
    }
    if(!data){
-     msg.textContent='Checking your wallet session...';
      token=await renewExistingSession();
-     if(!token){msg.textContent='To access private Ideas & Research, verify your wallet in Creator Studio, then return to My Library.';return;}
+     if(!token)return;
      data=await requestLibrary(token);
    }
    msg.textContent='';
    for(const it of data.items||[])box.appendChild(card(it,false));
-   if(!(data.items||[]).length)msg.textContent='No Ideas & Research records yet.';
+
  }catch(e){
-   msg.textContent=(e.status===401||e.status===403)?'Wallet verification is needed for private Ideas & Research. Verify in Creator Studio, then return here.':(e.message||'Unable to load My Library.');
+   console.warn('Private Ideas & Research unavailable:',e);
  }
 }
-publicLibrary();
+// Load public Ideas & Research only when its tab is opened, not on every page visit.
+let publicIdeasLoaded=false;
+document.querySelector('.filter-tab[data-cat="ideas-research"]')?.addEventListener('click',()=>{
+  if(!publicIdeasLoaded){publicIdeasLoaded=true;publicLibrary();}
+});
 // Wrap view switch only: do not alter existing purchases or listing code.
 const original=window.switchView;if(typeof original==='function')window.switchView=function(v){original(v);if(v==='my-orders')owned()};
 if(new URLSearchParams(location.search).get('view')==='my-library')setTimeout(()=>window.switchView?.('my-orders'),200);
