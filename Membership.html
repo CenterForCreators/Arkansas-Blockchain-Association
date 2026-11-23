@@ -684,13 +684,14 @@ body{color:#d7e3f1;background:var(--navy)}
 .membership-page a{color:inherit}
 .mem-hero{min-height:540px;position:relative;display:grid;align-items:center;padding:92px 0 78px;background:radial-gradient(ellipse at 85% 35%,rgba(28,102,158,.25),transparent 42%),linear-gradient(145deg,#07111f,#091a2b 60%,#07111f);border-bottom:1px solid var(--m-line)}
 .mem-hero:before{content:"";position:absolute;inset:0;pointer-events:none;background-image:linear-gradient(rgba(105,177,222,.055) 1px,transparent 1px),linear-gradient(90deg,rgba(105,177,222,.055) 1px,transparent 1px);background-size:58px 58px;mask-image:linear-gradient(90deg,transparent,black 65%)}
-.mem-hero-grid{position:relative;display:grid;grid-template-columns:1.08fr .92fr;gap:54px;align-items:center}
+.mem-hero-grid{position:relative;display:grid;grid-template-columns:minmax(0,1fr);gap:54px;align-items:center;text-align:center}
+.mem-hero .mem-kicker{justify-content:center}
 .mem-kicker{display:flex;align-items:center;gap:11px;color:#81d7ff;font-size:.75rem;font-weight:800;letter-spacing:.15em;text-transform:uppercase}
 .mem-kicker:before{content:"";width:26px;height:2px;background:var(--m-gold)}
 .mem-hero h1{font-size:clamp(2.7rem,5.4vw,5rem);line-height:1.04;letter-spacing:-.045em;margin:20px 0 22px;color:#f4f8fc}
 .mem-hero h1 span{color:#79d5ff}
-.mem-lead{max-width:620px;color:#b9c9d8;font-size:1.12rem;line-height:1.8;margin:0}
-.mem-actions{display:flex;gap:14px;flex-wrap:wrap;margin-top:30px}
+.mem-lead{max-width:900px;color:#b9c9d8;font-size:1.12rem;line-height:1.8;margin:0 auto}
+.mem-actions{display:flex;gap:14px;flex-wrap:wrap;margin-top:30px;justify-content:center}
 .mem-button{min-height:48px;display:inline-flex;align-items:center;justify-content:center;padding:0 22px;border:1px solid #318ac4;background:linear-gradient(130deg,#1671ae,#1b9acf);color:#fff!important;text-decoration:none;border-radius:4px;font-weight:800;letter-spacing:.01em;transition:transform .25s,box-shadow .25s,background .25s}
 .mem-button:hover{transform:translateY(-2px);box-shadow:0 12px 28px rgba(25,151,218,.22)}
 .mem-button.secondary{background:transparent;border-color:rgba(125,199,239,.48);color:#cfeeff!important}
@@ -842,7 +843,7 @@ body{color:#d7e3f1;background:var(--navy)}
 <main class="membership-page" id="main">
 <section class="mem-hero" aria-labelledby="membership-title">
  <div class="container mem-hero-grid">
-  <div class="reveal"><div class="mem-kicker">ABA membership</div><h1 id="membership-title">Knowledge, connections, and practical tools for <span>what comes next.</span></h1><p class="mem-lead">Join a national and global community advancing emerging technologies. Explore interactive knowledge, create tokenized work, and connect with people shaping real world applications.</p><div class="mem-actions"><a class="mem-button" href="https://arkansasblockchainassociation.com/join">Join ABA</a><a class="mem-button secondary" href="#membership-options">View membership options</a></div></div>
+  <div class="reveal"><div class="mem-kicker">ABA membership</div><h1 id="membership-title">Knowledge, connections, and<br>practical tools for <span>what comes next</span></h1><p class="mem-lead">Join a global community advancing emerging technologies. Explore interactive knowledge, create tokenized work, and connect with people shaping real world applications.</p><div class="mem-actions"><a class="mem-button" href="https://arkansasblockchainassociation.com/join">Join ABA</a><a class="mem-button secondary" href="#membership-options">View membership options</a></div></div>
 </div>
 </section>
 <section class="mem-benefits-overview" aria-labelledby="benefits-title"><div class="container">
