@@ -1023,4 +1023,15 @@ body{color:#d7e3f1;background:var(--navy)}
 <script>
 (()=>{const year=document.getElementById('year');if(year)year.textContent=new Date().getFullYear();const obs=new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');obs.unobserve(e.target)}}),{threshold:.12,rootMargin:'0px 0px -35px'});document.querySelectorAll('.membership-page .reveal').forEach((el,i)=>{el.style.transitionDelay=`${Math.min((i%3)*65,130)}ms`;obs.observe(el)})})();
 </script>
+<script>
+/* Shared grouped menu interactions */
+(()=>{
+ const nav=document.getElementById('aba-primary-nav');if(!nav)return;
+ const triggers=[...nav.querySelectorAll('.aba-nav-trigger')];
+ const closeAll=except=>triggers.forEach(button=>{if(button===except)return;button.setAttribute('aria-expanded','false');const panel=document.getElementById(button.getAttribute('aria-controls'));if(panel)panel.hidden=true;});
+ triggers.forEach(button=>{button.addEventListener('click',e=>{e.stopPropagation();const open=button.getAttribute('aria-expanded')!=='true';closeAll(button);button.setAttribute('aria-expanded',String(open));const panel=document.getElementById(button.getAttribute('aria-controls'));if(panel)panel.hidden=!open;});button.addEventListener('keydown',e=>{if(e.key==='Escape'){closeAll();button.focus();}})});
+ document.addEventListener('click',e=>{if(!nav.contains(e.target))closeAll()});document.addEventListener('keydown',e=>{if(e.key==='Escape')closeAll()});
+ nav.querySelectorAll('.aba-nav-submenu a').forEach(link=>link.addEventListener('click',()=>closeAll()));
+})();
+</script>
 </body></html>
