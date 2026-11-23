@@ -799,6 +799,20 @@ body{color:#d7e3f1;background:var(--navy)}
 .membership-page .mem-demo-action .mem-note{margin:12px 0 0!important}
 @media(max-width:620px){.membership-page .mem-demo-shot{margin-top:20px}.membership-page .mem-demo-action{margin-top:18px}}
 </style>
+<style id="aba-unified-profile-header-style">
+/* Header-only addition. Existing authentication forms and page functionality are untouched. */
+#aba-primary-nav .aba-account-entry{position:relative;display:flex;align-items:center;flex-shrink:0}
+#aba-primary-nav .aba-account-signin{display:inline-flex;align-items:center;justify-content:center;color:#dce7f5;text-decoration:none;font:inherit;font-size:.78rem;font-weight:700;padding:10px 6px;white-space:nowrap}
+#aba-primary-nav .aba-account-signin:hover{color:#e4b452}
+#aba-primary-nav .aba-account-trigger{display:flex;align-items:center;gap:8px;color:#fff;background:rgba(23,49,78,.8);border:1px solid rgba(155,208,254,.27);padding:8px 11px;border-radius:10px;font-size:11px;font-weight:800;cursor:pointer;white-space:nowrap}
+#aba-primary-nav .aba-account-trigger:hover{border-color:#8cc8ff}
+#aba-primary-nav .aba-account-avatar{width:25px;height:25px;border-radius:50%;background:#467ca9;display:grid;place-items:center;font-size:12px}
+#aba-primary-nav .aba-account-dropdown{position:absolute;top:calc(100% + 10px);right:0;min-width:172px;background:#071d3e;border:1px solid rgba(134,191,241,.3);border-radius:11px;box-shadow:0 15px 40px rgba(0,0,0,.3);padding:7px;z-index:1600}
+#aba-primary-nav .aba-account-dropdown[hidden]{display:none!important}
+#aba-primary-nav .aba-account-dropdown>a,#aba-primary-nav .aba-account-dropdown>button{display:block;width:100%;border:none;background:transparent;border-radius:6px;text-align:left;color:#e3edf7;text-decoration:none;font-family:inherit;font-size:13px;font-weight:600;padding:11px 12px;cursor:pointer}
+#aba-primary-nav .aba-account-dropdown>a:hover,#aba-primary-nav .aba-account-dropdown>button:hover{background:#123760;color:white}
+@media(max-width:960px){#aba-primary-nav .aba-account-entry{display:block;width:100%;padding:13px 0;border-bottom:1px solid rgba(126,183,240,.18)}#aba-primary-nav .aba-account-signin{font-size:1rem;padding:4px 0}#aba-primary-nav .aba-account-dropdown{position:static;margin-top:8px;box-shadow:none;width:100%}}
+</style>
 </head>
 <body>
 <header class="site-header" id="top">
@@ -906,7 +920,7 @@ body{color:#d7e3f1;background:var(--navy)}
 </main>
 <footer class="site-footer">
     <div class="container footer-main">
-      <div class="footer-brand"><img src="ABA.png" alt="Arkansas Blockchain Association logo"><div><strong>ARKANSAS BLOCKCHAIN ASSOCIATION</strong><span>EDUCATE <i>•</i> CONNECT <i>•</i> INNOVATE <i>•</i> ADVANCE</span></div></div>
+      <div class="footer-brand"><img src="aba_logo.png" alt="Arkansas Blockchain Association logo"><div><strong>ARKANSAS BLOCKCHAIN ASSOCIATION</strong><span>EDUCATE <i>•</i> CONNECT <i>•</i> INNOVATE <i>•</i> ADVANCE</span></div></div>
      <div class="footer-links">
  <div> 
   <b>Explore</b> 
@@ -1032,6 +1046,53 @@ body{color:#d7e3f1;background:var(--navy)}
  triggers.forEach(button=>{button.addEventListener('click',e=>{e.stopPropagation();const open=button.getAttribute('aria-expanded')!=='true';closeAll(button);button.setAttribute('aria-expanded',String(open));const panel=document.getElementById(button.getAttribute('aria-controls'));if(panel)panel.hidden=!open;});button.addEventListener('keydown',e=>{if(e.key==='Escape'){closeAll();button.focus();}})});
  document.addEventListener('click',e=>{if(!nav.contains(e.target))closeAll()});document.addEventListener('keydown',e=>{if(e.key==='Escape')closeAll()});
  nav.querySelectorAll('.aba-nav-submenu a').forEach(link=>link.addEventListener('click',()=>closeAll()));
+})();
+</script>
+<script id="aba-unified-profile-header-script">
+/* Uses the existing ABA membership cookie/session. No new authentication or wallet flow. */
+(()=>{
+ 'use strict';
+ const nav=document.getElementById('aba-primary-nav');
+ if(!nav||nav.querySelector('.aba-account-entry'))return;
+ const wrap=document.createElement('div');wrap.className='aba-account-entry';
+ const login=document.createElement('a');login.className='aba-account-signin';
+ login.href='/member-network';login.textContent='Sign In';
+ // The network pages and Creator Studio/Knowledge Library already have working in-page login forms.
+ const path=location.pathname.toLowerCase();
+ if(path.includes('member-network')||path.includes('global-student-network'))login.href='#authView';
+ if(path.includes('creator_studio')||path.includes('creator-studio')||path.includes('knowledge_library')||path.includes('knowledge-library'))login.href='#aba-member-access';
+ wrap.append(login);
+ const join=nav.querySelector('.nav-join');nav.insertBefore(wrap,join||null);
+ const api='https://api.arkansasblockchainassociation.com';
+ function showSignedIn(){
+   if(wrap.querySelector('.aba-account-trigger'))return;
+   wrap.replaceChildren();
+   const b=document.createElement('button');b.type='button';b.className='aba-account-trigger';b.setAttribute('aria-label','Profile options');b.setAttribute('aria-expanded','false');
+   const avatar=document.createElement('span');avatar.className='aba-account-avatar';avatar.textContent='●';avatar.setAttribute('aria-hidden','true');
+   const caption=document.createElement('span');caption.textContent='My Profile';
+   const chevron=document.createElement('span');chevron.textContent='⌄';chevron.setAttribute('aria-hidden','true');
+   b.append(avatar,caption,chevron);
+   const menu=document.createElement('div');menu.className='aba-account-dropdown';menu.hidden=true;
+   const profile=document.createElement('a');profile.href='/profile.html';profile.textContent='My Profile';
+   const signout=document.createElement('button');signout.type='button';signout.textContent='Sign Out';
+   signout.addEventListener('click',async()=>{
+     signout.disabled=true;signout.textContent='Signing out…';
+     try{
+       const r=await fetch(api+'/api/student-auth/logout',{method:'POST',credentials:'include',headers:{Accept:'application/json'}});
+       if(!r.ok)throw new Error('Sign-out was not confirmed');
+       try{localStorage.removeItem('aba_member_session')}catch{}
+       location.reload();
+     }catch(e){signout.disabled=false;signout.textContent='Sign Out';alert('Unable to sign out. Please try again.');}
+   });
+   menu.append(profile,signout);wrap.append(b,menu);
+   b.addEventListener('click',()=>{menu.hidden=!menu.hidden;b.setAttribute('aria-expanded',String(!menu.hidden));});
+   document.addEventListener('click',e=>{if(!wrap.contains(e.target)){menu.hidden=true;b.setAttribute('aria-expanded','false');}});
+   document.addEventListener('keydown',e=>{if(e.key==='Escape'){menu.hidden=true;b.setAttribute('aria-expanded','false');}});
+ }
+  window.addEventListener('aba:session-confirmed',showSignedIn);
+ try { const cached=JSON.parse(localStorage.getItem('aba_member_session')||'null'); if(cached?.verifiedAt)showSignedIn(); } catch (_) {}
+ fetch(api+'/api/student-network/me',{credentials:'include',headers:{Accept:'application/json'},cache:'no-store'})
+ .then(r=>r.ok?r.json():null).then(d=>{if(d?.profile)showSignedIn();}).catch(()=>{});
 })();
 </script>
 </body></html>
