@@ -852,7 +852,7 @@ body{color:#d7e3f1;background:var(--navy)}
 <main class="membership-page" id="main">
 <section class="mem-hero" aria-labelledby="membership-title">
  <div class="container mem-hero-grid">
-  <div class="reveal"><div class="mem-kicker">ABA membership</div><h1 id="membership-title">Knowledge, connections, and<br><span class="mem-headline-second">practical tools for <span>what comes next</span></span></h1><p class="mem-lead">Join a global community advancing emerging technologies. Explore interactive knowledge, create tokenized work, and connect with people shaping real world applications.</p><div class="mem-actions"><a class="mem-button" href="https://arkansasblockchainassociation.com/join">Join ABA</a><a class="mem-button secondary" href="#membership-options">View membership options</a></div></div>
+  <div class="reveal"><div class="mem-kicker">ABA membership</div><h1 id="membership-title">Membership That Connects You<br><span class="mem-headline-second">to the Future of <span>Innovation</span></span></h1><p class="mem-lead">Join a global network of industry leaders, innovators, policymakers, and students advancing blockchain, digital assets, AI, quantum technologies, and emerging industries. Access exclusive knowledge, professional connections, collaborative initiatives, and opportunities to participate in shaping what’s next.</p><div class="mem-actions"><a class="mem-button" href="#benefits-title">Explore Membership Benefits</a><a class="mem-button secondary" href="https://arkansasblockchainassociation.com/join">Become a Member</a></div></div>
 </div>
 </section>
 <section class="mem-benefits-overview" aria-labelledby="benefits-title"><div class="container">
@@ -1032,53 +1032,6 @@ body{color:#d7e3f1;background:var(--navy)}
  triggers.forEach(button=>{button.addEventListener('click',e=>{e.stopPropagation();const open=button.getAttribute('aria-expanded')!=='true';closeAll(button);button.setAttribute('aria-expanded',String(open));const panel=document.getElementById(button.getAttribute('aria-controls'));if(panel)panel.hidden=!open;});button.addEventListener('keydown',e=>{if(e.key==='Escape'){closeAll();button.focus();}})});
  document.addEventListener('click',e=>{if(!nav.contains(e.target))closeAll()});document.addEventListener('keydown',e=>{if(e.key==='Escape')closeAll()});
  nav.querySelectorAll('.aba-nav-submenu a').forEach(link=>link.addEventListener('click',()=>closeAll()));
-})();
-</script>
-<script id="aba-unified-profile-header-script">
-/* Uses the existing ABA membership cookie/session. No new authentication or wallet flow. */
-(()=>{
- 'use strict';
- const nav=document.getElementById('aba-primary-nav');
- if(!nav||nav.querySelector('.aba-account-entry'))return;
- const wrap=document.createElement('div');wrap.className='aba-account-entry';
- const login=document.createElement('a');login.className='aba-account-signin';
- login.href='/member-network';login.textContent='Sign In';
- // The network pages and Creator Studio/Knowledge Library already have working in-page login forms.
- const path=location.pathname.toLowerCase();
- if(path.includes('member-network')||path.includes('global-student-network'))login.href='#authView';
- if(path.includes('creator_studio')||path.includes('creator-studio')||path.includes('knowledge_library')||path.includes('knowledge-library'))login.href='#aba-member-access';
- wrap.append(login);
- const join=nav.querySelector('.nav-join');nav.insertBefore(wrap,join||null);
- const api='https://api.arkansasblockchainassociation.com';
- function showSignedIn(){
-   if(wrap.querySelector('.aba-account-trigger'))return;
-   wrap.replaceChildren();
-   const b=document.createElement('button');b.type='button';b.className='aba-account-trigger';b.setAttribute('aria-label','Profile options');b.setAttribute('aria-expanded','false');
-   const avatar=document.createElement('span');avatar.className='aba-account-avatar';avatar.textContent='●';avatar.setAttribute('aria-hidden','true');
-   const caption=document.createElement('span');caption.textContent='My Profile';
-   const chevron=document.createElement('span');chevron.textContent='⌄';chevron.setAttribute('aria-hidden','true');
-   b.append(avatar,caption,chevron);
-   const menu=document.createElement('div');menu.className='aba-account-dropdown';menu.hidden=true;
-   const profile=document.createElement('a');profile.href='/profile.html';profile.textContent='My Profile';
-   const signout=document.createElement('button');signout.type='button';signout.textContent='Sign Out';
-   signout.addEventListener('click',async()=>{
-     signout.disabled=true;signout.textContent='Signing out…';
-     try{
-       const r=await fetch(api+'/api/student-auth/logout',{method:'POST',credentials:'include',headers:{Accept:'application/json'}});
-       if(!r.ok)throw new Error('Sign-out was not confirmed');
-       try{localStorage.removeItem('aba_member_session')}catch{}
-       location.reload();
-     }catch(e){signout.disabled=false;signout.textContent='Sign Out';alert('Unable to sign out. Please try again.');}
-   });
-   menu.append(profile,signout);wrap.append(b,menu);
-   b.addEventListener('click',()=>{menu.hidden=!menu.hidden;b.setAttribute('aria-expanded',String(!menu.hidden));});
-   document.addEventListener('click',e=>{if(!wrap.contains(e.target)){menu.hidden=true;b.setAttribute('aria-expanded','false');}});
-   document.addEventListener('keydown',e=>{if(e.key==='Escape'){menu.hidden=true;b.setAttribute('aria-expanded','false');}});
- }
-  window.addEventListener('aba:session-confirmed',showSignedIn);
- try { const cached=JSON.parse(localStorage.getItem('aba_member_session')||'null'); if(cached?.verifiedAt)showSignedIn(); } catch (_) {}
- fetch(api+'/api/student-network/me',{credentials:'include',headers:{Accept:'application/json'},cache:'no-store'})
- .then(r=>r.ok?r.json():null).then(d=>{if(d?.profile)showSignedIn();}).catch(()=>{});
 })();
 </script>
 </body></html>
