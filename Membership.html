@@ -685,6 +685,7 @@ body{color:#d7e3f1;background:var(--navy)}
 .mem-hero{min-height:540px;position:relative;display:grid;align-items:center;padding:92px 0 78px;background:radial-gradient(ellipse at 85% 35%,rgba(28,102,158,.25),transparent 42%),linear-gradient(145deg,#07111f,#091a2b 60%,#07111f);border-bottom:1px solid var(--m-line)}
 .mem-hero:before{content:"";position:absolute;inset:0;pointer-events:none;background-image:linear-gradient(rgba(105,177,222,.055) 1px,transparent 1px),linear-gradient(90deg,rgba(105,177,222,.055) 1px,transparent 1px);background-size:58px 58px;mask-image:linear-gradient(90deg,transparent,black 65%)}
 .mem-hero-grid{position:relative;display:grid;grid-template-columns:minmax(0,1fr);gap:54px;align-items:center;text-align:center}
+@media(min-width:901px){.mem-hero .container{width:min(100% - 48px,1500px)}.mem-hero h1 .mem-headline-second{white-space:nowrap}}
 .mem-hero .mem-kicker{justify-content:center}
 .mem-kicker{display:flex;align-items:center;gap:11px;color:#81d7ff;font-size:.75rem;font-weight:800;letter-spacing:.15em;text-transform:uppercase}
 .mem-kicker:before{content:"";width:26px;height:2px;background:var(--m-gold)}
@@ -843,7 +844,7 @@ body{color:#d7e3f1;background:var(--navy)}
 <main class="membership-page" id="main">
 <section class="mem-hero" aria-labelledby="membership-title">
  <div class="container mem-hero-grid">
-  <div class="reveal"><div class="mem-kicker">ABA membership</div><h1 id="membership-title">Knowledge, connections, and<br>practical tools for <span>what comes next</span></h1><p class="mem-lead">Join a global community advancing emerging technologies. Explore interactive knowledge, create tokenized work, and connect with people shaping real world applications.</p><div class="mem-actions"><a class="mem-button" href="https://arkansasblockchainassociation.com/join">Join ABA</a><a class="mem-button secondary" href="#membership-options">View membership options</a></div></div>
+  <div class="reveal"><div class="mem-kicker">ABA membership</div><h1 id="membership-title">Knowledge, connections, and<br><span class="mem-headline-second">practical tools for <span>what comes next</span></span></h1><p class="mem-lead">Join a global community advancing emerging technologies. Explore interactive knowledge, create tokenized work, and connect with people shaping real world applications.</p><div class="mem-actions"><a class="mem-button" href="https://arkansasblockchainassociation.com/join">Join ABA</a><a class="mem-button secondary" href="#membership-options">View membership options</a></div></div>
 </div>
 </section>
 <section class="mem-benefits-overview" aria-labelledby="benefits-title"><div class="container">
