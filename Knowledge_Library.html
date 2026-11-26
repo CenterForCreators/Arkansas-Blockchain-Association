@@ -133,12 +133,12 @@ nav:not(#aba-primary-nav) {
 .filter-tabs { display:flex; gap:0.5rem; justify-content:center; flex-wrap:wrap; margin-top:1rem; }
 .filter-tab { padding:0.45rem 1.2rem; border-radius:100px; border:2px solid transparent; background:rgba(255,255,255,0.06); color:#C0C8D8; font-size:0.92rem; font-weight:700; cursor:pointer; transition:all 0.2s; font-family:inherit; }
 .filter-tab:hover { color:#fff; background:rgba(255,255,255,0.1); }
-.filter-tab[data-cat="all"] { border-color:rgba(255,255,255,0.2); }
-.filter-tab[data-cat="all"].active { background:#E5E7EB; color:#0C0C1D; border-color:#E5E7EB; }
+.filter-tab[data-cat="all"] { background:#0D9488; color:#fff; border-color:#0D9488; }
+.filter-tab[data-cat="all"].active { background:#0D9488; color:#fff; border-color:#0D9488; }
 .filter-tab[data-cat="book"] { border-color:#F0B429; color:#F0B429; }
 .filter-tab[data-cat="book"].active { background:#F0B429; color:#000; border-color:#F0B429; }
-.filter-tab[data-cat="article"] { border-color:#87CEEB; color:#87CEEB; }
-.filter-tab[data-cat="article"].active { background:#87CEEB; color:#000; border-color:#87CEEB; }
+.filter-tab[data-cat="article"] { border-color:#F87171; color:#F87171; }
+.filter-tab[data-cat="article"].active { background:#F87171; color:#07162f; border-color:#F87171; }
 .filter-tab[data-cat="video"] { border-color:#58c7e8; color:#58c7e8; }
 .filter-tab[data-cat="video"].active { background:#58c7e8; color:#06152f; border-color:#58c7e8; }
 .filter-tab[data-cat="workshop"] { border-color:#10B981; color:#10B981; }
@@ -735,6 +735,13 @@ body.menu-open .site-header{background:#06152f;backdrop-filter:none}
 #listings {padding-top:1.8rem!important;}
 #listings .listings-header {margin-bottom:1.3rem!important;}
 @media(max-width:760px){.aba-library-controls-inner{justify-content:center;}.aba-library-controls .view-tabs{width:100%;justify-content:center;}.aba-library-controls .view-tab{flex:1;padding:.7rem .45rem;font-size:.68rem;}.aba-library-controls #wallet-banner{width:100%;justify-content:center;}.aba-library-controls .aba-rewards-strip{width:100%;}.aba-library-controls #aba-trustline-panel{width:100%;text-align:center;}.aba-library-controls #banner-connected{justify-content:center;}#market-hero{padding:1.6rem 0 1.1rem!important;}}
+/* Approved visual-only updates: clear category colors and gold navigation outlines. */
+.filter-tab[data-cat="ideas-research"] { border-color:#fff; color:#fff; }
+.filter-tab[data-cat="ideas-research"].active { background:#7C3AED; color:#fff; border-color:#fff; }
+.aba-library-controls .view-tabs { border:0; border-radius:2px; gap:6px; overflow:visible; }
+.aba-library-controls .view-tab { border:1px solid #C89124; border-radius:2px; color:#E4B452; }
+.aba-library-controls .view-tab:hover { border-color:#E4B452; color:#fff; background:rgba(200,145,36,.10); }
+.aba-library-controls .view-tab.active { border:1px solid #E4B452; border-radius:2px; background:rgba(200,145,36,.22); color:#FFE0A0; }
 </style>
 </head>
 <body class="aba-membership-pending">
