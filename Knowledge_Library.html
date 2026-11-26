@@ -139,6 +139,8 @@ nav:not(#aba-primary-nav) {
 .filter-tab[data-cat="book"].active { background:#F0B429; color:#000; border-color:#F0B429; }
 .filter-tab[data-cat="article"] { border-color:#87CEEB; color:#87CEEB; }
 .filter-tab[data-cat="article"].active { background:#87CEEB; color:#000; border-color:#87CEEB; }
+.filter-tab[data-cat="video"] { border-color:#58c7e8; color:#58c7e8; }
+.filter-tab[data-cat="video"].active { background:#58c7e8; color:#06152f; border-color:#58c7e8; }
 .filter-tab[data-cat="workshop"] { border-color:#10B981; color:#10B981; }
 .filter-tab[data-cat="workshop"].active { background:#10B981; color:#fff; border-color:#10B981; }
 .filter-tab[data-cat="service"] { border-color:#A78BFA; color:#A78BFA; }
@@ -882,6 +884,7 @@ try { const member=JSON.parse(localStorage.getItem('aba_member_session')||'null'
         <button class="filter-tab active" data-cat="all">All</button>
         <button class="filter-tab" data-cat="book">Books</button>
         <button class="filter-tab" data-cat="article">Articles</button>
+        <button class="filter-tab" data-cat="video">Videos</button>
         <button class="filter-tab" data-cat="workshop">Workshops</button>
         <button class="filter-tab" data-cat="service">Programs</button>
         <button class="filter-tab" data-cat="ideas-research">Ideas &amp; Research</button>
@@ -1418,12 +1421,12 @@ let currentIndex = 0;
 let loadingMore = false;
 
 function getCategoryEmoji(cat){
-  const map = {book:'&#128214;',article:'&#128196;',workshop:'&#129504;',service:'&#9881;',art:'&#127912;'};
+  const map = {book:'&#128214;',article:'&#128196;',video:'&#127909;',workshop:'&#129504;',service:'&#9881;',art:'&#127912;'};
   return map[cat?.toLowerCase()] || '&#128305;';
 }
 
 function getCategoryBadgeClass(cat){
-  const map = {book:'badge-book',article:'badge-article',workshop:'badge-workshop',service:'badge-service',art:'badge-art'};
+  const map = {book:'badge-book',article:'badge-article',video:'badge-article',workshop:'badge-workshop',service:'badge-service',art:'badge-art'};
   return map[cat?.toLowerCase()] || 'badge-book';
 }
 
