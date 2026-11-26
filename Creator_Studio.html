@@ -1723,63 +1723,39 @@ function abaVideoReset(){
 // a second SignIn transaction or changing Ideas & Research authentication.
 async function abaVideoAuth(){
   if(!creatorWallet)throw Error('Connect your Xaman wallet before uploading a video.');
-  const savedToken=abaIrState.token||(
-    sessionStorage.getItem('aba_ideas_wallet')===creatorWallet
-      ?sessionStorage.getItem('aba_ideas_token'):null
-  );
-  if(savedToken){
-    try{
-      const response=await fetch(ABA_IR_API+'/records',{
-        headers:{Authorization:'Bearer '+savedToken},
-        signal:AbortSignal.timeout(10000)
-      });
-      if(response.ok){abaIrState.token=savedToken;return savedToken;}
-    }catch{}
-    abaIrState.token='';
-    sessionStorage.removeItem('aba_ideas_token');
-    sessionStorage.removeItem('aba_ideas_wallet');
-  }
-  // An account address remembered by Creator Studio is not a verified
-  // authorization token. Only use the already-authorized Xaman OAuth session.
-  const xumm=getXumm();
-  let bearer=null;
+  // Reuse the existing Ideas & Research verified Xaman session and authentication.
+  // A remembered wallet address by itself is not authorization to upload private files.
+  const signing=document.getElementById('aba-ir-signing');
+  const originalParent=signing.parentNode;
+  const originalNext=signing.nextSibling;
+  const uploadPanel=document.getElementById('content-upload-status');
   try{
-    bearer=await Promise.race([
-      Promise.resolve(xumm.environment.bearer),
-      new Promise(resolve=>setTimeout(()=>resolve(null),3000))
-    ]);
-  }catch{}
-  if(!bearer){
-    abaVideoStatus('Confirm your Xaman authorization to continue the private video upload.');
-    let timer;
-    try{
-      const state=await Promise.race([
-        Promise.resolve(xumm.authorize()),
-        new Promise((_,reject)=>{timer=setTimeout(()=>reject(Error('Xaman authorization timed out. Please authorize Xaman and retry the video upload.')),30000);})
-      ]);
-      if(state?.me?.account && state.me.account!==creatorWallet)
-        throw Error('The authorized Xaman wallet does not match Creator Studio.');
-      bearer=await Promise.race([
-        Promise.resolve(xumm.environment.bearer),
-        new Promise(resolve=>setTimeout(()=>resolve(null),3000))
-      ]);
-    }finally{clearTimeout(timer);}
+    // The existing Xaman verification UI belongs to the review step. Present
+    // that same UI here only while verifying a video upload.
+    uploadPanel.insertAdjacentElement('afterend',signing);
+    const savedToken=abaIrState.token||(
+      sessionStorage.getItem('aba_ideas_wallet')===creatorWallet
+        ?sessionStorage.getItem('aba_ideas_token'):null
+    );
+    if(savedToken){
+      try{
+        const response=await fetch(ABA_IR_API+'/records',{
+          headers:{Authorization:'Bearer '+savedToken},
+          signal:AbortSignal.timeout(10000)
+        });
+        if(response.ok){abaIrState.token=savedToken;return savedToken;}
+      }catch{}
+      abaIrState.token='';
+      sessionStorage.removeItem('aba_ideas_token');
+      sessionStorage.removeItem('aba_ideas_wallet');
+    }
+    await abaIrAuth();
+    if(!abaIrState.token)throw Error('Xaman wallet verification was not completed.');
+    return abaIrState.token;
+  }finally{
+    abaIrShow('aba-ir-signing',false);
+    originalParent.insertBefore(signing,originalNext);
   }
-  if(typeof bearer!=='string'||!bearer)
-    throw Error('Xaman authorization was not completed. Authorize the connected wallet, then select the video again.');
-  const response=await fetch(ABA_IR_API+'/auth/existing-wallet',{
-    method:'POST',headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({xaman_bearer:bearer}),signal:AbortSignal.timeout(12000)
-  });
-  const data=await response.json().catch(()=>({}));
-  if(!response.ok||!data.token)
-    throw Error(data.error||'Xaman authorization could not be verified for video upload.');
-  if(data.wallet!==creatorWallet)
-    throw Error('The authorized Xaman wallet does not match Creator Studio.');
-  abaIrState.token=data.token;
-  sessionStorage.setItem('aba_ideas_token',data.token);
-  sessionStorage.setItem('aba_ideas_wallet',data.wallet);
-  return data.token;
 }
 async function abaVideoUpload(file){
   if(abaVideoState.uploading){abaVideoStatus('The previous video upload is still in progress.',true);return;}
