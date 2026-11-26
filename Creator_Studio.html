@@ -858,7 +858,7 @@ Edit Profile
 <div class="step-panel" id="step-1">
 <div class="step-heading">Upload Content Cover Image</div>
 <div class="form-group"><label class="form-label" for="aba-ir-early-type">Choose Content Type</label><select class="form-input" id="aba-ir-early-type" onchange="document.getElementById('nft-category').value=this.value;abaIrCategoryChanged()">
-<option value="book">Book</option><option value="article">Article</option><option value="workshop">Workshop</option><option value="service">Service</option><option value="art">Art</option><option value="idea">Idea</option><option value="research">Research</option>
+<option value="book">Book</option><option value="article">Article</option><option value="workshop">Workshop</option><option value="service">Service</option><option value="art">Art</option><option value="idea">Idea</option><option value="research">Research</option><option value="video">Video</option>
 </select></div>
 <div id="aba-ir-cover-choice" hidden style="margin-bottom:1rem;">
 <label class="form-label" for="aba-ir-cover-mode">Choose Cover Image Design</label>
@@ -906,6 +906,7 @@ Edit Profile
 </div>
 </div>
 <div class="alert" id="content-upload-status" style="display:none;margin-top:1rem;"></div>
+<div id="aba-video-preview" hidden style="margin-top:1rem;"><video id="aba-video-player" controls playsinline preload="metadata" style="display:block;max-width:100%;max-height:420px;margin:auto;"></video></div>
 <div class="wizard-nav">
 <button class="btn-back" onclick="goToStep(1)">← Back</button>
 <button class="btn-next" onclick="abaIrStep2Next()">Continue →</button>
@@ -941,6 +942,7 @@ Edit Profile
 <option value="art">🎨 Art</option>
 <option value="idea">💡 Idea</option>
 <option value="research">🔬 Research</option>
+<option value="video">🎬 Video</option>
 </select>
 </div>
 <div class="form-group">
@@ -1699,7 +1701,59 @@ async function handleContentUpload(event){
   if(file) processContentFile(file);
 }
 
+// ABA videos: private IPFS uploads through the dedicated ABA backend only.
+const ABA_VIDEO_API = 'https://aba-tik-ideas-research-backend.onrender.com/api/videos';
+let abaVideoState = {id:null,cid:null,file:null,objectUrl:null,uploading:false};
+function abaIsVideo(){return document.getElementById('nft-category').value==='video';}
+function abaVideoStatus(message,isError=false){const el=document.getElementById('content-upload-status');el.className='alert '+(isError?'alert-error':'alert-info');el.textContent=message;el.style.display='block';}
+function abaVideoReset(){
+  if(abaVideoState.objectUrl)URL.revokeObjectURL(abaVideoState.objectUrl);
+  abaVideoState={id:null,cid:null,file:null,objectUrl:null,uploading:false};
+  const player=document.getElementById('aba-video-player');player.pause();player.removeAttribute('src');player.load();
+  document.getElementById('aba-video-preview').hidden=true;
+  document.getElementById('content-file-name').textContent='';
+  document.getElementById('content-file-input').value='';
+}
+async function abaVideoUpload(file){
+  if(abaVideoState.uploading){abaVideoStatus('The previous video upload is still in progress.',true);return;}
+  abaVideoReset();
+  if(!/\.mp4$/i.test(file.name) || (file.type&&file.type!=='video/mp4') || !file.size || file.size>60*1024*1024){
+    abaVideoStatus('Select an MP4 file of 60 MB or less.',true);return;
+  }
+  const url=URL.createObjectURL(file);
+  const probe=document.createElement('video');probe.preload='metadata';
+  let seconds;
+  try{
+    seconds=await new Promise((resolve,reject)=>{
+      const timeout=setTimeout(()=>reject(Error('Unable to read video duration.')),10000);
+      probe.onloadedmetadata=()=>{clearTimeout(timeout);resolve(probe.duration)};
+      probe.onerror=()=>{clearTimeout(timeout);reject(Error('Unable to read this MP4 video.'))};
+      probe.src=url;
+    });
+    if(!Number.isFinite(seconds)||seconds<=0||seconds>300)throw Error('Video must be 5 minutes or less.');
+  }catch(e){URL.revokeObjectURL(url);abaVideoStatus(e.message,true);return;}
+  abaVideoState.file=file;abaVideoState.objectUrl=url;abaVideoState.uploading=true;
+  document.getElementById('content-file-name').textContent=file.name;
+  const bar=document.getElementById('content-progress');bar.style.display='block';
+  const fill=document.getElementById('content-progress-bar');fill.style.width='20%';
+  abaVideoStatus('Verifying Xaman wallet and uploading video privately to Pinata...');
+  try{
+    await abaIrAuth();
+    const result=await fetch(ABA_VIDEO_API+'/upload',{
+      method:'POST',headers:{Authorization:'Bearer '+abaIrState.token,'Content-Type':'video/mp4','X-Video-Filename':file.name},body:file
+    });
+    const data=await result.json().catch(()=>({}));
+    if(!result.ok||!data.id||!data.cid||data.private!==true)throw Error(data.error||'Private video upload failed.');
+    abaVideoState.id=data.id;abaVideoState.cid=data.cid;
+    fill.style.width='100%';
+    const player=document.getElementById('aba-video-player');player.src=url;
+    document.getElementById('aba-video-preview').hidden=false;
+    abaVideoStatus('Private video uploaded successfully. Continue to Content Details.');
+  }catch(e){abaVideoStatus(e.message,true);fill.style.width='0%';}
+  finally{abaVideoState.uploading=false;}
+}
 async function processContentFile(file){
+  if(abaIsVideo()) return abaVideoUpload(file);
   if(abaIrSelected()) return abaIrContentFile(file);
   const status = document.getElementById('content-upload-status');
   const fileName = document.getElementById('content-file-name');
@@ -1793,6 +1847,7 @@ function buildReview(){
 
 // ── SUBMIT ──
 async function submitNFT(){
+  if(abaIsVideo()&&(!abaVideoState.id||!abaVideoState.cid||abaVideoState.uploading)){alert('Upload the private video before submitting.');return;}
   if(abaIrSelected()) return abaIrSubmit();
   const btn = document.getElementById('submit-btn');
   btn.disabled = true; btn.textContent = 'Submitting...';
@@ -1827,7 +1882,11 @@ learn: {
   content: document.getElementById('learnText').value.trim()
 }
   };
-if(contentCid) metadata.content_html = contentCid;
+if(contentCid && cat!=='video') metadata.content_html = contentCid;
+if(cat==='video'){
+  // Public NFT metadata references an opaque private storage identifier, not a playable public URL.
+  metadata.video={storage:'pinata-private',id:abaVideoState.id,cid:abaVideoState.cid,mime:'video/mp4'};
+}
 
 const metadataForm = new FormData();
 metadataForm.append(
@@ -1858,7 +1917,7 @@ try {
   email: creatorEmail,
   website,
 
-  contentCid: contentCid || '',
+  contentCid: cat==='video'?'':(contentCid || ''),
   category: cat,
   metadata,
 
@@ -2503,8 +2562,20 @@ function abaIrCategoryChanged(){
  abaIrEl('aba-ir-early-type').value=abaIrEl('nft-category').value;
  const enabled=abaIrSelected(),research=abaIrEl('nft-category').value==='research';
  const kind=abaIrEl('nft-category').value;
+  const isVideo=kind==='video';
+  const input=abaIrEl('content-file-input');
+  input.accept=isVideo?'.mp4,video/mp4':'.docx,.pdf,.txt';
+  abaIrEl('content-upload-zone').querySelector('h4').textContent=isVideo?'Select your MP4 video':'Drag and drop your content file here';
+  abaIrEl('content-upload-zone').querySelector('p').textContent=isVideo?'MP4 • Maximum 5 minutes • 60 MB':'Accepted format: Word (.docx) (max 100MB)';
+  const previous=abaIrEl('content-upload-zone').dataset.videoMode==='yes';
+  if(previous!==isVideo){
+    abaIrEl('content-upload-zone').dataset.videoMode=isVideo?'yes':'no';
+    if(!abaVideoState.uploading)abaVideoReset();
+    abaIrEl('content-upload-status').style.display='none';
+  }
+  if(!isVideo)abaIrEl('aba-video-preview').hidden=true;
  const guidance=abaIrEl('aba-content-type-guidance');
- if(guidance) guidance.textContent=kind==='idea'?'Required: Enter your idea or upload a Word document.':kind==='research'?'Required: Upload your research as a Word document.':(kind==='article'||kind==='book')?'Upload your content as a Word document.':'Optional: Upload a content file, or continue without one.';
+  if(guidance) guidance.textContent=isVideo?'Required: Upload your MP4 video privately (maximum 5 minutes).':kind==='idea'?'Required: Enter your idea or upload a Word document.':kind==='research'?'Required: Upload your research as a Word document.':(kind==='article'||kind==='book')?'Upload your content as a Word document.':'Optional: Upload a content file, or continue without one.';
  abaIrEl('creator-studio').classList.toggle('aba-ir-visual-mode',enabled);
  abaIrShow('aba-ir-cover-choice',enabled);
  abaIrShow('standard-cover-guidance',!enabled);
@@ -2523,7 +2594,7 @@ function abaIrCategoryChanged(){
  abaIrEl('enableLearn').checked=!enabled;
  abaIrEl('aba-ir-learn-label').textContent=enabled?'Include optional questions with this content (no Learn & Earn reward)':'Enable Learn & Earn rewards';
  abaIrEl('step1-next').disabled=enabled?!abaIrCoverReady():!imageCid;
- if(enabled)abaIrEl('step-2').querySelector('.step-heading').textContent=research?'Upload Research Word Document':'Enter an Idea or Upload Word Document';else abaIrEl('step-2').querySelector('.step-heading').innerHTML=abaIrOriginalStep2Heading;
+ if(enabled)abaIrEl('step-2').querySelector('.step-heading').textContent=research?'Upload Research Word Document':'Enter an Idea or Upload Word Document';else if(isVideo)abaIrEl('step-2').querySelector('.step-heading').textContent='Upload Video';else abaIrEl('step-2').querySelector('.step-heading').innerHTML=abaIrOriginalStep2Heading;
  abaIrEl('step-3').querySelector('.step-desc').textContent=enabled?'Describe your original work. Privacy settings apply only to Ideas and Research.':'Fill in the details for your Digital Asset. This information will be displayed in the marketplace.';
  abaIrEl('step-4').querySelector('.step-desc').textContent=enabled?'No AI Agent setup is needed for Ideas and Research.':'Each content digital asset comes with an embedded AI Agent trained on your content.';
  abaIrEl('step-5').querySelector('.step-desc').textContent=enabled?'Questions are optional. Learn and Earn is not available for Ideas and Research.':'Add questions for your readers to earn CFC tokens.';
@@ -2569,7 +2640,9 @@ async function abaIrContentFile(file){const status=abaIrEl('content-upload-statu
  abaIrState.file=file;abaIrEl('content-file-name').textContent=file.name;
  status.className='alert alert-success';status.textContent='Word document ready (not publicly uploaded).';status.style.display='block';
 }
-function abaIrStep2Next(){if(abaIrSelected()){
+function abaIrStep2Next(){
+ if(abaIsVideo()){if(!abaVideoState.id||!abaVideoState.cid||abaVideoState.uploading){abaVideoStatus('Upload the private video successfully before continuing.',true);return;}goToStep(3);return;}
+ if(abaIrSelected()){
  if(abaIrEl("nft-category").value==="research"&&!abaIrState.file){alert("Research requires a Word document.");return}
  if(abaIrEl("nft-category").value==="idea"&&!abaIrState.file&&!abaIrEl("aba-ir-idea-text").value.trim()){alert("Enter your idea or upload a Word document.");return}
  }goToStep(3)}
