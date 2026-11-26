@@ -1723,39 +1723,49 @@ function abaVideoReset(){
 // a second SignIn transaction or changing Ideas & Research authentication.
 async function abaVideoAuth(){
   if(!creatorWallet)throw Error('Connect your Xaman wallet before uploading a video.');
-  // Reuse the existing Ideas & Research verified Xaman session and authentication.
-  // A remembered wallet address by itself is not authorization to upload private files.
-  const signing=document.getElementById('aba-ir-signing');
-  const originalParent=signing.parentNode;
-  const originalNext=signing.nextSibling;
-  const uploadPanel=document.getElementById('content-upload-status');
-  try{
-    // The existing Xaman verification UI belongs to the review step. Present
-    // that same UI here only while verifying a video upload.
-    uploadPanel.insertAdjacentElement('afterend',signing);
-    const savedToken=abaIrState.token||(
-      sessionStorage.getItem('aba_ideas_wallet')===creatorWallet
-        ?sessionStorage.getItem('aba_ideas_token'):null
-    );
-    if(savedToken){
-      try{
-        const response=await fetch(ABA_IR_API+'/records',{
-          headers:{Authorization:'Bearer '+savedToken},
-          signal:AbortSignal.timeout(10000)
-        });
-        if(response.ok){abaIrState.token=savedToken;return savedToken;}
-      }catch{}
-      abaIrState.token='';
-      sessionStorage.removeItem('aba_ideas_token');
-      sessionStorage.removeItem('aba_ideas_wallet');
-    }
-    await abaIrAuth();
-    if(!abaIrState.token)throw Error('Xaman wallet verification was not completed.');
-    return abaIrState.token;
-  }finally{
-    abaIrShow('aba-ir-signing',false);
-    originalParent.insertBefore(signing,originalNext);
+  // Use the wallet session already established by Creator Studio. Never launch
+  // a second SignIn transaction or an additional Xaman authorization prompt.
+  const savedToken=abaIrState.token || (
+    sessionStorage.getItem('aba_ideas_wallet')===creatorWallet
+      ? sessionStorage.getItem('aba_ideas_token') : null
+  );
+  if(savedToken){
+    try{
+      const response=await fetch(ABA_IR_API+'/records',{
+        headers:{Authorization:'Bearer '+savedToken},
+        signal:AbortSignal.timeout(10000)
+      });
+      if(response.ok){abaIrState.token=savedToken;return savedToken;}
+    }catch{}
+    abaIrState.token='';
+    sessionStorage.removeItem('aba_ideas_token');
+    sessionStorage.removeItem('aba_ideas_wallet');
   }
+  // Xaman SDK can expose the existing OAuth bearer without opening a new window.
+  // Exchange it through the backend's ALREADY EXISTING auth/existing-wallet route.
+  const xumm=getXumm();
+  let bearer=null;
+  try{bearer=await Promise.race([
+    Promise.resolve(xumm.environment.bearer),
+    new Promise(resolve=>setTimeout(()=>resolve(null),8000))
+  ]);}catch{}
+  if(bearer){
+    const response=await fetch(ABA_IR_API+'/auth/existing-wallet',{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({xaman_bearer:bearer}),
+      signal:AbortSignal.timeout(10000)
+    });
+    const result=await response.json().catch(()=>({}));
+    if(response.ok && result.token && result.wallet===creatorWallet){
+      abaIrState.token=result.token;
+      sessionStorage.setItem('aba_ideas_token',result.token);
+      sessionStorage.setItem('aba_ideas_wallet',creatorWallet);
+      return result.token;
+    }
+  }
+  // A wallet address restored from localStorage is not proof of wallet control.
+  // Never bypass private-video access controls or initiate another sign-in here.
+  throw Error('The current Xaman wallet connection has no valid authorization session. Reconnect using the existing Connect Wallet button, then retry.');
 }
 async function abaVideoUpload(file){
   if(abaVideoState.uploading){abaVideoStatus('The previous video upload is still in progress.',true);return;}
@@ -1782,14 +1792,11 @@ async function abaVideoUpload(file){
   abaVideoStatus('Verifying Xaman wallet and uploading video privately to Pinata...');
   try{
     const videoToken=await abaVideoAuth();
-    abaVideoStatus('Uploading video privately to Pinata...');
     const result=await fetch(ABA_VIDEO_API+'/upload',{
-      method:'POST',headers:{Authorization:'Bearer '+videoToken,'Content-Type':'video/mp4','X-Video-Filename':file.name},body:file,
-      signal:AbortSignal.timeout(180000)
+      method:'POST',headers:{Authorization:'Bearer '+videoToken,'Content-Type':'video/mp4','X-Video-Filename':file.name},body:file
     });
     const data=await result.json().catch(()=>({}));
-    if(!result.ok)throw Error(data.error||`Private video upload failed (HTTP ${result.status}).`);
-    if(!data.id||!data.cid||data.private!==true)throw Error('Unexpected private video response: upload could not be verified.');
+    if(!result.ok||!data.id||!data.cid||data.private!==true)throw Error(data.error||'Private video upload failed.');
     abaVideoState.id=data.id;abaVideoState.cid=data.cid;
     fill.style.width='100%';
     const player=document.getElementById('aba-video-player');player.src=url;
