@@ -1416,6 +1416,11 @@ function goToStep(n){
   document.getElementById('ws-'+n).classList.add('active');
   document.querySelector('.wizard-container').scrollIntoView({behavior:'smooth',block:'start'});
   if(n === 6) buildReview();
+  // Keep the Step 1 Video selection in sync with Step 2's private MP4 uploader.
+  if(n === 2 && document.getElementById('aba-ir-early-type').value === 'video') {
+    document.getElementById('nft-category').value = 'video';
+    abaIrCategoryChanged();
+  }
   abaIrStepVisibility(n);
 }
 
