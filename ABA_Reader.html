@@ -925,6 +925,114 @@ async function loadAbaIdeasResearch(id,statusEl,content){
 }
 
 
+// ===== ABA PRIVATE VIDEO (isolated from the existing article Reader) =====
+const ABA_PRIVATE_VIDEO_API = 'https://aba-tik-ideas-research-backend.onrender.com/api/videos';
+async function loadAbaPrivateVideo(videoRecord, statusEl, contentEl){
+  // Videos retain the same submission metadata, cover, Reader URL and wallet state.
+  // Only their private media transport differs from public HTML content.
+  const id = videoRecord?.id;
+  if(!/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i.test(id||'')){
+    statusEl.textContent='Video reference unavailable';return;
+  }
+  contentEl.replaceChildren();
+  contentEl.style.columnWidth='auto';
+  contentEl.style.columnCount='1';
+  contentEl.style.overflowY='auto';
+  const player=document.createElement('video');
+  player.controls=true;player.playsInline=true;player.preload='metadata';
+  player.setAttribute('controlsList','nodownload');
+  player.style.cssText='width:100%;max-height:min(65vh,680px);display:block;margin:0 auto;background:#000;border-radius:4px';
+  const message=document.createElement('p');
+  message.style.cssText='margin:1rem 0;color:#a9c8d9;overflow-wrap:anywhere';
+  message.textContent='Preparing private video...';
+  contentEl.append(player,message);
+  // Reuse the existing article Learn & Earn input/button handler; reveal only after playback ends.
+  const videoLearn = document.createElement('div');
+  videoLearn.hidden = true;
+  if(meta?.learn?.enabled && meta?.learn?.content){
+    const learnText = String(meta.learn.content);
+    const lines = /Section\s+\d+/i.test(learnText)
+      ? learnText.replace(/Section\s+\d+/gi, '').split(/\n+/)
+      : learnText.replace(/Chapter\s+\d+/gi, '\n').split(/\n+/);
+    const questions = lines.map(line=>line.trim()).filter(line=>
+      line && !/^Question\s+\d+$/i.test(line) && !/^Activity\s+\d+$/i.test(line)
+    );
+    if(questions.length){
+      const box = document.createElement('div');
+      box.className = 'cfc-learn-box';
+      const heading = document.createElement('strong');
+      heading.textContent = '🏅 Interactive Activity — Answer to Claim CFC';
+      box.append(heading);
+      questions.forEach((question,index)=>{
+        const item=document.createElement('div');item.className='cfc-learn-item';
+        const prompt=document.createElement('div');prompt.textContent=question;
+        const answer=document.createElement('textarea');answer.id='learn-video-'+index;answer.placeholder='Your answer.';
+        const claim=document.createElement('button');claim.type='button';claim.className='cfc-learn-btn';
+        claim.textContent='Claim CFC Reward';
+        claim.addEventListener('click',()=>submitLearnAnswer('video-'+index));
+        item.append(prompt,answer,claim);box.append(item);
+      });
+      videoLearn.append(box);
+    }
+  }
+  contentEl.append(videoLearn);
+  // A video is a single Reader view; leave article pagination functions untouched.
+  const pager=document.querySelector('.pagerbar');if(pager)pager.style.display='none';
+  document.getElementById('pageInfo').textContent='Video';
+  let playbackUrl='';
+  try{
+    let auth=sessionStorage.getItem('aba_tik_ideas_wallet_session')||'';
+    // Reuse an existing Xaman session if present; never start a new sign-in.
+    // The video service also accepts the original Ideas & Research session token.
+    async function requestPlayback(token){
+      const response=await fetch(ABA_PRIVATE_VIDEO_API+'/'+encodeURIComponent(id)+'/playback',{
+        headers:{Authorization:'Bearer '+token,...(wallet?{'X-Video-Wallet':wallet}:{})},cache:'no-store'
+      });
+      const data=await response.json().catch(()=>({}));
+      if(!response.ok||!data.url)throw Error(data.error||'Private video access unavailable');
+      return data.url;
+    }
+    if(auth){
+      try{playbackUrl=await requestPlayback(auth);}catch(e){if(!/session|unauthoriz|expired|invalid|401/i.test(e.message))throw e;auth='';}
+    }
+    if(!playbackUrl){
+      if(!window.Xumm){
+        await new Promise((resolve,reject)=>{
+          const script=document.createElement('script');
+          script.src='https://xumm.app/assets/cdn/xumm.min.js';
+          script.onload=resolve;script.onerror=()=>reject(Error('Existing Xaman session could not be loaded'));
+          document.head.append(script);
+        });
+      }
+      if(window.Xumm){
+        const xumm=new Xumm('eebd4c17-c3ef-435b-b891-89afb99e259e');
+        auth=await Promise.race([Promise.resolve(xumm.environment.bearer),new Promise(resolve=>setTimeout(()=>resolve(''),4000))]);
+      }
+      if(!auth)throw Error('Private video access requires an existing authorized session. No additional wallet authorization has been requested.');
+      playbackUrl=await requestPlayback(auth);
+    }
+    player.src=playbackUrl;
+    message.textContent='';statusEl.textContent='Video ready';
+    // Reuse the Reader's existing Learn & Earn action endpoint after viewing.
+    // Prevent duplicate local read events for this playback.
+    let rewarded=false;
+    player.addEventListener('ended',()=>{
+      if(rewarded)return;rewarded=true;
+      trackLearnAction('read',`read-${submissionId}`);
+      showToast('🏆 Watch reward recorded! CFC incoming.');
+      statusEl.textContent='Video completed';
+      if(videoLearn.childElementCount){
+        videoLearn.hidden=false;
+        videoLearn.scrollIntoView({behavior:'smooth',block:'start'});
+      }
+    });
+    player.addEventListener('error',()=>{statusEl.textContent='Video playback could not be loaded. Please reopen the video.';});
+  }catch(e){
+    statusEl.textContent='Unable to play private video';
+    message.textContent=e.message||'Private video access unavailable';
+  }
+}
+
 // ===== MAIN INIT =====
 (async function init(){
   const statusEl = document.getElementById("status");
@@ -968,6 +1076,12 @@ requestAnimationFrame(() => {
 });
   }catch(e){
     console.warn("Metadata load failed:",e);
+  }
+
+  // Only private videos use signed playback. Article/book HTML paths stay unchanged.
+  if(meta?.category==='video' && meta?.video?.storage==='pinata-private'){
+    await loadAbaPrivateVideo(meta.video,statusEl,content);
+    return;
   }
 
   // Load content HTML
