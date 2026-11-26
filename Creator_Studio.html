@@ -1714,40 +1714,12 @@ function abaVideoStatus(message,isError=false){const el=document.getElementById(
 function abaVideoReset(){
   if(abaVideoState.objectUrl)URL.revokeObjectURL(abaVideoState.objectUrl);
   abaVideoState={id:null,cid:null,file:null,objectUrl:null,uploading:false};
+  // Content state is shared with the existing wizard's review and progress handling.
+  if(abaIsVideo()) contentCid='';
   const player=document.getElementById('aba-video-player');player.pause();player.removeAttribute('src');player.load();
   document.getElementById('aba-video-preview').hidden=true;
   document.getElementById('content-file-name').textContent='';
   document.getElementById('content-file-input').value='';
-}
-// Video-only access: reuse the Xaman session already established for Creator Studio.
-// Never create a second Xaman sign-in, popup, or Ideas & Research login.
-async function abaVideoAuth(){
-  if(!creatorWallet) throw Error('Connect your wallet using Creator Studio before uploading.');
-
-  // The SDK restores existing Xaman sessions asynchronously on page load.
-  // The bearer comes from that existing session, not from a new authorize() call.
-  const xumm=getXumm();
-  let bearer=null;
-  try {
-    bearer=await Promise.race([
-      Promise.resolve(xumm.environment.bearer),
-      new Promise(resolve=>setTimeout(()=>resolve(null),20000))
-    ]);
-  } catch(e) { console.warn('Existing Xaman session unavailable:', e); }
-  if(typeof bearer==='string' && bearer.split('.').length===3) return bearer;
-
-  // Reuse an existing valid Ideas & Research session if one was already created.
-  // This does not start a new authorization or change the Ideas workflow.
-  const old=(sessionStorage.getItem('aba_ideas_wallet')===creatorWallet)
-    ? sessionStorage.getItem('aba_ideas_token') : null;
-  const token=abaIrState.token || old;
-  if(token){
-    const response=await fetch(ABA_IR_API+'/records',{
-      headers:{Authorization:'Bearer '+token},signal:AbortSignal.timeout(10000)
-    }).catch(()=>null);
-    if(response?.ok) return token;
-  }
-  throw Error('Your current Xaman session is not available. Use the existing Connect Wallet button to connect your wallet.');
 }
 async function abaVideoUpload(file){
   if(abaVideoState.uploading){abaVideoStatus('The previous video upload is still in progress.',true);return;}
@@ -1767,19 +1739,27 @@ async function abaVideoUpload(file){
     });
     if(!Number.isFinite(seconds)||seconds<=0||seconds>300)throw Error('Video must be 5 minutes or less.');
   }catch(e){URL.revokeObjectURL(url);abaVideoStatus(e.message,true);return;}
+  // Use the same connected wallet already established at the wizard's first step.
+  // Do not request a new Xaman session or invoke any wallet authentication here.
+  const wallet=creatorWallet;
+  if(!/^r[1-9A-HJ-NP-Za-km-z]{25,34}$/.test(wallet)){
+    URL.revokeObjectURL(url);
+    abaVideoStatus('Connect your wallet in the existing Creator Studio first.',true);
+    return;
+  }
   abaVideoState.file=file;abaVideoState.objectUrl=url;abaVideoState.uploading=true;
   document.getElementById('content-file-name').textContent=file.name;
   const bar=document.getElementById('content-progress');bar.style.display='block';
   const fill=document.getElementById('content-progress-bar');fill.style.width='20%';
   abaVideoStatus('Uploading video privately to Pinata...');
   try{
-    const videoToken=await abaVideoAuth();
     const result=await fetch(ABA_VIDEO_API+'/upload',{
-      method:'POST',headers:{Authorization:'Bearer '+videoToken,'Content-Type':'video/mp4','X-Video-Filename':file.name,'X-Video-Wallet':creatorWallet},body:file
+      method:'POST',headers:{'Content-Type':'video/mp4','X-Video-Filename':file.name,'X-Video-Wallet':wallet},body:file
     });
     const data=await result.json().catch(()=>({}));
     if(!result.ok||!data.id||!data.cid||data.private!==true)throw Error(data.error||'Private video upload failed.');
     abaVideoState.id=data.id;abaVideoState.cid=data.cid;
+    contentCid=data.cid; // Existing wizard review uses this to recognize uploaded content.
     fill.style.width='100%';
     const player=document.getElementById('aba-video-player');player.src=url;
     document.getElementById('aba-video-preview').hidden=false;
