@@ -857,20 +857,20 @@ Edit Profile
 <!-- STEP 1: UPLOAD IMAGE -->
 <div class="step-panel" id="step-1">
 <div class="step-heading">Upload Content Cover Image</div>
-<div class="form-group"><label class="form-label" for="aba-ir-early-type">Choose Content Type</label><select class="form-input" id="aba-ir-early-type" onchange="document.getElementById('nft-category').value=this.value;abaIrCategoryChanged()">
-<option value="book">Book</option><option value="article">Article</option><option value="workshop">Workshop</option><option value="service">Service</option><option value="art">Art</option><option value="idea">Idea</option><option value="research">Research</option><option value="video">Video</option>
+<div class="form-group"><label class="form-label" for="aba-ir-early-type">Choose Your Content Type (Required)</label><p class="form-hint" style="margin-bottom:.5rem;">Select the type of content you want to tokenize.</p><select class="form-input" id="aba-ir-early-type" onchange="abaCreatorTypeChosen(this.value)">
+<option value="" selected disabled>Select a content type...</option><option value="book">Book</option><option value="article">Article</option><option value="workshop">Workshop</option><option value="service">Service</option><option value="art">Art</option><option value="idea">Idea</option><option value="research">Research</option><option value="video">Video</option>
 </select></div>
 <div id="aba-ir-cover-choice" hidden style="margin-bottom:1rem;">
-<label class="form-label" for="aba-ir-cover-mode">Choose Cover Image Design</label>
+<label class="form-label" for="aba-ir-cover-mode">Choose Your Cover Image Option (Required)</label>
 <div class="aba-ir-clarity">Required: Choose to upload your own cover image or generate one from text.</div>
-<select class="form-input" id="aba-ir-cover-mode" onchange="abaIrCoverModeChanged()"><option value="upload">Upload an image</option><option value="text">Generate a cover from text</option></select>
+<select class="form-input" id="aba-ir-cover-mode" onchange="abaIrCoverModeChanged()"><option value="" selected disabled>Select a cover option...</option><option value="upload">Upload an image</option><option value="text">Generate a cover from text</option></select>
 <p class="form-hint">Uploaded images must be 400 × 400 pixels. Maximum 2 MB. JPG, PNG or GIF.</p>
 <div id="aba-ir-cover-text-fields" hidden style="margin-top:.8rem;">
 <input class="form-input" id="aba-ir-cover-text" maxlength="120" placeholder="Text to appear on your cover" oninput="abaIrRenderCover()"/>
 <canvas id="aba-ir-cover-canvas" width="400" height="400" style="width:200px;max-width:100%;display:block;margin-top:.8rem;border:1px solid #385c70"></canvas>
 </div></div>
-<p id="standard-cover-guidance" class="step-desc">Required: Upload your cover image. Images must be 400 × 400 pixels. Maximum 2 MB. JPG, PNG or GIF.</p>
-<div class="upload-zone" id="img-upload-zone" onclick="document.getElementById('img-file-input').click()">
+<p id="standard-cover-guidance" class="step-desc">Upload Your Cover Image or Artwork (Required). This image represents your content in the Knowledge Library. For Art, upload an image of your actual artwork. Images must be 400 × 400 pixels. Maximum 2 MB. JPG, PNG or GIF.</p>
+<div class="upload-zone" id="img-upload-zone" onclick="if(abaCreatorCoverUploadAllowed())document.getElementById('img-file-input').click()">
 <input accept="image/*" id="img-file-input" onchange="handleImageUpload(event)" style="display:none" type="file"/>
 <div class="upload-icon">🖼</div>
 <h4>Drag and drop your image here</h4>
@@ -893,7 +893,7 @@ Edit Profile
 <div class="step-panel" id="step-2">
 <div class="step-heading">Upload Content File <span style="color:var(--text-dim);font-weight:400;font-size:0.85rem;">(Optional)</span></div>
 <div id="aba-content-type-guidance" class="form-hint" style="margin-bottom:0.8rem;">Upload your content as a Word document.</div>
-<p (.docx)="" a="" agent="" ai="" as="" be="" cfc="" class="step-desc" content="" content.="" customized="" document="" embedded="" into="" on="" only.="" reader="" specifically="" the="" this="" trained="" upload="" will="" with="" word="" your=""> Skip this step for Art, Workshops, and Services.</p>
+<p (.docx)="" a="" agent="" ai="" as="" be="" cfc="" class="step-desc" content="" content.="" customized="" document="" embedded="" into="" on="" only.="" reader="" specifically="" the="" this="" trained="" upload="" will="" with="" word="" your="">For Art, you can skip this step.</p>
 <div id="aba-ir-idea-entry" hidden style="margin-bottom:1rem;"><label class="form-label" for="aba-ir-idea-text">Enter your Idea (or upload a Word document below)</label><textarea class="form-input" id="aba-ir-idea-text" rows="9" maxlength="500000" placeholder="Write your original idea here..."></textarea></div>
 <div class="upload-zone" id="content-upload-zone" onclick="document.getElementById('content-file-input').click()">
 <input accept=".docx,.pdf,.txt" id="content-file-input" onchange="handleContentUpload(event)" style="display:none" type="file"/>
@@ -1009,6 +1009,7 @@ Edit Profile
 <option value="Chapter">Books / Courses (Chapters)</option>
 <option value="Section">Long Articles / Workshops (Sections)</option>
 <option value="Short">Short Content / Art (Single Section)</option>
+<option value="Video">Video (Questions After Viewing)</option>
 </select>
 </div>
 <div id="chapterContainer">
@@ -1030,7 +1031,7 @@ Edit Profile
 <p class="step-desc">Review your details before submitting.</p>
 <div id="review-content"></div>
 <div class="alert alert-info" id="aba-ir-submit-status" hidden role="status" aria-live="polite"></div>
-<div id="aba-ir-completion-links" hidden><p>Tokenization complete! Your NFT is verified on XRPL.</p><a href="/Knowledge_Library?view=my-library">View My Library</a></div>
+<div id="aba-ir-completion-links" hidden><p>Tokenization Complete! Your digital asset has been successfully tokenized and verified on XRPL.</p><a href="/Knowledge_Library?view=my-library">View My Library</a><a href="/Creator_Studio#creator-studio">Create Another</a></div>
 <div id="aba-ir-signing" hidden style="margin:1rem 0;padding:1rem;border:1px solid #386176;border-radius:8px;">
 <p id="aba-ir-sign-label">Approve in Xaman</p><div id="aba-ir-qr"></div>
 </div>
@@ -1144,7 +1145,11 @@ Edit Profile
 <div class="success-icon" id="success-icon">🎉</div>
 <div class="modal-title" id="success-title">Success!</div>
 <p class="modal-sub" id="success-msg">Operation completed successfully.</p>
-<button class="btn-full-outline" onclick="closeModal('success-modal');loadDashboard();">Done</button>
+<div id="aba-tokenization-complete-actions" hidden style="display:none;gap:.65rem;justify-content:center;flex-wrap:wrap;">
+<a class="btn-full-outline" href="/Knowledge_Library?view=my-library" style="display:inline-block;width:auto;text-decoration:none;">View My Library</a>
+<button class="btn-full-outline" type="button" onclick="window.location.href='/Creator_Studio#creator-studio'" style="width:auto;">Create Another</button>
+</div>
+<button id="aba-success-default-done" class="btn-full-outline" onclick="closeModal('success-modal');loadDashboard();">Done</button>
 </div>
 </div>
 <script>
@@ -1487,12 +1492,13 @@ document.getElementById('img-upload-zone').addEventListener('drop', (e)=>{
   e.preventDefault();
   document.getElementById('img-upload-zone').classList.remove('dragover');
   const file = e.dataTransfer.files[0];
-  if(file) processImageFile(file);
+  if(file && abaCreatorCoverUploadAllowed()) processImageFile(file);
 });
 
 async function handleImageUpload(event){
   const file = event.target.files[0];
-  if(file) processImageFile(file);
+  if(file && abaCreatorCoverUploadAllowed()) processImageFile(file);
+  else if(file) event.target.value='';
 }
 async function optimizeImage(file) {
 
@@ -1635,6 +1641,8 @@ fileName.textContent = optimizedFile.name;
 
 }
 function step1Next(){
+  if(!abaCreatorTypeConfirmed || !document.getElementById('aba-ir-early-type').value){abaCreatorCoverUploadAllowed();return;}
+  if(abaIrSelected() && !document.getElementById('aba-ir-cover-mode').value){abaCreatorCoverUploadAllowed();return;}
   if(abaIrSelected()){ if(!abaIrCoverReady()){ alert("Upload an image or generate a text cover before continuing."); return; } goToStep(2); return; }
   if(!imageCid){ return; }
   goToStep(2);
@@ -1751,7 +1759,7 @@ async function abaVideoUpload(file){
   document.getElementById('content-file-name').textContent=file.name;
   const bar=document.getElementById('content-progress');bar.style.display='block';
   const fill=document.getElementById('content-progress-bar');fill.style.width='20%';
-  abaVideoStatus('Uploading video privately to Pinata...');
+  abaVideoStatus('Uploading your video...');
   try{
     const result=await fetch(ABA_VIDEO_API+'/upload',{
       method:'POST',headers:{'Content-Type':'video/mp4','X-Video-Filename':file.name,'X-Video-Wallet':wallet},body:file
@@ -1763,7 +1771,7 @@ async function abaVideoUpload(file){
     fill.style.width='100%';
     const player=document.getElementById('aba-video-player');player.src=url;
     document.getElementById('aba-video-preview').hidden=false;
-    abaVideoStatus('Private video uploaded successfully. Continue to Content Details.');
+    abaVideoStatus('Video uploaded successfully. Continue to Content Details.');
   }catch(e){abaVideoStatus(e.message,true);fill.style.width='0%';}
   finally{abaVideoState.uploading=false;}
 }
@@ -2485,8 +2493,12 @@ function confirmSigned(uuid, callback){
 
 // ── SUCCESS MODAL ──
 function showSuccess(icon, msg){
+  const isListed = String(msg).includes('Sell Offers') && String(msg).includes('confirmed');
+  const actions = document.getElementById('aba-tokenization-complete-actions');
+  actions.hidden = !isListed; actions.style.display = isListed ? 'flex' : 'none';
+  document.getElementById('aba-success-default-done').style.display = isListed ? 'none' : 'block';
+  document.getElementById('success-title').textContent = isListed ? 'Tokenization Complete!' : 'Success!';
   document.getElementById('success-icon').innerHTML = icon;
-  document.getElementById('success-title').textContent = 'Success!';
   document.getElementById('success-msg').textContent = msg.replace(/<[^>]*>/g,'');
   openModal('success-modal');
 }
@@ -2511,7 +2523,7 @@ function resetLearnBuilder() {
   document.querySelectorAll('.structureLabel').forEach(el => el.textContent = type);
   
   // Hide "Add More" button if it's Short Content
-  addBtn.style.display = (type === "Short") ? "none" : "block";
+  addBtn.style.display = (type === "Short" || type === "Video") ? "none" : "block";
   
   document.getElementById('chapterContainer').innerHTML = '';
   chapterCount = 0;
@@ -2521,7 +2533,7 @@ function resetLearnBuilder() {
 function addChapterUI() {
   chapterCount++;
   const type = document.getElementById('structureType').value;
-  const label = (type === "Short") ? "QUESTIONS" : `${type.toUpperCase()} ${chapterCount}`;
+  const label = (type === "Short" || type === "Video") ? "QUESTIONS" : `${type.toUpperCase()} ${chapterCount}`;
   
   const html = `
     <div class="chapter-card" style="border-bottom:1px solid var(--border); padding-bottom:1rem; margin-bottom:1.5rem;">
@@ -2535,7 +2547,7 @@ function addChapterUI() {
 
 function syncAndContinue() {
   const typeSelection = document.getElementById('structureType').value;
-  const typeLabel = (typeSelection === "Short") ? "Section" : typeSelection; 
+  const typeLabel = (typeSelection === "Short" || typeSelection === "Video") ? "Section" : typeSelection; 
   const inputs = document.querySelectorAll('.q-input');
   let finalString = "";
   let lastCh = 0;
@@ -2570,6 +2582,26 @@ const ABA_IR_API = 'https://aba-tik-ideas-research-backend.onrender.com/api/idea
 const abaIrState = {image:null, file:null, token:'', recordId:'', phase:'new', signingUrl:'', pollBusy:false, mintPollTimer:null};
 const abaIrOriginalStep2Heading = document.getElementById('step-2').querySelector('.step-heading').innerHTML;
 function abaIrEl(id){return document.getElementById(id)}
+// Step 2: require a deliberate content type and, for Ideas/Research, cover mode choice.
+let abaCreatorTypeConfirmed = false;
+function abaCreatorTypeChosen(value){
+  abaCreatorTypeConfirmed = !!value;
+  if(!value)return;
+  abaIrEl('nft-category').value=value;
+  if(value==='idea'||value==='research')abaIrEl('aba-ir-cover-mode').value='';
+  abaIrCategoryChanged();
+}
+function abaCreatorCoverUploadAllowed(){
+  const status=abaIrEl('img-upload-status');
+  let message='';
+  if(!abaCreatorTypeConfirmed || !abaIrEl('aba-ir-early-type').value)message='Please select your content type before uploading an image.';
+  else if(abaIrSelected() && !abaIrEl('aba-ir-cover-mode').value)message='Please choose a cover image option before uploading an image.';
+  else if(abaIrSelected() && abaIrEl('aba-ir-cover-mode').value==='text')message='Use the text cover option above, or select Upload an image.';
+  if(message){status.className='alert alert-error';status.textContent=message;status.style.display='block';return false;}
+  if(status.classList.contains('alert-error') && status.textContent.startsWith('Please '))status.style.display='none';
+  return true;
+}
+
 function abaIrSelected(){return ['idea','research'].includes(abaIrEl('nft-category').value)}
 function abaIrShow(id, yes){const el=abaIrEl(id); if(el)el.hidden=!yes}
 function abaIrStatus(message, bad=false){const el=abaIrEl('aba-ir-submit-status');el.hidden=false;el.textContent=message;el.className='alert '+(bad?'alert-error':'alert-info')}
@@ -2593,7 +2625,8 @@ function abaIrCategoryChanged(){
   if(guidance) guidance.textContent=isVideo?'Required: Upload your MP4 video privately (maximum 5 minutes).':kind==='idea'?'Required: Enter your idea or upload a Word document.':kind==='research'?'Required: Upload your research as a Word document.':(kind==='article'||kind==='book')?'Upload your content as a Word document.':'Optional: Upload a content file, or continue without one.';
  abaIrEl('creator-studio').classList.toggle('aba-ir-visual-mode',enabled);
  abaIrShow('aba-ir-cover-choice',enabled);
- abaIrShow('standard-cover-guidance',!enabled);
+ abaIrShow('standard-cover-guidance',true);
+ abaIrEl('standard-cover-guidance').textContent=enabled?'Upload Your Cover Image or Artwork (Required). Choose to upload an image or generate a cover from text. This image represents your content in the Knowledge Library. Uploaded images must be 400 × 400 pixels, maximum 2 MB.':'Upload Your Cover Image or Artwork (Required). This image represents your content in the Knowledge Library. For Art, upload an image of your actual artwork. Images must be 400 × 400 pixels. Maximum 2 MB. JPG, PNG or GIF.';
  if(!enabled){
    abaIrShow('img-upload-zone',true);
    abaIrShow('aba-ir-cover-text-fields',false);
@@ -2607,8 +2640,9 @@ function abaIrCategoryChanged(){
  const qty=abaIrEl('nft-qty').closest('.form-group');qty.style.display=enabled?'none':'';
  abaIrEl('nft-ai-enabled').checked=!enabled;
  abaIrEl('enableLearn').checked=!enabled;
+ if(isVideo){abaIrEl('structureType').value='Video';resetLearnBuilder();}
  abaIrEl('aba-ir-learn-label').textContent=enabled?'Include optional questions with this content (no Learn & Earn reward)':'Enable Learn & Earn rewards';
- abaIrEl('step1-next').disabled=enabled?!abaIrCoverReady():!imageCid;
+ abaIrEl('step1-next').disabled=!abaCreatorTypeConfirmed || (enabled?!abaIrCoverReady():!imageCid);
  if(enabled)abaIrEl('step-2').querySelector('.step-heading').textContent=research?'Upload Research Word Document':'Enter an Idea or Upload Word Document';else if(isVideo)abaIrEl('step-2').querySelector('.step-heading').textContent='Upload Video';else abaIrEl('step-2').querySelector('.step-heading').innerHTML=abaIrOriginalStep2Heading;
  abaIrEl('step-3').querySelector('.step-desc').textContent=enabled?'Describe your original work. Privacy settings apply only to Ideas and Research.':'Fill in the details for your Digital Asset. This information will be displayed in the marketplace.';
  abaIrEl('step-4').querySelector('.step-desc').textContent=enabled?'No AI Agent setup is needed for Ideas and Research.':'Each content digital asset comes with an embedded AI Agent trained on your content.';
@@ -2627,7 +2661,7 @@ function abaIrCoverModeChanged(){const en=abaIrSelected();if(!en){
  }
  const text=abaIrEl('aba-ir-cover-mode').value==='text';abaIrShow('aba-ir-cover-text-fields',text);
  abaIrShow('img-upload-zone',!text);abaIrShow('img-preview-area',!text && !!abaIrState.image);
- if(text)abaIrRenderCover();abaIrEl('step1-next').disabled=!abaIrCoverReady();
+ if(text)abaIrRenderCover();abaIrEl('step1-next').disabled=!abaCreatorTypeConfirmed || !abaIrEl('aba-ir-cover-mode').value || !abaIrCoverReady();
 }
 function abaIrRenderCover(){const canvas=abaIrEl('aba-ir-cover-canvas');if(!canvas)return;
  const c=canvas.getContext('2d');c.fillStyle='#081b30';c.fillRect(0,0,400,400);c.strokeStyle='#7ec8e8';c.lineWidth=3;c.strokeRect(16,16,368,368);
@@ -2636,9 +2670,10 @@ function abaIrRenderCover(){const canvas=abaIrEl('aba-ir-cover-canvas');if(!canv
  c.fillStyle='#fff';c.font='bold 28px sans-serif';for(const word of words){const next=(line+' '+word).trim();if(c.measureText(next).width>320&&line){lines.push(line);line=word}else line=next}if(line)lines.push(line);
  lines.slice(0,7).forEach((part,i)=>c.fillText(part,200,Math.max(120,200-(Math.min(lines.length,7)-1)*17)+i*34,330));
 
- abaIrEl('step1-next').disabled=!abaIrCoverReady();
+ abaIrEl('step1-next').disabled=!abaCreatorTypeConfirmed || !abaIrCoverReady();
 }
 function abaIrCoverReady(){if(!abaIrSelected())return !!imageCid;
+ if(!abaIrEl('aba-ir-cover-mode').value)return false;
  return abaIrEl('aba-ir-cover-mode').value==='text'?!!abaIrEl('aba-ir-cover-text').value.trim():!!abaIrState.image}
 async function abaIrImageFile(file){
  const status=abaIrEl('img-upload-status');try{
@@ -2647,7 +2682,7 @@ async function abaIrImageFile(file){
  abaIrState.image={mime:'image/jpeg',base64:data};
  abaIrEl('img-preview').src='data:image/jpeg;base64,'+data;abaIrEl('img-preview-area').style.display='block';
  abaIrEl('img-file-name').textContent=file.name;status.className='alert alert-success';status.textContent='Cover ready (stored privately until submission).';status.style.display='block';
- abaIrEl('step1-next').disabled=false;
+ abaIrEl('step1-next').disabled=!abaCreatorTypeConfirmed;
  }catch(e){status.className='alert alert-error';status.textContent=e.message;status.style.display='block'}
 }
 async function abaIrContentFile(file){const status=abaIrEl('content-upload-status');
@@ -2795,6 +2830,8 @@ loadDashboard=async function(...args){
 
 // Reapply chosen type when returning to earlier wizard steps. No extra creator mode.
 abaIrCategoryChanged();
+abaIrEl('aba-ir-early-type').value='';
+abaIrEl('step1-next').disabled=true;
 
 </script>
 <script>
