@@ -1719,53 +1719,35 @@ function abaVideoReset(){
   document.getElementById('content-file-name').textContent='';
   document.getElementById('content-file-input').value='';
 }
-// Video uploads reuse the existing Xaman OAuth authorization, without creating
-// a second SignIn transaction or changing Ideas & Research authentication.
+// Video-only access: reuse the Xaman session already established for Creator Studio.
+// Never create a second Xaman sign-in, popup, or Ideas & Research login.
 async function abaVideoAuth(){
-  if(!creatorWallet)throw Error('Connect your Xaman wallet before uploading a video.');
-  // Use the wallet session already established by Creator Studio. Never launch
-  // a second SignIn transaction or an additional Xaman authorization prompt.
-  const savedToken=abaIrState.token || (
-    sessionStorage.getItem('aba_ideas_wallet')===creatorWallet
-      ? sessionStorage.getItem('aba_ideas_token') : null
-  );
-  if(savedToken){
-    try{
-      const response=await fetch(ABA_IR_API+'/records',{
-        headers:{Authorization:'Bearer '+savedToken},
-        signal:AbortSignal.timeout(10000)
-      });
-      if(response.ok){abaIrState.token=savedToken;return savedToken;}
-    }catch{}
-    abaIrState.token='';
-    sessionStorage.removeItem('aba_ideas_token');
-    sessionStorage.removeItem('aba_ideas_wallet');
-  }
-  // Xaman SDK can expose the existing OAuth bearer without opening a new window.
-  // Exchange it through the backend's ALREADY EXISTING auth/existing-wallet route.
+  if(!creatorWallet) throw Error('Connect your wallet using Creator Studio before uploading.');
+
+  // The SDK restores existing Xaman sessions asynchronously on page load.
+  // The bearer comes from that existing session, not from a new authorize() call.
   const xumm=getXumm();
   let bearer=null;
-  try{bearer=await Promise.race([
-    Promise.resolve(xumm.environment.bearer),
-    new Promise(resolve=>setTimeout(()=>resolve(null),8000))
-  ]);}catch{}
-  if(bearer){
-    const response=await fetch(ABA_IR_API+'/auth/existing-wallet',{
-      method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({xaman_bearer:bearer}),
-      signal:AbortSignal.timeout(10000)
-    });
-    const result=await response.json().catch(()=>({}));
-    if(response.ok && result.token && result.wallet===creatorWallet){
-      abaIrState.token=result.token;
-      sessionStorage.setItem('aba_ideas_token',result.token);
-      sessionStorage.setItem('aba_ideas_wallet',creatorWallet);
-      return result.token;
-    }
+  try {
+    bearer=await Promise.race([
+      Promise.resolve(xumm.environment.bearer),
+      new Promise(resolve=>setTimeout(()=>resolve(null),20000))
+    ]);
+  } catch(e) { console.warn('Existing Xaman session unavailable:', e); }
+  if(typeof bearer==='string' && bearer.split('.').length===3) return bearer;
+
+  // Reuse an existing valid Ideas & Research session if one was already created.
+  // This does not start a new authorization or change the Ideas workflow.
+  const old=(sessionStorage.getItem('aba_ideas_wallet')===creatorWallet)
+    ? sessionStorage.getItem('aba_ideas_token') : null;
+  const token=abaIrState.token || old;
+  if(token){
+    const response=await fetch(ABA_IR_API+'/records',{
+      headers:{Authorization:'Bearer '+token},signal:AbortSignal.timeout(10000)
+    }).catch(()=>null);
+    if(response?.ok) return token;
   }
-  // A wallet address restored from localStorage is not proof of wallet control.
-  // Never bypass private-video access controls or initiate another sign-in here.
-  throw Error('The current Xaman wallet connection has no valid authorization session. Reconnect using the existing Connect Wallet button, then retry.');
+  throw Error('Your current Xaman session is not available. Use the existing Connect Wallet button to connect your wallet.');
 }
 async function abaVideoUpload(file){
   if(abaVideoState.uploading){abaVideoStatus('The previous video upload is still in progress.',true);return;}
@@ -1789,11 +1771,11 @@ async function abaVideoUpload(file){
   document.getElementById('content-file-name').textContent=file.name;
   const bar=document.getElementById('content-progress');bar.style.display='block';
   const fill=document.getElementById('content-progress-bar');fill.style.width='20%';
-  abaVideoStatus('Verifying Xaman wallet and uploading video privately to Pinata...');
+  abaVideoStatus('Uploading video privately to Pinata...');
   try{
     const videoToken=await abaVideoAuth();
     const result=await fetch(ABA_VIDEO_API+'/upload',{
-      method:'POST',headers:{Authorization:'Bearer '+videoToken,'Content-Type':'video/mp4','X-Video-Filename':file.name},body:file
+      method:'POST',headers:{Authorization:'Bearer '+videoToken,'Content-Type':'video/mp4','X-Video-Filename':file.name,'X-Video-Wallet':creatorWallet},body:file
     });
     const data=await result.json().catch(()=>({}));
     if(!result.ok||!data.id||!data.cid||data.private!==true)throw Error(data.error||'Private video upload failed.');
