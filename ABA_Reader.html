@@ -1024,39 +1024,95 @@ async function loadAbaPrivateVideo(videoRecord, statusEl, contentEl){
   const pager=document.querySelector('.pagerbar');if(pager)pager.style.display='none';
   document.getElementById('pageInfo').textContent='Video';
   let playbackUrl='';
-  try{
-    let auth=sessionStorage.getItem('aba_tik_ideas_wallet_session')||'';
-    // Reuse an existing Xaman session if present; never start a new sign-in.
-    // The video service also accepts the original Ideas & Research session token.
-    async function requestPlayback(token){
-      const response=await fetch(ABA_PRIVATE_VIDEO_API+'/'+encodeURIComponent(id)+'/playback',{
-        headers:{Authorization:'Bearer '+token,...(wallet?{'X-Video-Wallet':wallet}:{})},cache:'no-store'
-      });
-      const data=await response.json().catch(()=>({}));
-      if(!response.ok||!data.url)throw Error(data.error||'Video access unavailable');
-      return data.url;
+  const XAMAN_APP_ID='eebd4c17-c3ef-435b-b891-89afb99e259e';
+  // Preserve the original Reader's new-tab video flow. A remembered wallet
+  // address is not proof of an active Xaman OAuth session.
+  async function requestPlayback(token){
+    const response=await fetch(ABA_PRIVATE_VIDEO_API+'/'+encodeURIComponent(id)+'/playback',{
+      headers:{Authorization:'Bearer '+token,...(wallet?{'X-Video-Wallet':wallet}:{})},cache:'no-store'
+    });
+    const data=await response.json().catch(()=>({}));
+    if(!response.ok||!data.url){
+      const error=new Error(data.error||'Video access unavailable');
+      error.httpStatus=response.status;
+      throw error;
     }
+    return data.url;
+  }
+  async function existingXamanBearer(){
+    if(!window.Xumm){
+      await new Promise((resolve,reject)=>{
+        const script=document.createElement('script');
+        script.src='https://xumm.app/assets/cdn/xumm.min.js';
+        script.onload=resolve;script.onerror=()=>reject(Error('Xaman could not be loaded'));
+        document.head.append(script);
+      });
+    }
+    if(!window.Xumm)throw Error('Xaman could not be loaded');
+    const xumm=new Xumm(XAMAN_APP_ID);
+    const bearer=await Promise.race([
+      Promise.resolve(xumm.environment.bearer).catch(()=>''),
+      new Promise(resolve=>setTimeout(()=>resolve(''),4000))
+    ]);
+    return {xumm,bearer:bearer||''};
+  }
+  try{
+    // A valid existing Ideas & Research session works without any new prompt.
+    let auth=sessionStorage.getItem('aba_tik_ideas_wallet_session')||'';
     if(auth){
-      try{playbackUrl=await requestPlayback(auth);}catch(e){if(!/session|unauthoriz|expired|invalid|401/i.test(e.message))throw e;auth='';}
+      try{playbackUrl=await requestPlayback(auth);}
+      catch(error){
+        if(error.httpStatus!==401)throw error;
+        sessionStorage.removeItem('aba_tik_ideas_wallet_session');
+      }
+    }
+    let xumm;
+    if(!playbackUrl){
+      const existing=await existingXamanBearer();
+      xumm=existing.xumm;
+      if(existing.bearer){
+        try{playbackUrl=await requestPlayback(existing.bearer);}
+        catch(error){if(error.httpStatus!==401)throw error;}
+      }
     }
     if(!playbackUrl){
-      if(!window.Xumm){
-        await new Promise((resolve,reject)=>{
-          const script=document.createElement('script');
-          script.src='https://xumm.app/assets/cdn/xumm.min.js';
-          script.onload=resolve;script.onerror=()=>reject(Error('Existing Xaman session could not be loaded'));
-          document.head.append(script);
-        });
-      }
-      if(window.Xumm){
-        const xumm=new Xumm('eebd4c17-c3ef-435b-b891-89afb99e259e');
-        auth=await Promise.race([Promise.resolve(xumm.environment.bearer),new Promise(resolve=>setTimeout(()=>resolve(''),4000))]);
-      }
-      if(!auth)throw Error('Video access requires an existing authorized session. No additional wallet authorization has been requested.');
-      playbackUrl=await requestPlayback(auth);
+      // Xaman OAuth may expire while My Library still shows the saved address.
+      // Do not pretend the address is authorization or request a transaction.
+      // Browser popup policies require renewal from a real user click.
+      statusEl.textContent='Video authorization needed';
+      message.textContent='Continue with your connected Xaman wallet to play this video.';
+      const resume=document.createElement('button');
+      resume.type='button';resume.className='cfc-learn-btn';
+      resume.textContent='Continue to Video';
+      contentEl.insertBefore(resume,videoLearn);
+      resume.addEventListener('click',async()=>{
+        resume.disabled=true;
+        statusEl.textContent='Opening video...';
+        message.textContent='Restoring Xaman authorization...';
+        try{
+          if(!xumm){const restored=await existingXamanBearer();xumm=restored.xumm;}
+          const state=await xumm.authorize();
+          const verified=state?.me?.account||await Promise.resolve(xumm.user.account).catch(()=>'');
+          if(!verified || (wallet && verified!==wallet)){
+            throw Error('The authorized Xaman wallet must match the wallet used in My Library.');
+          }
+          const bearer=await Promise.resolve(xumm.environment.bearer);
+          if(!bearer)throw Error('Xaman authorization was not completed. Please try again.');
+          const url=await requestPlayback(bearer);
+          resume.remove();
+          player.src=url;
+          message.textContent='';statusEl.textContent='Video ready';
+        }catch(error){
+          statusEl.textContent='Unable to open video';
+          message.textContent=error.message||'Xaman authorization could not be completed.';
+          resume.disabled=false;
+        }
+      });
     }
+    if(playbackUrl){
     player.src=playbackUrl;
     message.textContent='';statusEl.textContent='Video ready';
+    }
     // Reuse the Reader's existing Learn & Earn action endpoint after viewing.
     // Prevent duplicate local read events for this playback.
     let rewarded=false;
