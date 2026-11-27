@@ -1056,6 +1056,36 @@ async function loadAbaPrivateVideo(videoRecord, statusEl, contentEl){
     ]);
     return {xumm,bearer:bearer||''};
   }
+  // Before any Xaman prompt, ask the My Library tab that opened this Reader
+  // for the authorization it already holds. The token never enters the URL.
+  async function existingLibraryBearer(){
+    const handoff=qp('video_session_handoff');
+    if(!handoff||!/^[0-9a-f-]{36}$/i.test(handoff))return '';
+    return await new Promise(resolve=>{
+      let completed=false;
+      let channel=null;try{if(typeof BroadcastChannel==='function')channel=new BroadcastChannel('aba-video-session-handoff');}catch(_){}
+      const finish=value=>{
+        if(completed)return;
+        completed=true;clearTimeout(timer);
+        window.removeEventListener('message',onMessage);
+        if(channel){channel.removeEventListener('message',onChannel);channel.close();}
+        resolve(value||'');
+      };
+      const valid=data=>data?.type==='aba-video-session-response' &&
+        data.handoff===handoff && data.wallet===wallet && typeof data.bearer==='string';
+      const onMessage=event=>{
+        if(event.origin===location.origin && event.source===window.opener && valid(event.data))finish(event.data.bearer);
+      };
+      const onChannel=event=>{if(valid(event.data))finish(event.data.bearer);};
+      const timer=setTimeout(()=>finish(''),6500);
+      window.addEventListener('message',onMessage);
+      if(channel)channel.addEventListener('message',onChannel);
+      const request={type:'aba-video-session-request',handoff};
+      try{window.opener?.postMessage(request,location.origin);}catch(_){}
+      if(channel)channel.postMessage(request);
+      if(!window.opener&&!channel)finish('');
+    });
+  }
   try{
     // A valid existing Ideas & Research session works without any new prompt.
     let auth=sessionStorage.getItem('aba_tik_ideas_wallet_session')||'';
@@ -1064,6 +1094,14 @@ async function loadAbaPrivateVideo(videoRecord, statusEl, contentEl){
       catch(error){
         if(error.httpStatus!==401)throw error;
         sessionStorage.removeItem('aba_tik_ideas_wallet_session');
+      }
+    }
+    // My Library may have an active Xaman bearer even when a new mobile tab does not.
+    if(!playbackUrl){
+      const libraryBearer=await existingLibraryBearer();
+      if(libraryBearer){
+        try{playbackUrl=await requestPlayback(libraryBearer);}
+        catch(error){if(error.httpStatus!==401)throw error;}
       }
     }
     let xumm;
