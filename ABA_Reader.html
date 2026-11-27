@@ -716,6 +716,48 @@ function submitLearnAnswer(id){
   setTimeout(()=>msg.remove(),6000);
 }
 
+// ===== MULTIPLE-CHOICE QUESTIONS (new publications only) =====
+function abaMcQuestions(){
+  return Array.isArray(meta?.learn?.multiple_choice) ? meta.learn.multiple_choice : [];
+}
+function abaMcBlock(questions){
+  const box=document.createElement('div');box.className='cfc-learn-box';
+  const title=document.createElement('strong');title.textContent='🏅 Interactive Activity — Answer to Claim CFC';box.append(title);
+  for(const q of questions){
+    const item=document.createElement('div');item.className='cfc-learn-item';
+    const prompt=document.createElement('div');prompt.textContent=q.prompt;item.append(prompt);
+    const group=document.createElement('div');group.style.cssText='display:grid;gap:.55rem;margin:.7rem 0';
+    const groupName=`aba-mc-${q.section}-${q.question}`;
+    for(let i=0;i<4;i++){
+      const label=document.createElement('label');label.style.cssText='display:flex;align-items:center;gap:.55rem;cursor:pointer;color:#E5E7EB';
+      const radio=document.createElement('input');radio.type='radio';radio.name=groupName;radio.value=String(i);
+      const caption=document.createElement('span');caption.textContent=`${'ABCD'[i]}. ${q.options[i]}`;
+      label.append(radio,caption);group.append(label);
+    }
+    const button=document.createElement('button');button.type='button';button.className='cfc-learn-btn';button.textContent='Claim CFC Reward';
+    const feedback=document.createElement('div');feedback.style.cssText='margin-top:.5rem;font-size:.9rem';
+    button.addEventListener('click',async()=>{
+      const answer=group.querySelector('input:checked');
+      if(!answer){feedback.textContent='Select an answer first.';return;}
+      if(!wallet || !submissionId){feedback.textContent='Connect your wallet to claim CFC tokens.';return;}
+      button.disabled=true;feedback.textContent='Checking answer...';
+      try{
+        const response=await fetch(`${CREATOR_BACKEND}/api/learn/track`,{
+          method:'POST',headers:{'Content-Type':'application/json'},
+          body:JSON.stringify({wallet,submission_id:submissionId,action_type:'activity',action_ref:`learn-mc-${q.section}-${q.question}`,answer_choice:Number(answer.value)})
+        });
+        const result=await response.json().catch(()=>({}));
+        if(!response.ok){feedback.textContent=result.error||'Answer verification failed.';button.disabled=false;return;}
+        if(result.correct===false){feedback.textContent='Not quite right. Try another answer.';button.disabled=false;return;}
+        feedback.textContent=result.already_recorded?'✅ Reward already claimed.':'✅ Correct! CFC reward recorded.';
+        group.querySelectorAll('input').forEach(input=>input.disabled=true);
+      }catch(e){feedback.textContent='Could not verify your answer. Please retry.';button.disabled=false;}
+    });
+    item.append(group,button,feedback);box.append(item);
+  }
+  return box;
+}
+
 // ===== PAGER =====
 function setupPager(){
   viewportEl = document.getElementById("pageViewport");
@@ -949,7 +991,9 @@ async function loadAbaPrivateVideo(videoRecord, statusEl, contentEl){
   // Reuse the existing article Learn & Earn input/button handler; reveal only after playback ends.
   const videoLearn = document.createElement('div');
   videoLearn.hidden = true;
-  if(meta?.learn?.enabled && meta?.learn?.content){
+  if(meta?.learn?.enabled && abaMcQuestions().length){
+    videoLearn.append(abaMcBlock(abaMcQuestions()));
+  } else if(meta?.learn?.enabled && meta?.learn?.content){
     const learnText = String(meta.learn.content);
     const lines = /Section\s+\d+/i.test(learnText)
       ? learnText.replace(/Section\s+\d+/gi, '').split(/\n+/)
@@ -1094,7 +1138,7 @@ requestAnimationFrame(() => {
     statusEl.textContent = "Content loaded";
 
   // Inject Learn & Earn
-if (meta.learn && meta.learn.enabled && meta.learn.content) {
+if (meta.learn && meta.learn.enabled && meta.learn.content && !abaMcQuestions().length) {
 
   const learnText = meta.learn.content;
 
@@ -1199,6 +1243,27 @@ if (meta.learn && meta.learn.enabled && meta.learn.content) {
 }
 
   content.innerHTML = html;
+  if(meta?.learn?.enabled && abaMcQuestions().length){
+    const questions=abaMcQuestions();
+    const type=String(meta.learn.content||'');
+    if(/\bSection\s+\d+/i.test(type) || !/\bChapter\s+\d+/i.test(type)){
+      content.append(abaMcBlock(questions));
+    }else{
+      const walker=document.createTreeWalker(content,NodeFilter.SHOW_TEXT);
+      const headings=[];let node;
+      while((node=walker.nextNode())){
+        const match=node.textContent.match(/\bChapter\s+(\d+)\b/i);
+        if(match)headings.push({node,number:Number(match[1])});
+      }
+      // Insert each chapter activity before the next chapter heading when possible.
+      for(const section of [...new Set(questions.map(q=>q.section))].reverse()){
+        const block=abaMcBlock(questions.filter(q=>q.section===section));
+        const next=headings[section];
+        if(next?.node?.parentElement){next.node.parentElement.before(block);}
+        else content.append(block);
+      }
+    }
+  }
     setupPager();
 
     // Restore AI button
