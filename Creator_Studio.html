@@ -1154,7 +1154,7 @@ Edit Profile
 </div>
 <script>
 // ── CONFIG ──
-const CREATOR_API = 'https://aba-tik-ideas-research-backend.onrender.com/creator';
+const CREATOR_API = 'https://cfc-nft-creator-backend.onrender.com';
 const CFC_ISSUER = 'rsxUkmjnAn8PRDz8RYrPusb9mTDYn5NqG8';
 
 // ── PARTICLE CANVAS ──
@@ -1338,7 +1338,7 @@ window.addEventListener('pageshow',()=>setTimeout(abaRestoreTrustlinePosition,35
 window.addEventListener('focus',()=>setTimeout(abaRestoreTrustlinePosition,350));
 
 // ── CREATOR TRUSTLINE READINESS ──
-const TRUSTLINE_API = 'https://aba-tik-ideas-research-backend.onrender.com/marketplace';
+const TRUSTLINE_API = 'https://cfc-nft-shared-mint-backend.onrender.com';
 let creatorTrustlines = { wallet:'', cfc:false, rlusd:false, verified:false };
 let trustlineBusy = false;
 
@@ -2156,7 +2156,7 @@ async function loadSubmissionById(){
 async function fetchMarketplaceNftWithRetry(subId, retries = 10, delayMs = 2500) {
   for (let i = 0; i < retries; i++) {
     try {
-      const marketRes = await fetch('https://aba-tik-ideas-research-backend.onrender.com/marketplace/api/market/all?tenant=aba');
+      const marketRes = await fetch('https://cfc-nft-shared-mint-backend.onrender.com/api/market/all?tenant=aba');
       if (marketRes.ok) {
         const all = await marketRes.json();
         const row = all.find(n => Number(n.submission_id) === Number(subId));
@@ -2249,7 +2249,7 @@ updateXamanModal(d.link, d.uuid, async()=>{
 }
 
 async function getSellOfferStatus(row){
-  const r = await fetch(`https://aba-tik-ideas-research-backend.onrender.com/marketplace/api/market/listing-status/${row.id}?currency=RLUSD`);
+  const r = await fetch(`https://cfc-nft-shared-mint-backend.onrender.com/api/market/listing-status/${row.id}?currency=RLUSD`);
   const d = await r.json();
   if(!r.ok) throw new Error(d.error || 'Unable to load sell offer status');
   return d;
@@ -2304,7 +2304,7 @@ async function listOnMarketplace(subId, autoStart){
       return;
     }
 
-    const r = await fetch('https://aba-tik-ideas-research-backend.onrender.com/marketplace/api/list-on-marketplace', {
+    const r = await fetch('https://cfc-nft-shared-mint-backend.onrender.com/api/list-on-marketplace', {
       method:'POST',
       mode:'cors',
       headers:{'Content-Type':'application/json'},
