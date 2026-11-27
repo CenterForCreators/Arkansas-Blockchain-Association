@@ -1025,39 +1025,9 @@ async function loadAbaPrivateVideo(videoRecord, statusEl, contentEl){
   document.getElementById('pageInfo').textContent='Video';
   let playbackUrl='';
   try{
-    // My Library opens the Reader in a new tab. On mobile, sessionStorage is not
-    // reliably copied into that tab. Reuse the existing authorized same-origin
-    // My Library session directly, without requesting a new wallet signature.
-    const libraryTab=(()=>{
-      try{return window.opener && window.opener !== window && window.opener.location.origin===location.origin ? window.opener : null;}
-      catch(_){return null;}
-    })();
-    // My Library opens purchased content in a new tab. Mobile browsers do not
-    // reliably share sessionStorage or preserve window.opener across that tab.
-    // Consume the one-time verified session prepared by My Library.
-    const handoffId=new URLSearchParams(location.search).get('aba_handoff')||'';
-    let handoffAuth='';
-    if(/^[0-9a-f-]{36}$/i.test(handoffId)){
-      const handoffKey='aba_video_reader_handoff_'+handoffId;
-      try{
-        const packet=JSON.parse(localStorage.getItem(handoffKey)||'null');
-        localStorage.removeItem(handoffKey);
-        if(packet && packet.expires>Date.now() && packet.wallet===wallet && typeof packet.token==='string'){
-          handoffAuth=packet.token;
-          sessionStorage.setItem('aba_ideas_token',handoffAuth);
-          sessionStorage.setItem('aba_ideas_wallet',wallet);
-        }
-      }catch(_){try{localStorage.removeItem(handoffKey);}catch(_){}}
-      // Remove transfer identifier from the visible browser address/history.
-      try{const clean=new URL(location.href);clean.searchParams.delete('aba_handoff');history.replaceState(null,'',clean.pathname+clean.search+clean.hash);}catch(_){}
-    }
-    let auth=handoffAuth||sessionStorage.getItem('aba_ideas_token')||sessionStorage.getItem('aba_tik_ideas_wallet_session')||'';
-    if(!auth && libraryTab){
-      try{auth=libraryTab.sessionStorage.getItem('aba_ideas_token')||libraryTab.sessionStorage.getItem('aba_tik_ideas_wallet_session')||'';}
-      catch(_){}
-    }
-    // Both the Ideas & Research session and the Xaman OAuth bearer are
-    // verified by the existing video backend before access is granted.
+    let auth=sessionStorage.getItem('aba_tik_ideas_wallet_session')||'';
+    // Reuse an existing Xaman session if present; never start a new sign-in.
+    // The video service also accepts the original Ideas & Research session token.
     async function requestPlayback(token){
       const response=await fetch(ABA_PRIVATE_VIDEO_API+'/'+encodeURIComponent(id)+'/playback',{
         headers:{Authorization:'Bearer '+token,...(wallet?{'X-Video-Wallet':wallet}:{})},cache:'no-store'
@@ -1070,32 +1040,20 @@ async function loadAbaPrivateVideo(videoRecord, statusEl, contentEl){
       try{playbackUrl=await requestPlayback(auth);}catch(e){if(!/session|unauthoriz|expired|invalid|401/i.test(e.message))throw e;auth='';}
     }
     if(!playbackUrl){
-       // Prefer the already connected Xaman instance in My Library when
-       // the mobile Reader opens in a new tab with no saved authorization.
-       if(libraryTab){
-         try{
-           const existing=typeof libraryTab.getXumm==='function' ? libraryTab.getXumm() : libraryTab.xummInstance;
-           if(existing?.environment?.bearer){
-             auth=await Promise.race([Promise.resolve(existing.environment.bearer),new Promise(resolve=>setTimeout(()=>resolve(''),10000))]);
-           }
-         }catch(_){}
-       }
-       if(!auth){
-         if(!window.Xumm){
-           await new Promise((resolve,reject)=>{
-             const script=document.createElement('script');
-             script.src='https://xumm.app/assets/cdn/xumm.min.js';
-             script.onload=resolve;script.onerror=()=>reject(Error('Existing Xaman session could not be loaded'));
-             document.head.append(script);
-           });
-         }
-         if(window.Xumm){
-           const xumm=new Xumm('eebd4c17-c3ef-435b-b891-89afb99e259e');
-           auth=await Promise.race([Promise.resolve(xumm.environment.bearer),new Promise(resolve=>setTimeout(()=>resolve(''),10000))]);
-         }
-       }
-       if(!auth)throw Error('Video session unavailable. Connect your Xaman wallet in My Library and reopen the video.');
-       playbackUrl=await requestPlayback(auth);
+      if(!window.Xumm){
+        await new Promise((resolve,reject)=>{
+          const script=document.createElement('script');
+          script.src='https://xumm.app/assets/cdn/xumm.min.js';
+          script.onload=resolve;script.onerror=()=>reject(Error('Existing Xaman session could not be loaded'));
+          document.head.append(script);
+        });
+      }
+      if(window.Xumm){
+        const xumm=new Xumm('eebd4c17-c3ef-435b-b891-89afb99e259e');
+        auth=await Promise.race([Promise.resolve(xumm.environment.bearer),new Promise(resolve=>setTimeout(()=>resolve(''),4000))]);
+      }
+      if(!auth)throw Error('Video access requires an existing authorized session. No additional wallet authorization has been requested.');
+      playbackUrl=await requestPlayback(auth);
     }
     player.src=playbackUrl;
     message.textContent='';statusEl.textContent='Video ready';
