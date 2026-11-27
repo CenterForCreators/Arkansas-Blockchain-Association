@@ -1954,28 +1954,66 @@ document.querySelectorAll('.modal-overlay').forEach(m=>{
 });
 
 // ── INIT ──
-  function openReader(metadataCid, submissionId){
+  // Preserve the existing Open Content button and new-tab Reader flow.
+  // Hand off a short-lived, verified ABA video session across mobile tabs only.
+  async function openReader(metadataCid, submissionId){
+    const wallet =
+      connectedWallet ||
+      window.connectedAccount ||
+      localStorage.getItem('cfcWallet') ||
+      localStorage.getItem('xummAccount') ||
+      sessionStorage.getItem('connectedAccount');
+    if (!wallet){
+      alert("Connect your wallet first.");
+      return;
+    }
+    const url =
+      "/ABA_Reader.html" +
+      "?metadata_cid=" + encodeURIComponent(metadataCid) +
+      "&submission_id=" + encodeURIComponent(submissionId) +
+      "&wallet=" + encodeURIComponent(wallet);
 
-  const wallet =
-    connectedWallet ||
-    window.connectedAccount ||
-    localStorage.getItem('cfcWallet') ||
-    localStorage.getItem('xummAccount') ||
-    sessionStorage.getItem('connectedAccount');
-
-  if (!wallet){
-    alert("Connect your wallet first.");
-    return;
+    // Open immediately from the click so mobile popup blockers do not interrupt.
+    const readerTab = window.open('', '_blank');
+    if(!readerTab){ alert('Please allow this site to open the Reader.'); return; }
+    try {
+      // Existing Ideas & Research login, if already present, is reusable.
+      let token = sessionStorage.getItem('aba_ideas_token') || '';
+      const tokenWallet = sessionStorage.getItem('aba_ideas_wallet') || '';
+      if(tokenWallet !== wallet) token = '';
+      if(!token){
+        // Use the current Xaman OAuth session to obtain a wallet-verified
+        // ABA session. This does not request a new transaction or wallet signature.
+        const xumm = getXumm();
+        const bearer = await Promise.race([
+          Promise.resolve(xumm.environment.bearer).catch(()=>''),
+          new Promise(resolve=>setTimeout(()=>resolve(''),6000))
+        ]);
+        if(bearer){
+          const response = await fetch('https://aba-tik-ideas-research-backend.onrender.com/api/ideas-research/auth/existing-wallet',{
+            method:'POST',headers:{'Content-Type':'application/json'},
+            body:JSON.stringify({xaman_bearer:bearer})
+          });
+          const data = await response.json().catch(()=>({}));
+          if(response.ok && data.token && data.wallet===wallet){
+            token=data.token;
+            sessionStorage.setItem('aba_ideas_token',token);
+            sessionStorage.setItem('aba_ideas_wallet',wallet);
+          }
+        }
+      }
+      if(token){
+        // A one-use, 60-second cross-tab handoff, not a permanent browser login.
+        // The Reader consumes and removes it before loading content.
+        const handoff = crypto.randomUUID();
+        localStorage.setItem('aba_video_reader_handoff_'+handoff,JSON.stringify({token,wallet,expires:Date.now()+60000}));
+        readerTab.location.replace(url+'&aba_handoff='+encodeURIComponent(handoff));
+      }else{
+        // Non-video content retains its existing Reader behavior.
+        readerTab.location.replace(url);
+      }
+    }catch(_){ readerTab.location.replace(url); }
   }
-
-  const url =
-     "/ABA_Reader.html" +
-    "?metadata_cid=" + encodeURIComponent(metadataCid) +
-    "&submission_id=" + encodeURIComponent(submissionId) +
-    "&wallet=" + encodeURIComponent(wallet);
-
-  window.open(url, "_blank");
-}
 
   async function claimCfcReward(submissionId, btn) {
 
