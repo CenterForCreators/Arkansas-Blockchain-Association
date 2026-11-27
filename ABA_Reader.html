@@ -620,7 +620,7 @@ const XRPL_WSS        = "wss://s1.ripple.com";
 function qp(name){return new URLSearchParams(location.search).get(name)||"";}
 const metadataCid  = qp("metadata_cid");
 const submissionId = qp("submission_id");
-let   wallet       = qp("wallet") || localStorage.getItem("cfc_wallet") || "";
+let   wallet       = qp("wallet") || localStorage.getItem("cfc_wallet") || localStorage.getItem("cfcWallet") || localStorage.getItem("xrpl_account") || "";
 
 let meta = {};
 let viewportEl, pageInfoEl;
@@ -1025,7 +1025,9 @@ async function loadAbaPrivateVideo(videoRecord, statusEl, contentEl){
   document.getElementById('pageInfo').textContent='Video';
   let playbackUrl='';
   try{
-    let auth=sessionStorage.getItem('aba_tik_ideas_wallet_session')||'';
+    // The Knowledge Library stores its authenticated ABA session under aba_ideas_token.
+    // Accept the original Reader session key as well; neither requires a new signature.
+    let auth=sessionStorage.getItem('aba_ideas_token')||sessionStorage.getItem('aba_tik_ideas_wallet_session')||'';
     // Reuse an existing Xaman session if present; never start a new sign-in.
     // The video service also accepts the original Ideas & Research session token.
     async function requestPlayback(token){
