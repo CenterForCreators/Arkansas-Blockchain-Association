@@ -992,7 +992,7 @@ Your XAMAN signing request has been sent. Complete the signature in your XAMAN a
 
 <script>
 // ── CONFIG ──
-const MARKET_API = 'https://aba-tik-ideas-research-backend.onrender.com/marketplace';
+const MARKET_API = 'https://cfc-nft-shared-mint-backend.onrender.com';
 const FAUCET_API = 'https://cfc-faucet.onrender.com';
 const IPFS_GATEWAY = 'https://gold-tropical-muskox-22.mypinata.cloud/ipfs/';
 const CFC_ISSUER = 'rsxUkmjnAn8PRDz8RYrPusb9mTDYn5NqG8';
@@ -1219,7 +1219,7 @@ window.addEventListener('pageshow',()=>setTimeout(abaRestoreLibraryTrustlinePosi
 window.addEventListener('focus',()=>setTimeout(abaRestoreLibraryTrustlinePosition,350));
 
 // ABA wallet trustline readiness; uses existing shared trustline endpoints.
-const ABA_TRUSTLINE_API = 'https://aba-tik-ideas-research-backend.onrender.com/marketplace';
+const ABA_TRUSTLINE_API = 'https://cfc-nft-shared-mint-backend.onrender.com';
 let abaTrustlineRequestActive = false;
 function abaClearTrustlinePanel(){
   const panel=document.getElementById('aba-trustline-panel');
@@ -1289,7 +1289,7 @@ async function checkCFCTrustline(wallet){
   try{
 
     const r = await fetch(
-      `https://aba-tik-ideas-research-backend.onrender.com/marketplace/api/check-cfc-trustline/${wallet}`
+      `https://cfc-nft-shared-mint-backend.onrender.com/api/check-cfc-trustline/${wallet}`
     );
 
     const d = await r.json();
@@ -1319,7 +1319,7 @@ async function showTrustlineRequest(wallet){
   try{
 
     const r = await fetch(
-      "https://aba-tik-ideas-research-backend.onrender.com/marketplace/api/create-cfc-trustline",
+      "https://cfc-nft-shared-mint-backend.onrender.com/api/create-cfc-trustline",
       {
         method: "POST"
       }
@@ -1398,7 +1398,7 @@ async function claimFaucet(){
   btn.disabled = true; btn.textContent = 'Claiming...';
   msg.textContent = ''; msg.className = '';
   try {
-    const r = await fetch('https://aba-tik-ideas-research-backend.onrender.com/marketplace/api/faucet-claim', {
+    const r = await fetch('https://cfc-nft-shared-mint-backend.onrender.com/api/faucet-claim', {
       method:'POST', headers:{'Content-Type':'application/json'},
       body: JSON.stringify({wallet: connectedWallet})
     });
