@@ -1902,7 +1902,8 @@ async function submitNFT(){
 
 learn: {
   enabled: document.getElementById('enableLearn').checked,
-  content: document.getElementById('learnText').value.trim()
+  content: document.getElementById('learnText').value.trim(),
+  multiple_choice: document.getElementById('enableLearn').checked ? (window.abaMultipleChoiceQuestions || []) : []
 }
   };
 if(contentCid && cat!=='video') metadata.content_html = contentCid;
@@ -2526,6 +2527,7 @@ function resetLearnBuilder() {
   addBtn.style.display = (type === "Short" || type === "Video") ? "none" : "block";
   
   document.getElementById('chapterContainer').innerHTML = '';
+  window.abaMultipleChoiceQuestions = [];
   chapterCount = 0;
   addChapterUI();
 }
@@ -2538,9 +2540,12 @@ function addChapterUI() {
   const html = `
     <div class="chapter-card" style="border-bottom:1px solid var(--border); padding-bottom:1rem; margin-bottom:1.5rem;">
       <div style="color:var(--gold); font-weight:700; font-size:0.8rem; margin-bottom:0.8rem;">${label}</div>
-      <div class="form-group"><input type="text" class="form-input q-input" data-ch="${chapterCount}" data-q="1" placeholder="Question 1"></div>
-      <div class="form-group"><input type="text" class="form-input q-input" data-ch="${chapterCount}" data-q="2" placeholder="Question 2 (Optional)"></div>
-      <div class="form-group"><input type="text" class="form-input q-input" data-ch="${chapterCount}" data-q="3" placeholder="Question 3 (Optional)"></div>
+      ${[1,2,3].map(q => `
+        <div class="form-group aba-mc-question" data-ch="${chapterCount}" data-q="${q}">
+          <input type="text" class="form-input q-input" data-ch="${chapterCount}" data-q="${q}" placeholder="Question ${q}${q>1?' (Optional)':''}">
+          <div style="margin:.6rem 0 .3rem;color:var(--text-muted);font-size:.78rem">Four answers — select the correct one</div>
+          ${['A','B','C','D'].map(letter => `<div style="display:flex;gap:.5rem;align-items:center;margin:.35rem 0"><label style="min-width:1.5rem"><input type="radio" name="aba-answer-${chapterCount}-${q}" value="${letter}" aria-label="${letter} is correct"> ${letter}</label><input class="form-input aba-mc-option" data-letter="${letter}" placeholder="Answer ${letter}" aria-label="Answer ${letter}"></div>`).join('')}
+        </div>`).join('')}
     </div>`;
   document.getElementById('chapterContainer').insertAdjacentHTML('beforeend', html);
 }
@@ -2566,6 +2571,20 @@ function syncAndContinue() {
     }
   });
 
+  // Validate multiple-choice answers only for questions that have been entered.
+  const multipleChoice = [];
+  for (const group of document.querySelectorAll('.aba-mc-question')) {
+    const question = group.querySelector('.q-input').value.trim();
+    if (!question) continue;
+    const options = [...group.querySelectorAll('.aba-mc-option')].map(input => input.value.trim());
+    const selected = group.querySelector('input[type="radio"]:checked');
+    if (options.some(option => !option) || new Set(options.map(o => o.toLowerCase())).size !== 4 || !selected) {
+      alert('For each question, enter four different answers and select the correct answer.');
+      return;
+    }
+    multipleChoice.push({section:Number(group.dataset.ch),question:Number(group.dataset.q),prompt:question,options,correct:['A','B','C','D'].indexOf(selected.value)});
+  }
+  window.abaMultipleChoiceQuestions = multipleChoice;
   document.getElementById('learnText').value = finalString.trim();
   goToStep(6);
 }
