@@ -986,7 +986,7 @@ async function loadAbaPrivateVideo(videoRecord, statusEl, contentEl){
   player.style.cssText='width:100%;max-height:min(65vh,680px);display:block;margin:0 auto;background:#000;border-radius:4px';
   const message=document.createElement('p');
   message.style.cssText='margin:1rem 0;color:#a9c8d9;overflow-wrap:anywhere';
-  message.textContent='Preparing private video...';
+  message.textContent='Preparing video...';
   contentEl.append(player,message);
   // Reuse the existing article Learn & Earn input/button handler; reveal only after playback ends.
   const videoLearn = document.createElement('div');
@@ -1032,7 +1032,26 @@ async function loadAbaPrivateVideo(videoRecord, statusEl, contentEl){
       try{return window.opener && window.opener !== window && window.opener.location.origin===location.origin ? window.opener : null;}
       catch(_){return null;}
     })();
-    let auth=sessionStorage.getItem('aba_ideas_token')||sessionStorage.getItem('aba_tik_ideas_wallet_session')||'';
+    // My Library opens purchased content in a new tab. Mobile browsers do not
+    // reliably share sessionStorage or preserve window.opener across that tab.
+    // Consume the one-time verified session prepared by My Library.
+    const handoffId=new URLSearchParams(location.search).get('aba_handoff')||'';
+    let handoffAuth='';
+    if(/^[0-9a-f-]{36}$/i.test(handoffId)){
+      const handoffKey='aba_video_reader_handoff_'+handoffId;
+      try{
+        const packet=JSON.parse(localStorage.getItem(handoffKey)||'null');
+        localStorage.removeItem(handoffKey);
+        if(packet && packet.expires>Date.now() && packet.wallet===wallet && typeof packet.token==='string'){
+          handoffAuth=packet.token;
+          sessionStorage.setItem('aba_ideas_token',handoffAuth);
+          sessionStorage.setItem('aba_ideas_wallet',wallet);
+        }
+      }catch(_){try{localStorage.removeItem(handoffKey);}catch(_){}}
+      // Remove transfer identifier from the visible browser address/history.
+      try{const clean=new URL(location.href);clean.searchParams.delete('aba_handoff');history.replaceState(null,'',clean.pathname+clean.search+clean.hash);}catch(_){}
+    }
+    let auth=handoffAuth||sessionStorage.getItem('aba_ideas_token')||sessionStorage.getItem('aba_tik_ideas_wallet_session')||'';
     if(!auth && libraryTab){
       try{auth=libraryTab.sessionStorage.getItem('aba_ideas_token')||libraryTab.sessionStorage.getItem('aba_tik_ideas_wallet_session')||'';}
       catch(_){}
@@ -1044,7 +1063,7 @@ async function loadAbaPrivateVideo(videoRecord, statusEl, contentEl){
         headers:{Authorization:'Bearer '+token,...(wallet?{'X-Video-Wallet':wallet}:{})},cache:'no-store'
       });
       const data=await response.json().catch(()=>({}));
-      if(!response.ok||!data.url)throw Error(data.error||'Private video access unavailable');
+      if(!response.ok||!data.url)throw Error(data.error||'Video access unavailable');
       return data.url;
     }
     if(auth){
@@ -1075,7 +1094,7 @@ async function loadAbaPrivateVideo(videoRecord, statusEl, contentEl){
            auth=await Promise.race([Promise.resolve(xumm.environment.bearer),new Promise(resolve=>setTimeout(()=>resolve(''),10000))]);
          }
        }
-       if(!auth)throw Error('Private video access requires an existing authorized session. Return to My Library and reopen the video.');
+       if(!auth)throw Error('Video session unavailable. Connect your Xaman wallet in My Library and reopen the video.');
        playbackUrl=await requestPlayback(auth);
     }
     player.src=playbackUrl;
@@ -1095,8 +1114,8 @@ async function loadAbaPrivateVideo(videoRecord, statusEl, contentEl){
     });
     player.addEventListener('error',()=>{statusEl.textContent='Video playback could not be loaded. Please reopen the video.';});
   }catch(e){
-    statusEl.textContent='Unable to play private video';
-    message.textContent=e.message||'Private video access unavailable';
+    statusEl.textContent='Unable to play video';
+    message.textContent=e.message||'Video access unavailable';
   }
 }
 
