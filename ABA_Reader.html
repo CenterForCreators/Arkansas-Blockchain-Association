@@ -1025,11 +1025,20 @@ async function loadAbaPrivateVideo(videoRecord, statusEl, contentEl){
   document.getElementById('pageInfo').textContent='Video';
   let playbackUrl='';
   try{
-    // The Knowledge Library stores its authenticated ABA session under aba_ideas_token.
-    // Accept the original Reader session key as well; neither requires a new signature.
+    // My Library opens the Reader in a new tab. On mobile, sessionStorage is not
+    // reliably copied into that tab. Reuse the existing authorized same-origin
+    // My Library session directly, without requesting a new wallet signature.
+    const libraryTab=(()=>{
+      try{return window.opener && window.opener !== window && window.opener.location.origin===location.origin ? window.opener : null;}
+      catch(_){return null;}
+    })();
     let auth=sessionStorage.getItem('aba_ideas_token')||sessionStorage.getItem('aba_tik_ideas_wallet_session')||'';
-    // Reuse an existing Xaman session if present; never start a new sign-in.
-    // The video service also accepts the original Ideas & Research session token.
+    if(!auth && libraryTab){
+      try{auth=libraryTab.sessionStorage.getItem('aba_ideas_token')||libraryTab.sessionStorage.getItem('aba_tik_ideas_wallet_session')||'';}
+      catch(_){}
+    }
+    // Both the Ideas & Research session and the Xaman OAuth bearer are
+    // verified by the existing video backend before access is granted.
     async function requestPlayback(token){
       const response=await fetch(ABA_PRIVATE_VIDEO_API+'/'+encodeURIComponent(id)+'/playback',{
         headers:{Authorization:'Bearer '+token,...(wallet?{'X-Video-Wallet':wallet}:{})},cache:'no-store'
@@ -1042,20 +1051,32 @@ async function loadAbaPrivateVideo(videoRecord, statusEl, contentEl){
       try{playbackUrl=await requestPlayback(auth);}catch(e){if(!/session|unauthoriz|expired|invalid|401/i.test(e.message))throw e;auth='';}
     }
     if(!playbackUrl){
-      if(!window.Xumm){
-        await new Promise((resolve,reject)=>{
-          const script=document.createElement('script');
-          script.src='https://xumm.app/assets/cdn/xumm.min.js';
-          script.onload=resolve;script.onerror=()=>reject(Error('Existing Xaman session could not be loaded'));
-          document.head.append(script);
-        });
-      }
-      if(window.Xumm){
-        const xumm=new Xumm('eebd4c17-c3ef-435b-b891-89afb99e259e');
-        auth=await Promise.race([Promise.resolve(xumm.environment.bearer),new Promise(resolve=>setTimeout(()=>resolve(''),4000))]);
-      }
-      if(!auth)throw Error('Private video access requires an existing authorized session. No additional wallet authorization has been requested.');
-      playbackUrl=await requestPlayback(auth);
+       // Prefer the already connected Xaman instance in My Library when
+       // the mobile Reader opens in a new tab with no saved authorization.
+       if(libraryTab){
+         try{
+           const existing=typeof libraryTab.getXumm==='function' ? libraryTab.getXumm() : libraryTab.xummInstance;
+           if(existing?.environment?.bearer){
+             auth=await Promise.race([Promise.resolve(existing.environment.bearer),new Promise(resolve=>setTimeout(()=>resolve(''),10000))]);
+           }
+         }catch(_){}
+       }
+       if(!auth){
+         if(!window.Xumm){
+           await new Promise((resolve,reject)=>{
+             const script=document.createElement('script');
+             script.src='https://xumm.app/assets/cdn/xumm.min.js';
+             script.onload=resolve;script.onerror=()=>reject(Error('Existing Xaman session could not be loaded'));
+             document.head.append(script);
+           });
+         }
+         if(window.Xumm){
+           const xumm=new Xumm('eebd4c17-c3ef-435b-b891-89afb99e259e');
+           auth=await Promise.race([Promise.resolve(xumm.environment.bearer),new Promise(resolve=>setTimeout(()=>resolve(''),10000))]);
+         }
+       }
+       if(!auth)throw Error('Private video access requires an existing authorized session. Return to My Library and reopen the video.');
+       playbackUrl=await requestPlayback(auth);
     }
     player.src=playbackUrl;
     message.textContent='';statusEl.textContent='Video ready';
