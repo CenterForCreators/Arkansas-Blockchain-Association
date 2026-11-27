@@ -1954,6 +1954,39 @@ document.querySelectorAll('.modal-overlay').forEach(m=>{
 });
 
 // ── INIT ──
+  // Video-only authorization handoff: the signed-in Library tab can provide
+  // its existing Xaman bearer to the Reader without starting another sign-in.
+  const abaVideoReaderSessions=new Map();
+  async function abaProvideVideoSession(handoff){
+    const request=abaVideoReaderSessions.get(handoff);
+    if(!request||Date.now()>request.expires){abaVideoReaderSessions.delete(handoff);return null;}
+    const connected=connectedWallet||window.connectedAccount||localStorage.getItem('cfcWallet')||localStorage.getItem('xummAccount');
+    if(!connected||connected!==request.wallet)return null;
+    try{
+      const xumm=getXumm();
+      const bearer=await Promise.race([
+        Promise.resolve(xumm.environment.bearer).catch(()=>''),
+        new Promise(resolve=>setTimeout(()=>resolve(''),5000))
+      ]);
+      return bearer?{bearer,wallet:request.wallet}:null;
+    }catch(_){return null;}
+  }
+  window.addEventListener('message',async event=>{
+    if(event.origin!==location.origin||event.data?.type!=='aba-video-session-request')return;
+    const handoff=event.data.handoff;
+    if(typeof handoff!=='string'||!abaVideoReaderSessions.has(handoff))return;
+    const result=await abaProvideVideoSession(handoff);
+    if(result)event.source?.postMessage({type:'aba-video-session-response',handoff,...result},event.origin);
+  });
+  let abaVideoSessionChannel=null;try{if(typeof BroadcastChannel==='function')abaVideoSessionChannel=new BroadcastChannel('aba-video-session-handoff');}catch(_){}
+  abaVideoSessionChannel?.addEventListener('message',async event=>{
+    if(event.data?.type!=='aba-video-session-request')return;
+    const handoff=event.data.handoff;
+    if(typeof handoff!=='string'||!abaVideoReaderSessions.has(handoff))return;
+    const result=await abaProvideVideoSession(handoff);
+    if(result)abaVideoSessionChannel.postMessage({type:'aba-video-session-response',handoff,...result});
+  });
+
   function openReader(metadataCid, submissionId){
 
   const wallet =
@@ -1974,7 +2007,12 @@ document.querySelectorAll('.modal-overlay').forEach(m=>{
     "&submission_id=" + encodeURIComponent(submissionId) +
     "&wallet=" + encodeURIComponent(wallet);
 
-  window.open(url, "_blank");
+  // Let the newly opened Reader reuse this tab's existing Xaman session.
+  // No bearer is added to the URL or stored persistently.
+  const handoff=crypto.randomUUID();
+  abaVideoReaderSessions.set(handoff,{wallet,expires:Date.now()+120000});
+  const child=window.open(url+"&video_session_handoff="+encodeURIComponent(handoff), "_blank");
+  if(!child)abaVideoReaderSessions.delete(handoff);
 }
 
   async function claimCfcReward(submissionId, btn) {
