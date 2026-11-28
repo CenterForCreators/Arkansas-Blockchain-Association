@@ -2489,6 +2489,33 @@ if(new URLSearchParams(location.search).get('view')==='my-library')setTimeout(()
   }
   return {bearer,token,w};
  }
+ // My Purchases uses the already authorized ABA wallet session first.
+ // A new Xaman bearer is needed only if that stored session cannot load claims.
+ async function ownedClaims(){
+  const w=wallet();
+  if(!/^r[1-9A-HJ-NP-Za-km-z]{25,34}$/.test(w))throw Error('Connect your Xaman wallet to view claimed NFTs');
+  const request=async token=>{
+   const r=await fetch(base+'/member-distribution/my-claims',{headers:{Authorization:'Bearer '+token},cache:'no-store'});
+   const data=await r.json().catch(()=>({}));
+   if(!r.ok){const e=new Error(data.error||'Unable to load your claimed NFTs');e.status=r.status;throw e;}
+   return data;
+  };
+  let token=sessionStorage.getItem('aba_ideas_wallet')===w?sessionStorage.getItem('aba_ideas_token'):null;
+  if(token){
+   try{return await request(token);}catch(e){
+    if(e.status!==401&&e.status!==403)throw e;
+    sessionStorage.removeItem('aba_ideas_token');
+    sessionStorage.removeItem('aba_ideas_wallet');
+   }
+  }
+  // Reuse the existing connected Xaman session. Never request a new signature.
+  const bearer=await xamanBearer();
+  const d=await json(base+'/auth/existing-wallet',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({xaman_bearer:bearer})});
+  if(d.wallet!==w||!d.token)throw Error('The connected Xaman wallet does not match your session');
+  sessionStorage.setItem('aba_ideas_token',d.token);
+  sessionStorage.setItem('aba_ideas_wallet',w);
+  return request(d.token);
+ }
  async function proof(record_id,bearer){return json(membership+'/eligibility',{method:'POST',credentials:'include',headers:{'Content-Type':'application/json'},body:JSON.stringify({record_id,xaman_bearer:bearer})});}
  async function api(path,token,body){return json(base+'/member-distribution'+path,{method:body?'POST':'GET',headers:{Authorization:'Bearer '+token,...(body?{'Content-Type':'application/json'}:{})},...(body?{body:JSON.stringify(body)}:{})});}
  async function advance(claimId,recordId,authorization){
@@ -2708,8 +2735,9 @@ if(new URLSearchParams(location.search).get('view')==='my-library')setTimeout(()
   separateSection.hidden=true;
   if(!wallet()||!grid)return;
   try{
-   const a=await auth();const d=await api('/my-claims',a.token);
+   const d=await ownedClaims();
    const claims=Array.isArray(d.items)?d.items:[];
+   grid.querySelectorAll('[data-aba-free-error]').forEach(el=>el.remove());
    const completed=claims.filter(c=>c.status==='claimed');
    window.abaFreeOwnedRecordIds=new Set(completed.map(c=>String(c.record_id)));
    if(typeof renderFilteredNFTs==='function')renderFilteredNFTs();
@@ -2736,7 +2764,13 @@ if(new URLSearchParams(location.search).get('view')==='my-library')setTimeout(()
     };
     card.append(b);grid.append(card);
    }
-  }catch(e){status('aba-free-owned-status',e.message);}
+  }catch(e){
+   // Do not hide errors in the unused separate free-claim section.
+   // Leave paid purchase cards untouched and report only the missing free claim lookup.
+   let notice=grid.querySelector('[data-aba-free-error]');
+   if(!notice){notice=html('div','order-card');notice.dataset.abaFreeError='true';grid.append(notice);}
+   notice.textContent='Unable to load your free member NFTs: '+(e.message||'Please try again.');
+  }
  }
  // Invoked from the existing My Purchases loader after it finishes rendering.
  window.abaShowFreeOwned=showOwned;
