@@ -1913,7 +1913,11 @@ if(!wallet) return;
       if(!Array.isArray(freeOrders))throw new Error('Invalid ABA ownership records');
     } catch(e) { freeError=e.message||'ABA claim lookup unavailable'; }
     if(!Array.isArray(paidOrders))throw new Error('Invalid paid purchase records');
-    const orders=paidOrders.concat(freeOrders);
+    const orders=paidOrders.concat(freeOrders).sort((a,b)=>{
+      const aTime=Date.parse(a.created_at||'')||0;
+      const bTime=Date.parse(b.created_at||'')||0;
+      return bTime-aTime;
+    });
     window.abaFreeOwnedRecordIds=new Set(freeOrders.map(o=>String(o.record_id)));
     if(typeof renderFilteredNFTs==='function')renderFilteredNFTs();
     if(!orders.length){
