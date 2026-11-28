@@ -894,14 +894,15 @@ try { const member=JSON.parse(localStorage.getItem('aba_member_session')||'null'
         <button class="filter-tab" data-cat="video">Videos</button>
         <button class="filter-tab" data-cat="workshop">Workshops</button>
         <button class="filter-tab" data-cat="service">Programs</button>
+        <button class="filter-tab" data-cat="free-members">Free for Members</button>
         <button class="filter-tab" data-cat="ideas-research">Ideas &amp; Research</button>
       </div>
     </div>
     <div id="aba-ir-public-section" style="display:none;margin-top:2.5rem"><h3 style="color:#87ceeb;margin-bottom:.8rem">Public Ideas &amp; Research</h3><p style="color:#a6c5d7;margin-bottom:1rem">Creators chose to list these Ideas and Research publicly. They are not for sale. Opening the full content depends on Reader access.</p><div id="aba-ir-public-grid" class="nft-grid"></div></div>
-<div id="aba-free-member-catalog" style="margin-top:2rem" hidden><h3 style="color:#87ceeb;margin-bottom:.8rem">Free for ABA Members</h3><div id="aba-free-member-grid" class="nft-grid"></div><p id="aba-free-member-status" role="status" style="color:#87ceeb;margin-top:1rem"></p></div>
 <div id="nft-grid" class="nft-grid">
       <div class="nft-loading"><div class="nft-loading-spinner"></div><div>Loading knowledge library...</div></div>
     </div>
+    <p id="aba-free-member-status" role="status" style="color:#87ceeb;margin-top:1rem"></p>
   </div>
 </section>
 
@@ -1637,15 +1638,21 @@ function renderFilteredNFTs(){
 
   const normCat = c => c.toLowerCase().replace(/s$/, '');
 
-  // Only ABA free-member items are presented in their dedicated claim catalog.
-  // Paid listings retain the original filtering and purchase flow.
+  // ABA free-member listings share this grid with paid listings.
+  // Existing paid purchase handling is unchanged.
   const paidOrOtherNFTs=allNFTs.filter(n=>!window.abaFreeSubmissionIds?.has(String(n.submission_id)));
   const filtered =
-    activeCategory === 'all'
+    activeCategory === 'free-members' ? [] : activeCategory === 'all'
       ? paidOrOtherNFTs
       : paidOrOtherNFTs.filter(n => normCat(n.category || 'art') === normCat(activeCategory));
 
-  if(!filtered.length){
+  const freeCount=window.abaFreeCatalogItems?.filter(item=>{
+    if(activeCategory==='ideas-research')return false;
+    if(activeCategory==='all'||activeCategory==='free-members')return true;
+    const listing=allNFTs.find(n=>String(n.submission_id)===String(item.submission_id));
+    return normCat(item.category||listing?.category||'')===normCat(activeCategory);
+  }).length||0;
+  if(!filtered.length && !freeCount){
     grid.innerHTML = `
       <div class="empty-state">
         <div class="empty-icon">&#127912;</div>
@@ -1663,6 +1670,7 @@ function renderFilteredNFTs(){
   grid.innerHTML = "";
 
   appendNFTBatch(filtered);
+  window.abaRenderFreeCards?.();
 
   const sentinel = document.createElement("div");
   sentinel.id = "scroll-sentinel";
@@ -2521,16 +2529,47 @@ if(new URLSearchParams(location.search).get('view')==='my-library')setTimeout(()
  async function catalog(){
   try{const d=await json(base+'/member-distribution/catalog');cache=Array.isArray(d.items)?d.items:[];
    window.abaFreeSubmissionIds=new Set(cache.map(x=>String(x.submission_id)));
+   window.abaFreeCatalogItems=cache;
    if(typeof renderFilteredNFTs==='function')renderFilteredNFTs();
-   const section=document.getElementById('aba-free-member-catalog'),grid=document.getElementById('aba-free-member-grid');
-   section.hidden=!cache.length;grid.replaceChildren();
-   for(const item of cache){
-    const card=html('div','nft-card');const body=html('div','nft-body');
-    body.append(html('div','nft-title',item.title),html('div','nft-desc',item.category),html('div','nft-price-rlusd','0 XRP for verified ABA members'));
-    const btn=html('button','btn-buy-rlusd','Claim for 0 XRP');btn.type='button';btn.onclick=()=>claim(item.record_id);body.append(btn);card.append(body);grid.append(card);
-   }
   }catch(e){status('aba-free-member-status',e.message);}
  }
+ function renderFreeCards(){
+   const grid=document.getElementById('nft-grid');
+   if(!grid || activeCategory==='ideas-research')return;
+   const sourceListings=allNFTs;
+   const normCat=c=>String(c||'').toLowerCase().replace(/s$/,'');
+   for(const item of cache){
+    const matching=sourceListings.find(n=>String(n.submission_id)===String(item.submission_id));
+    if(activeCategory!=='all'&&activeCategory!=='free-members'&&normCat(item.category||matching?.category)!==normCat(activeCategory))continue;
+    const existing=sourceListings.find(n=>String(n.submission_id)===String(item.submission_id));
+    let card;
+    if(existing){
+     const wrapper=document.createElement('div');
+     wrapper.innerHTML=renderNFTCard({...existing,quantity:1,price_rlusd:null});
+     card=wrapper.firstElementChild;
+     card.classList.add('visible');
+     card.querySelectorAll('.sold-out-badge').forEach(el=>el.remove());
+     const qty=card.querySelector('.nft-qty');if(qty)qty.remove();
+     const prices=card.querySelector('.nft-prices');
+     if(prices)prices.replaceChildren(html('div','nft-price-rlusd','0 XRP for verified ABA members'));
+     const actions=card.querySelector('.nft-buy-btns');
+     if(actions){
+      const btn=html('button','btn-buy-rlusd','Claim for 0 XRP');btn.type='button';btn.onclick=()=>claim(item.record_id);actions.replaceChildren(btn);
+     }
+     card.querySelectorAll('.nft-img[data-src]').forEach(img=>imageObserver.observe(img));
+    }else{
+     card=html('div','nft-card');
+     const img=html('div','nft-img-wrap');
+     if(item.image_cid){const cover=html('img','nft-img');cover.src=IPFS_GATEWAY+item.image_cid;cover.alt=item.title||'ABA member content';img.append(cover);}
+     const badge=html('div','nft-badge '+getCategoryBadgeClass(item.category),String(item.category||'Content').toUpperCase());img.append(badge);
+     const body=html('div','nft-body');
+     body.append(html('div','nft-title',item.title),html('div','nft-desc',item.category),html('div','nft-price-rlusd','0 XRP for verified ABA members'));
+     const btn=html('button','btn-buy-rlusd','Claim for 0 XRP');btn.type='button';btn.onclick=()=>claim(item.record_id);body.append(btn);card.append(img,body);
+    }
+    grid.append(card);
+   }
+ }
+ window.abaRenderFreeCards=renderFreeCards;
  async function showOwned(){
   const section=document.getElementById('aba-free-owned-section'),grid=document.getElementById('aba-free-owned-grid');
   if(!wallet()){section.hidden=true;return;}
