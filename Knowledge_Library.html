@@ -2498,33 +2498,105 @@ if(new URLSearchParams(location.search).get('view')==='my-library')setTimeout(()
   }
   return {status:'pending'};
  }
+ // Free claims use the same modal presentation as existing NFT purchases.
+ // The underlying wallet-restricted 0 XRP transaction remains ABA-only.
+ let freeClaimPoll=null;
+ let freeClaimBusy=false;
+ function freeModal(title,body){
+  const panel=document.getElementById('buy-modal-content');
+  if(!panel)throw Error('Marketplace Xaman dialog unavailable');
+  panel.replaceChildren();
+  const heading=html('div','modal-title',title);
+  panel.append(heading);
+  if(body)panel.append(html('p','modal-sub',body));
+  openModal('buy-modal');
+  return panel;
+ }
+ function freeModalStatus(message){const el=document.getElementById('aba-free-xaman-status');if(el)el.textContent=message;}
+ function freeModalError(message){
+  const panel=document.getElementById('buy-modal-content');
+  if(!panel)return;
+  const e=html('div','alert alert-error',message||'Unable to complete NFT claim');
+  panel.append(e,freeModalCloseButton());
+ }
+ function freeModalCloseButton(){
+  const b=html('button','btn-full-outline','Close');
+  b.type='button';b.onclick=()=>closeModal('buy-modal');return b;
+ }
  async function finishClaim(id){
-  const a=await auth();const done=await api('/claims/'+encodeURIComponent(id)+'/accept/complete',a.token,{});
-  if(done.status==='claimed'){status('aba-free-owned-status','NFT claimed successfully. Refresh My Library to open your content.');await showOwned();}
-  else status('aba-free-owned-status','Acceptance is awaiting your Xaman approval or XRPL confirmation.');
+  const a=await auth();
+  const done=await api('/claims/'+encodeURIComponent(id)+'/accept/complete',a.token,{});
+  if(done.status==='claimed'){
+   if(freeClaimPoll){clearInterval(freeClaimPoll);freeClaimPoll=null;}
+   closeModal('buy-modal');
+   document.getElementById('success-title').textContent='NFT Claimed';
+   document.getElementById('success-message').textContent='Your 0 XRP NFT claim is complete. Your content is available in My Library.';
+   openModal('success-modal');
+   await showOwned();
+  }
+  return done;
+ }
+ function showFreeXamanStep(acceptance,claimId){
+  const link=acceptance.xaman_url;
+  if(!link)throw Error('Xaman acceptance link unavailable');
+  const panel=freeModal('Sign in XAMAN','Scan the QR code with XAMAN or tap below to accept your NFT for 0 XRP.');
+  const wrap=html('div','xaman-section');
+  const qr=document.createElement('canvas');
+  qr.id='aba-free-xaman-qr';
+  const action=html('a','xaman-link-btn','Open in XAMAN App →');
+  action.href=link;action.target='_blank';action.rel='noopener noreferrer';
+  wrap.append(qr,document.createElement('div'),action);
+  const divider=html('hr','divider');
+  const spinner=html('div','spinner');
+  const info=html('div','status-text','Waiting for your signature in XAMAN...');
+  info.id='aba-free-xaman-status';
+  panel.append(wrap,divider,spinner,info,freeModalCloseButton());
+  if(typeof QRCode!=='undefined'){
+   QRCode.toCanvas(qr,link,{width:180,color:{dark:'#F0B429',light:'#12121F'}},e=>{if(e)console.warn('Free NFT QR',e);});
+  }
+  if(freeClaimPoll)clearInterval(freeClaimPoll);
+  let attempts=0,checking=false;
+  const check=async()=>{
+   if(checking)return;
+   checking=true;
+   try{
+    const r=await finishClaim(claimId);
+    if(r.status==='claimed')return;
+    if(r.status!=='awaiting_signature'&&r.status!=='awaiting_confirmation')freeModalStatus('Confirming your NFT on XRPL...');
+   }catch(e){freeModalStatus(e.message||'Unable to confirm the NFT acceptance');}
+   finally{checking=false;}
+  };
+  freeClaimPoll=setInterval(()=>{
+   if(!document.getElementById('buy-modal').classList.contains('open')){clearInterval(freeClaimPoll);freeClaimPoll=null;return;}
+   if(++attempts>90){clearInterval(freeClaimPoll);freeClaimPoll=null;freeModalStatus('Still awaiting XAMAN or XRPL confirmation. Reopen My Library to continue.');return;}
+   check();
+  },2000);
+  // The existing modal stays on the marketplace page; no extra status link appears under the card.
  }
  async function claim(recordId){
-  const area='aba-free-member-status';
+  if(freeClaimBusy)return;
+  freeClaimBusy=true;
+  freeModal('Claim NFT','Preparing your 0 XRP member claim...');
   try{
-   status(area,'Verifying ABA membership and existing Xaman wallet...');
    const a=await auth();const p=await proof(recordId,a.bearer);
    if(p.wallet!==a.w)throw Error('Your member wallet does not match Xaman');
    const entry=await api('/claims',a.token,{record_id:recordId,membership_attestation:p.attestation});
-   status(area,'Preparing your wallet-restricted 0 XRP NFT offer...');
+   // Continue existing offer/claim without starting a second NFT.
    const result=await advance(entry.id,recordId,a);
-   if(result.status==='pending'){status(area,'Your NFT is processing on XRPL. Open My Library to continue shortly.');await showOwned();return;}
-   if(result.status==='claimed'){status(area,'Your NFT is already claimed.');await showOwned();return;}
-   const acceptance=await api('/claims/'+encodeURIComponent(entry.id)+'/accept/start',a.token,{});
-   status(area,'Approve the 0 XRP NFT acceptance in Xaman, then return to My Library to complete your claim.');
-   if(acceptance.xaman_url){
-    const box=document.getElementById(area),link=document.createElement('a');
-    link.href=acceptance.xaman_url;link.target='_blank';link.rel='noopener noreferrer';
-    link.textContent='Open Xaman to Accept Your NFT';link.style.cssText='display:block;color:#9bd8ef;margin-top:8px;font-weight:700';
-    box.append(link);
-    if(/Android|iPhone|iPad|iPod/i.test(navigator.userAgent))window.location.assign(acceptance.xaman_url);
+   if(result.status==='pending'){
+    freeModal('Claim NFT','The NFT is being confirmed on XRPL. Open My Library to continue.');
+    document.getElementById('buy-modal-content').append(freeModalCloseButton());return;
    }
-   await showOwned();
-  }catch(e){status(area,e.message);}
+   if(result.status==='claimed'){
+    closeModal('buy-modal');
+    document.getElementById('success-title').textContent='NFT Claimed';
+    document.getElementById('success-message').textContent='This NFT is already in your library.';
+    openModal('success-modal');await showOwned();return;
+   }
+   const acceptance=await api('/claims/'+encodeURIComponent(entry.id)+'/accept/start',a.token,{});
+   showFreeXamanStep(acceptance,entry.id);
+  }catch(e){freeModalError(e.message);}
+  finally{freeClaimBusy=false;}
  }
  async function catalog(){
   try{const d=await json(base+'/member-distribution/catalog');cache=Array.isArray(d.items)?d.items:[];
