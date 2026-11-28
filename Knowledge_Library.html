@@ -736,9 +736,9 @@ body.menu-open .site-header{background:#06152f;backdrop-filter:none}
 #listings .listings-header {margin-bottom:1.3rem!important;}
 @media(max-width:760px){.aba-library-controls-inner{justify-content:center;}.aba-library-controls .view-tabs{width:100%;justify-content:center;}.aba-library-controls .view-tab{flex:1;padding:.7rem .45rem;font-size:.68rem;}.aba-library-controls #wallet-banner{width:100%;justify-content:center;}.aba-library-controls .aba-rewards-strip{width:100%;}.aba-library-controls #aba-trustline-panel{width:100%;text-align:center;}.aba-library-controls #banner-connected{justify-content:center;}#market-hero{padding:1.6rem 0 1.1rem!important;}}
 /* Approved visual-only updates: clear category colors and gold navigation outlines. */
-/* Highlight only All and Free for Members with the same yellow outline. */
-.filter-tab[data-cat="all"],.filter-tab[data-cat="free-members"] { border:2px solid #F0B429; color:#F0B429; }
-.filter-tab[data-cat="all"].active,.filter-tab[data-cat="free-members"].active { border:2px solid #F0B429; background:#F0B429; color:#07162f; }
+/* Keep the original teal All tab; make only Free for Members bright yellow (distinct from Books). */
+.filter-tab[data-cat="free-members"] { border:2px solid #FFFF00; color:#FFFF00; }
+.filter-tab[data-cat="free-members"].active { border:2px solid #FFFF00; background:#FFFF00; color:#07162f; }
 .filter-tab[data-cat="ideas-research"] { border-color:#fff; color:#fff; }
 .filter-tab[data-cat="ideas-research"].active { background:#7C3AED; color:#fff; border-color:#fff; }
 .aba-library-controls .view-tabs { border:0; border-radius:2px; gap:6px; overflow:visible; }
@@ -1917,6 +1917,9 @@ if(!wallet) return;
     } catch(e) { freeError=e.message||'ABA claim lookup unavailable'; }
     if(!Array.isArray(paidOrders))throw new Error('Invalid paid purchase records');
     const orders=paidOrders.concat(freeOrders).sort((a,b)=>{
+      // Keep claimed free editions in the main purchase grid above the
+      // separate Ideas & Research section; newest first within each group.
+      if(Boolean(a.aba_free_owned)!==Boolean(b.aba_free_owned))return a.aba_free_owned?-1:1;
       const aTime=Date.parse(a.created_at||'')||0;
       const bTime=Date.parse(b.created_at||'')||0;
       return bTime-aTime;
