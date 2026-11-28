@@ -1901,9 +1901,24 @@ if(!wallet) return;
   try {
     const r = await fetch(MARKET_API+'/api/orders/by-wallet/'+wallet);
     if(!r.ok) throw new Error('Failed');
-    const orders = await r.json();
+    const paidOrders = await r.json();
+    // The free editions are returned in the same order format, but only when
+    // XRPL confirms this wallet actually owns the NFT. Never alter paid orders.
+    let freeOrders=[];
+    let freeError='';
+    try {
+      const freeResponse = await fetch('https://aba-tik-ideas-research-backend.onrender.com/api/ideas-research/member-distribution/owned-orders/'+encodeURIComponent(wallet),{cache:'no-store'});
+      if(!freeResponse.ok)throw new Error('ABA ownership check unavailable ('+freeResponse.status+')');
+      freeOrders=await freeResponse.json();
+      if(!Array.isArray(freeOrders))throw new Error('Invalid ABA ownership records');
+    } catch(e) { freeError=e.message||'ABA claim lookup unavailable'; }
+    if(!Array.isArray(paidOrders))throw new Error('Invalid paid purchase records');
+    const orders=paidOrders.concat(freeOrders);
+    window.abaFreeOwnedRecordIds=new Set(freeOrders.map(o=>String(o.record_id)));
+    if(typeof renderFilteredNFTs==='function')renderFilteredNFTs();
     if(!orders.length){
       grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1"><div class="empty-icon">&#128196;</div><div class="empty-title">No NFTs yet</div><div class="empty-sub">Purchase an NFT from the marketplace above to start your library.</div></div>`;
+      if(freeError){grid.innerHTML += '<div class="order-card">Unable to verify free ABA member NFTs: '+freeError+'</div>';}
       return;
     }
    grid.innerHTML = orders.map(o=>`
@@ -1920,13 +1935,15 @@ if(!wallet) return;
 </div>
    
     <div class="order-meta">
-      Status: PAID
+      Status: ${o.aba_free_owned ? 'CLAIMED' : 'PAID'}
     </div>
 
     <div style="margin-top:0.75rem; display:flex; gap:0.5rem; flex-wrap:wrap;">
 
            ${
-        o.reward_claimed
+        o.aba_free_owned
+        ? ''
+        : o.reward_claimed
         ? `<span class="order-badge badge-completed">Reward Claimed</span>`
         : `
 <button class="btn-full-gold"
@@ -1955,9 +1972,6 @@ if(!wallet) return;
     <div class="empty-title">Library unavailable</div>
     <div class="empty-sub">Unable to load your orders. Please refresh.</div>
   </div>`;
-} finally {
-  // Add completed ABA member editions only AFTER paid purchase cards finish rendering.
-  if (typeof window.abaShowFreeOwned === 'function') await window.abaShowFreeOwned();
 }
 }
 
@@ -2562,7 +2576,7 @@ if(new URLSearchParams(location.search).get('view')==='my-library')setTimeout(()
    document.getElementById('success-title').textContent='NFT Claimed';
    document.getElementById('success-message').textContent='Your 0 XRP NFT claim is complete. Your content is available in My Library.';
    openModal('success-modal');
-   await showOwned();
+   await loadOrders();
   }
   return done;
  }
@@ -2659,7 +2673,7 @@ if(new URLSearchParams(location.search).get('view')==='my-library')setTimeout(()
     closeModal('buy-modal');
     document.getElementById('success-title').textContent='NFT Claimed';
     document.getElementById('success-message').textContent='This NFT is already in your library.';
-    openModal('success-modal');await showOwned();return;
+    openModal('success-modal');await loadOrders();return;
    }
    // A previously signed acceptance may be awaiting ledger confirmation.
    // Check it before ever requesting another signature.
@@ -2775,7 +2789,7 @@ if(new URLSearchParams(location.search).get('view')==='my-library')setTimeout(()
  // Invoked from the existing My Purchases loader after it finishes rendering.
  window.abaShowFreeOwned=showOwned;
  document.addEventListener('DOMContentLoaded',()=>{catalog();});
- window.addEventListener('focus',()=>{if(document.getElementById('my-orders').style.display==='block')showOwned();});
+ window.addEventListener('focus',()=>{if(document.getElementById('my-orders').style.display==='block')loadOrders();});
 })();
 </script>
 </body>
