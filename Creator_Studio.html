@@ -964,6 +964,7 @@ Edit Profile
 <div id="aba-ir-privacy-row" hidden class="form-group"><label class="form-label" for="aba-ir-visibility">Visibility (Idea &amp; Research only)</label>
 <select class="form-input" id="aba-ir-visibility" onchange="abaIrPrivacyChanged()"><option value="private" selected>Private (only in My Library)</option><option value="public">Public (listed in Knowledge Library, not for sale)</option></select>
 <div class="form-hint">Private (default): Only you can access your record in My Library using your verified wallet. Public: Your record appears in the Knowledge Library for others to discover. Neither choice offers the record for sale. Reader access is handled separately.</div></div>
+<div id="aba-free-member-row" class="form-group" hidden><label class="form-label" for="aba-free-member-choice"><input type="checkbox" id="aba-free-member-choice" style="width:auto;margin-right:.5rem;vertical-align:middle">Free for verified ABA members (0 XRP)</label><div class="form-hint">Creates separate ABA member editions after your public Idea or Research NFT is verified. Your original NFT and existing paid offers are unchanged.</div><p id="aba-free-member-status" style="font-size:.8rem;color:#87CEEB;margin-top:.4rem" aria-live="polite"></p></div>
 <div class="form-group">
 <label class="form-label">Your Website (optional)</label>
 <input class="form-input" id="nft-website" placeholder="https://yourwebsite.com" type="url"/>
@@ -2655,6 +2656,7 @@ function abaIrCategoryChanged(){
  }
  abaIrShow('aba-ir-idea-entry',enabled&&!research);
  abaIrShow('aba-ir-privacy-row',enabled);
+ abaIrShow('aba-free-member-row',enabled&&abaIrEl('aba-ir-visibility').value==='public');
  const price=abaIrEl('nft-price-rlusd').closest('.form-group'); price.style.display=enabled?'none':'';
  const qty=abaIrEl('nft-qty').closest('.form-group');qty.style.display=enabled?'none':'';
  abaIrEl('nft-ai-enabled').checked=!enabled;
@@ -2671,6 +2673,7 @@ function abaIrCategoryChanged(){
 }
 function abaIrStepVisibility(n){if(abaIrSelected()&&n===1)abaIrCoverModeChanged();if(abaIrSelected()&&n===3)abaIrCategoryChanged()}
 function abaIrPrivacyChanged(){const en=abaIrSelected();if(!en)return;const priv=abaIrEl('aba-ir-visibility').value==='private';
+ abaIrShow('aba-free-member-row',!priv);if(priv)abaIrEl('aba-free-member-choice').checked=false;
  abaIrEl('enableLearn').disabled=priv;if(priv)abaIrEl('enableLearn').checked=false;
 }
 function abaIrCoverModeChanged(){const en=abaIrSelected();if(!en){
@@ -2721,6 +2724,7 @@ function abaIrStep3Next(){const name=abaIrEl('nft-name').value.trim(),desc=abaIr
  error.style.display='none';goToStep(4)}
 function abaIrBuildReview(){const box=abaIrEl('review-content');box.replaceChildren();
  const info=[['Title',abaIrEl('nft-name').value],['Type',abaIrEl('nft-category').value],['Visibility',abaIrEl('aba-ir-visibility').value],['Cover',abaIrEl('aba-ir-cover-mode').value==='text'?'Generated from text':'Uploaded image'],['Content',abaIrEl('nft-category').value==='research'?'Word document':abaIrState.file?'Typed idea and/or Word document':'Typed idea'],['Marketplace','No sale offer']];
+ if(abaIrEl('aba-free-member-choice').checked)info.push(['ABA Member Editions','Free for verified ABA members (0 XRP), enabled after mint confirmation']);
  for(const [label,value] of info){const row=document.createElement('div');row.className='review-row';const key=document.createElement('span');key.className='review-key';key.textContent=label;const val=document.createElement('span');val.className='review-val';val.textContent=value;row.append(key,val);box.append(row)}
  abaIrEl('submit-btn').textContent='Start Tokenization';abaIrEl('submit-btn').disabled=abaIrState.phase!=='new';
 }
@@ -2776,6 +2780,7 @@ async function abaIrConfirm(){if(abaIrState.pollBusy||!abaIrState.recordId)retur
  try{const result=await abaIrRequest('/records/'+encodeURIComponent(abaIrState.recordId)+'/mint/complete','POST',{});
  if(result.status==='minted'){abaIrState.phase='done';if(abaIrState.mintPollTimer){clearInterval(abaIrState.mintPollTimer);abaIrState.mintPollTimer=null;}abaIrStatus('Tokenization complete. Your NFT is verified on XRPL.');abaIrShow('aba-ir-signing',false);
  abaIrEl('submit-btn').disabled=true;abaIrEl('submit-btn').textContent='Tokenized';abaIrEl('aba-ir-completion-links').hidden=false;abaIrRefreshSubmissions(false);
+ if(abaIrEl('aba-free-member-choice').checked){abaIrEnableFreeEdition(abaIrState.recordId,abaIrEl('aba-free-member-status'));}
  }else if(abaIrState.phase==='pending')abaIrStatus('Awaiting Xaman signature and blockchain confirmation. This page will update automatically.');
  }catch(e){abaIrStatus(e.message,true)}finally{abaIrState.pollBusy=false}}
 async function abaIrSubmit(){if(!['new','saved'].includes(abaIrState.phase))return;
@@ -2802,6 +2807,20 @@ async function abaIrSubmit(){if(!['new','saved'].includes(abaIrState.phase))retu
  btn.textContent='Tokenization Started';
  }catch(e){abaIrStatus(e.message,true);if(abaIrState.phase==='new'){btn.disabled=false;btn.textContent='Start Tokenization'}
  else if(abaIrState.phase==='saved'){btn.textContent='Retry Start Tokenization';btn.disabled=false}else {btn.textContent='Tokenization Started';btn.disabled=true}}
+}
+// ABA-only optional member editions, registered after the existing NFT is minted.
+async function abaIrEnableFreeEdition(recordId,statusEl,button){
+ if(button)button.disabled=true;
+ if(statusEl)statusEl.textContent='Enabling free ABA member editions...';
+ try{
+  await abaIrAuth();
+  await abaIrRequest('/distribution/records/'+encodeURIComponent(recordId)+'/enable','POST',{creator_consent:true});
+  if(statusEl)statusEl.textContent='Free ABA member editions enabled (0 XRP).';
+  if(button){button.textContent='Free for ABA members enabled';button.disabled=true;}
+ }catch(e){
+  if(statusEl)statusEl.textContent='Free member editions not enabled: '+(e.message||'Please retry from My Submissions.');
+  if(button)button.disabled=false;
+ }
 }
 // ABA-only dashboard extension. No modification to the original submissions / mint workflow.
 async function abaIrRefreshSubmissions(requestAuth=false){
@@ -2834,7 +2853,16 @@ async function abaIrRefreshSubmissions(requestAuth=false){
      const actions=document.createElement('div');actions.className='dash-actions';
      const link=document.createElement('a');link.className='btn-sm-outline';link.style.textDecoration='none';
      link.href='/Knowledge_Library?view=my-library';link.textContent='View My Library';
-     actions.append(link);card.append(title,meta,badge,actions);grid.append(card);
+     actions.append(link);
+     if(item.status==='minted' && item.visibility==='public'){
+       const freeButton=document.createElement('button');
+       freeButton.type='button';freeButton.className='btn-sm-outline';
+       freeButton.textContent='Enable free for ABA members (0 XRP)';
+       const freeStatus=document.createElement('p');freeStatus.style.cssText='font-size:.76rem;color:#87CEEB;margin-top:.5rem';
+       freeButton.addEventListener('click',()=>abaIrEnableFreeEdition(item.id,freeStatus,freeButton));
+       actions.append(freeButton);actions.append(freeStatus);
+     }
+     card.append(title,meta,badge,actions);grid.append(card);
    }
  }catch(e){status.textContent=e.message||'Unable to load Ideas & Research.';}
 }
