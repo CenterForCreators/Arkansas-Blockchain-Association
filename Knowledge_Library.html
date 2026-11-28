@@ -898,6 +898,7 @@ try { const member=JSON.parse(localStorage.getItem('aba_member_session')||'null'
       </div>
     </div>
     <div id="aba-ir-public-section" style="display:none;margin-top:2.5rem"><h3 style="color:#87ceeb;margin-bottom:.8rem">Public Ideas &amp; Research</h3><p style="color:#a6c5d7;margin-bottom:1rem">Creators chose to list these Ideas and Research publicly. They are not for sale. Opening the full content depends on Reader access.</p><div id="aba-ir-public-grid" class="nft-grid"></div></div>
+<div id="aba-free-member-catalog" style="margin-top:2rem" hidden><h3 style="color:#87ceeb;margin-bottom:.8rem">Free for ABA Members</h3><div id="aba-free-member-grid" class="nft-grid"></div><p id="aba-free-member-status" role="status" style="color:#87ceeb;margin-top:1rem"></p></div>
 <div id="nft-grid" class="nft-grid">
       <div class="nft-loading"><div class="nft-loading-spinner"></div><div>Loading knowledge library...</div></div>
     </div>
@@ -913,6 +914,7 @@ try { const member=JSON.parse(localStorage.getItem('aba_member_session')||'null'
    <div id="orders-grid" class="orders-grid"></div>
 <p id="aba-ir-owned-status" style="color:#a6c5d7;margin-top:1rem"></p>
 <div id="aba-ir-owned-grid" class="orders-grid"></div>
+<div id="aba-free-owned-section" style="margin-top:2rem" hidden><h3 style="color:#87ceeb;margin-bottom:.8rem">Free ABA Member NFTs</h3><div id="aba-free-owned-grid" class="orders-grid"></div><p id="aba-free-owned-status" role="status" style="color:#87ceeb;margin-top:1rem"></p></div>
      </div>
 </section>
 
@@ -1635,10 +1637,13 @@ function renderFilteredNFTs(){
 
   const normCat = c => c.toLowerCase().replace(/s$/, '');
 
+  // Only ABA free-member items are presented in their dedicated claim catalog.
+  // Paid listings retain the original filtering and purchase flow.
+  const paidOrOtherNFTs=allNFTs.filter(n=>!window.abaFreeSubmissionIds?.has(String(n.submission_id)));
   const filtered =
     activeCategory === 'all'
-      ? allNFTs
-      : allNFTs.filter(n => normCat(n.category || 'art') === normCat(activeCategory));
+      ? paidOrOtherNFTs
+      : paidOrOtherNFTs.filter(n => normCat(n.category || 'art') === normCat(activeCategory));
 
   if(!filtered.length){
     grid.innerHTML = `
@@ -2440,6 +2445,117 @@ if(new URLSearchParams(location.search).get('view')==='my-library')setTimeout(()
  const resetSignedOut=()=>{if(wrap.querySelector('.aba-account-trigger')) wrap.replaceChildren(login);};
  fetch(api+'/api/student-network/me',{credentials:'include',headers:{Accept:'application/json'},cache:'no-store'})
  .then(r=>r.ok?r.json():null).then(d=>{if(d?.profile)showSignedIn();else resetSignedOut();}).catch(()=>{ /* Keep cached navigation during temporary network failures. */ });
+})();
+</script>
+<script>
+// ABA-only member distribution. Existing paid purchases and video session handoff are untouched.
+(function(){
+ const base='https://aba-tik-ideas-research-backend.onrender.com/api/ideas-research';
+ const membership='https://api.arkansasblockchainassociation.com/api/aba-nft';
+ const source='https://cfc-nft-creator-backend.onrender.com';
+ let cache=[];
+ const wallet=()=>connectedWallet||window.connectedAccount||localStorage.getItem('cfcWallet')||'';
+ const html=(tag,cls,txt)=>{const el=document.createElement(tag);if(cls)el.className=cls;if(txt!==undefined)el.textContent=txt;return el;};
+ const status=(id,message)=>{const el=document.getElementById(id);if(el)el.textContent=message;};
+ async function json(url,opts={}){const r=await fetch(url,{cache:'no-store',...opts});const d=await r.json().catch(()=>({}));if(!r.ok)throw Error(d.error||'Request failed ('+r.status+')');return d;}
+ async function xamanBearer(){
+  if(!window.Xumm)throw Error('Your connected Xaman session is unavailable');
+  const x=typeof getXumm==='function'?getXumm():new Xumm('eebd4c17-c3ef-435b-b891-89afb99e259e');
+  const token=await Promise.race([Promise.resolve(x.environment.bearer).catch(()=>''),new Promise(r=>setTimeout(()=>r(''),7000))]);
+  if(!token)throw Error('The existing Xaman session is unavailable');return token;
+ }
+ async function auth(){
+  const w=wallet();if(!/^r[1-9A-HJ-NP-Za-km-z]{25,34}$/.test(w))throw Error('Connect your Xaman wallet in My Library first');
+  const bearer=await xamanBearer();
+  let token=sessionStorage.getItem('aba_ideas_token');
+  if(token&&sessionStorage.getItem('aba_ideas_wallet')===w){
+   try{const r=await fetch(base+'/records',{headers:{Authorization:'Bearer '+token},cache:'no-store'});if(!r.ok)token='';}catch(_){token='';}
+  }
+  if(!token||sessionStorage.getItem('aba_ideas_wallet')!==w){
+   const d=await json(base+'/auth/existing-wallet',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({xaman_bearer:bearer})});
+   if(d.wallet!==w||!d.token)throw Error('The authorized Xaman account does not match the connected wallet');
+   token=d.token;sessionStorage.setItem('aba_ideas_token',token);sessionStorage.setItem('aba_ideas_wallet',w);
+  }
+  return {bearer,token,w};
+ }
+ async function proof(record_id,bearer){return json(membership+'/eligibility',{method:'POST',credentials:'include',headers:{'Content-Type':'application/json'},body:JSON.stringify({record_id,xaman_bearer:bearer})});}
+ async function api(path,token,body){return json(base+'/member-distribution'+path,{method:body?'POST':'GET',headers:{Authorization:'Bearer '+token,...(body?{'Content-Type':'application/json'}:{})},...(body?{body:JSON.stringify(body)}:{})});}
+ async function advance(claimId,recordId,authorization){
+  for(let i=0;i<4;i++){
+   const p=await proof(recordId,authorization.bearer);
+   const r=await api('/claims/'+encodeURIComponent(claimId)+'/advance',authorization.token,{membership_attestation:p.attestation});
+   if(r.status==='offered'||r.status==='claimed')return r;
+   if(r.status==='reconcile_required')throw Error('The transaction requires reconciliation');
+   await new Promise(resolve=>setTimeout(resolve,1600));
+  }
+  return {status:'pending'};
+ }
+ async function finishClaim(id){
+  const a=await auth();const done=await api('/claims/'+encodeURIComponent(id)+'/accept/complete',a.token,{});
+  if(done.status==='claimed'){status('aba-free-owned-status','NFT claimed successfully. Refresh My Library to open your content.');await showOwned();}
+  else status('aba-free-owned-status','Acceptance is awaiting your Xaman approval or XRPL confirmation.');
+ }
+ async function claim(recordId){
+  const area='aba-free-member-status';
+  try{
+   status(area,'Verifying ABA membership and existing Xaman wallet...');
+   const a=await auth();const p=await proof(recordId,a.bearer);
+   if(p.wallet!==a.w)throw Error('Your member wallet does not match Xaman');
+   const entry=await api('/claims',a.token,{record_id:recordId,membership_attestation:p.attestation});
+   status(area,'Preparing your wallet-restricted 0 XRP NFT offer...');
+   const result=await advance(entry.id,recordId,a);
+   if(result.status==='pending'){status(area,'Your NFT is processing on XRPL. Open My Library to continue shortly.');await showOwned();return;}
+   if(result.status==='claimed'){status(area,'Your NFT is already claimed.');await showOwned();return;}
+   const acceptance=await api('/claims/'+encodeURIComponent(entry.id)+'/accept/start',a.token,{});
+   status(area,'Approve the 0 XRP NFT acceptance in Xaman, then return to My Library to complete your claim.');
+   if(acceptance.xaman_url){
+    const box=document.getElementById(area),link=document.createElement('a');
+    link.href=acceptance.xaman_url;link.target='_blank';link.rel='noopener noreferrer';
+    link.textContent='Open Xaman to Accept Your NFT';link.style.cssText='display:block;color:#9bd8ef;margin-top:8px;font-weight:700';
+    box.append(link);
+    if(/Android|iPhone|iPad|iPod/i.test(navigator.userAgent))window.location.assign(acceptance.xaman_url);
+   }
+   await showOwned();
+  }catch(e){status(area,e.message);}
+ }
+ async function catalog(){
+  try{const d=await json(base+'/member-distribution/catalog');cache=Array.isArray(d.items)?d.items:[];
+   window.abaFreeSubmissionIds=new Set(cache.map(x=>String(x.submission_id)));
+   if(typeof renderFilteredNFTs==='function')renderFilteredNFTs();
+   const section=document.getElementById('aba-free-member-catalog'),grid=document.getElementById('aba-free-member-grid');
+   section.hidden=!cache.length;grid.replaceChildren();
+   for(const item of cache){
+    const card=html('div','nft-card');const body=html('div','nft-body');
+    body.append(html('div','nft-title',item.title),html('div','nft-desc',item.category),html('div','nft-price-rlusd','0 XRP for verified ABA members'));
+    const btn=html('button','btn-buy-rlusd','Claim for 0 XRP');btn.type='button';btn.onclick=()=>claim(item.record_id);body.append(btn);card.append(body);grid.append(card);
+   }
+  }catch(e){status('aba-free-member-status',e.message);}
+ }
+ async function showOwned(){
+  const section=document.getElementById('aba-free-owned-section'),grid=document.getElementById('aba-free-owned-grid');
+  if(!wallet()){section.hidden=true;return;}
+  try{
+   const a=await auth();const d=await api('/my-claims',a.token);
+   const claims=Array.isArray(d.items)?d.items:[];section.hidden=!claims.length;grid.replaceChildren();
+   for(const c of claims){
+    const item=cache.find(x=>x.record_id===c.record_id)||c;
+    const card=html('div','order-card');card.append(html('div','order-name',item?.title||'ABA Member NFT'),html('div','order-meta','Claim status: '+c.status));
+    const b=html('button','btn-buy-rlusd',c.status==='claimed'?'Open Content':c.status==='offered'?'Complete Claim':'Continue Claim');
+    b.onclick=async()=>{
+     if(c.status==='claimed'){
+      if(!item.metadata_uri)return status('aba-free-owned-status','Content metadata unavailable.');
+      // Existing Reader and cross-tab Xaman handoff is reused without modification.
+      openReader((item.metadata_uri||'').replace(/^ipfs:\/\//,''),item.submission_id);
+     }else if(c.status==='offered')await finishClaim(c.id);
+     else if(item)await claim(c.record_id);
+    };card.append(b);grid.append(card);
+   }
+  }catch(e){status('aba-free-owned-status',e.message);}
+ }
+ const original=window.switchView;
+ if(typeof original==='function')window.switchView=function(view){original(view);if(view==='my-orders')showOwned();};
+ document.addEventListener('DOMContentLoaded',()=>{catalog();});
+ window.addEventListener('focus',()=>{if(document.getElementById('my-orders').style.display==='block')showOwned();});
 })();
 </script>
 </body>
