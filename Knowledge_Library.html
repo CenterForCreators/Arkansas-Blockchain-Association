@@ -915,7 +915,7 @@ try { const member=JSON.parse(localStorage.getItem('aba_member_session')||'null'
    <div id="orders-grid" class="orders-grid"></div>
 <p id="aba-ir-owned-status" style="color:#a6c5d7;margin-top:1rem"></p>
 <div id="aba-ir-owned-grid" class="orders-grid"></div>
-<div id="aba-free-owned-section" style="margin-top:2rem" hidden><h3 style="color:#87ceeb;margin-bottom:.8rem">Free ABA Member NFTs</h3><div id="aba-free-owned-grid" class="orders-grid"></div><p id="aba-free-owned-status" role="status" style="color:#87ceeb;margin-top:1rem"></p></div>
+<div id="aba-free-owned-section" style="margin-top:1.5rem" hidden><div id="aba-free-owned-grid" class="orders-grid"></div><p id="aba-free-owned-status" role="status" style="color:#87ceeb;margin-top:1rem"></p></div>
      </div>
 </section>
 
@@ -2665,6 +2665,7 @@ if(new URLSearchParams(location.search).get('view')==='my-library')setTimeout(()
     const matching=sourceListings.find(n=>String(n.submission_id)===String(item.submission_id));
     if(activeCategory!=='all'&&activeCategory!=='free-members'&&normCat(item.category||matching?.category)!==normCat(activeCategory))continue;
     const existing=sourceListings.find(n=>String(n.submission_id)===String(item.submission_id));
+    const alreadyClaimed=window.abaFreeOwnedRecordIds?.has(String(item.record_id))===true;
     let card;
     if(existing){
      const wrapper=document.createElement('div');
@@ -2672,12 +2673,14 @@ if(new URLSearchParams(location.search).get('view')==='my-library')setTimeout(()
      card=wrapper.firstElementChild;
      card.classList.add('visible');
      card.querySelectorAll('.sold-out-badge').forEach(el=>el.remove());
+     if(alreadyClaimed){const badge=html('div','sold-out-badge','Sold Out');const cover=card.querySelector('.nft-img-wrap');if(cover)cover.append(badge);}
      const qty=card.querySelector('.nft-qty');if(qty)qty.remove();
      const prices=card.querySelector('.nft-prices');
      if(prices)prices.replaceChildren(html('div','nft-price-rlusd','0 XRP for verified ABA members'));
      const actions=card.querySelector('.nft-buy-btns');
      if(actions){
-      const btn=html('button','btn-buy-rlusd','Claim for 0 XRP');btn.type='button';btn.onclick=()=>claim(item.record_id);actions.replaceChildren(btn);
+      if(alreadyClaimed){actions.replaceChildren(html('span','order-badge badge-completed','Sold Out'));}
+      else{const btn=html('button','btn-buy-rlusd','Claim for 0 XRP');btn.type='button';btn.onclick=()=>claim(item.record_id);actions.replaceChildren(btn);}
      }
      card.querySelectorAll('.nft-img[data-src]').forEach(img=>imageObserver.observe(img));
     }else{
@@ -2687,7 +2690,9 @@ if(new URLSearchParams(location.search).get('view')==='my-library')setTimeout(()
      const badge=html('div','nft-badge '+getCategoryBadgeClass(item.category),String(item.category||'Content').toUpperCase());img.append(badge);
      const body=html('div','nft-body');
      body.append(html('div','nft-title',item.title),html('div','nft-desc',item.category),html('div','nft-price-rlusd','0 XRP for verified ABA members'));
-     const btn=html('button','btn-buy-rlusd','Claim for 0 XRP');btn.type='button';btn.onclick=()=>claim(item.record_id);body.append(btn);card.append(img,body);
+     if(alreadyClaimed){img.append(html('div','sold-out-badge','Sold Out'));body.append(html('span','order-badge badge-completed','Sold Out'));}
+     else{const btn=html('button','btn-buy-rlusd','Claim for 0 XRP');btn.type='button';btn.onclick=()=>claim(item.record_id);body.append(btn);}
+     card.append(img,body);
     }
     grid.append(card);
    }
@@ -2698,10 +2703,15 @@ if(new URLSearchParams(location.search).get('view')==='my-library')setTimeout(()
   if(!wallet()){section.hidden=true;return;}
   try{
    const a=await auth();const d=await api('/my-claims',a.token);
-   const claims=Array.isArray(d.items)?d.items:[];section.hidden=!claims.length;grid.replaceChildren();
+   const claims=Array.isArray(d.items)?d.items:[];
+   window.abaFreeOwnedRecordIds=new Set(claims.filter(c=>c.status==='claimed').map(c=>String(c.record_id)));
+   if(typeof renderFilteredNFTs==='function')renderFilteredNFTs();
+   section.hidden=!claims.length;grid.replaceChildren();
    for(const c of claims){
     const item=cache.find(x=>x.record_id===c.record_id)||c;
-    const card=html('div','order-card');card.append(html('div','order-name',item?.title||'ABA Member NFT'),html('div','order-meta','Claim status: '+c.status));
+    const card=html('div','order-card');
+    if(item.image_cid){const cover=html('img','buy-nft-img');cover.src=IPFS_GATEWAY+item.image_cid;cover.alt=item.title||'NFT cover';card.append(cover);}
+    card.append(html('div','order-name',item?.title||'ABA Member NFT'),html('div','order-meta','Status: '+(c.status==='claimed'?'CLAIMED':c.status.toUpperCase())));
     const b=html('button','btn-buy-rlusd',c.status==='claimed'?'Open Content':c.status==='offered'?'Complete Claim':'Continue Claim');
     b.onclick=async()=>{
      if(c.status==='claimed'){
@@ -2716,7 +2726,7 @@ if(new URLSearchParams(location.search).get('view')==='my-library')setTimeout(()
  }
  const original=window.switchView;
  if(typeof original==='function')window.switchView=function(view){original(view);if(view==='my-orders')showOwned();};
- document.addEventListener('DOMContentLoaded',()=>{catalog();});
+ document.addEventListener('DOMContentLoaded',()=>{catalog().then(()=>{if(wallet())showOwned();});});
  window.addEventListener('focus',()=>{if(document.getElementById('my-orders').style.display==='block')showOwned();});
 })();
 </script>
