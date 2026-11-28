@@ -736,6 +736,9 @@ body.menu-open .site-header{background:#06152f;backdrop-filter:none}
 #listings .listings-header {margin-bottom:1.3rem!important;}
 @media(max-width:760px){.aba-library-controls-inner{justify-content:center;}.aba-library-controls .view-tabs{width:100%;justify-content:center;}.aba-library-controls .view-tab{flex:1;padding:.7rem .45rem;font-size:.68rem;}.aba-library-controls #wallet-banner{width:100%;justify-content:center;}.aba-library-controls .aba-rewards-strip{width:100%;}.aba-library-controls #aba-trustline-panel{width:100%;text-align:center;}.aba-library-controls #banner-connected{justify-content:center;}#market-hero{padding:1.6rem 0 1.1rem!important;}}
 /* Approved visual-only updates: clear category colors and gold navigation outlines. */
+/* Highlight only All and Free for Members with the same yellow outline. */
+.filter-tab[data-cat="all"],.filter-tab[data-cat="free-members"] { border:2px solid #F0B429; color:#F0B429; }
+.filter-tab[data-cat="all"].active,.filter-tab[data-cat="free-members"].active { border:2px solid #F0B429; background:#F0B429; color:#07162f; }
 .filter-tab[data-cat="ideas-research"] { border-color:#fff; color:#fff; }
 .filter-tab[data-cat="ideas-research"].active { background:#7C3AED; color:#fff; border-color:#fff; }
 .aba-library-controls .view-tabs { border:0; border-radius:2px; gap:6px; overflow:visible; }
@@ -2709,6 +2712,7 @@ if(new URLSearchParams(location.search).get('view')==='my-library')setTimeout(()
    if(!grid || activeCategory==='ideas-research')return;
    const sourceListings=allNFTs;
    const normCat=c=>String(c||'').toLowerCase().replace(/s$/,'');
+   const freeCardsForAll=[];
    for(const item of cache){
     const matching=sourceListings.find(n=>String(n.submission_id)===String(item.submission_id));
     if(activeCategory!=='all'&&activeCategory!=='free-members'&&normCat(item.category||matching?.category)!==normCat(activeCategory))continue;
@@ -2742,8 +2746,11 @@ if(new URLSearchParams(location.search).get('view')==='my-library')setTimeout(()
      else{const btn=html('button','btn-buy-rlusd','Claim for 0 XRP');btn.type='button';btn.onclick=()=>claim(item.record_id);body.append(btn);}
      card.append(img,body);
     }
-    grid.append(card);
+    if(activeCategory==='all')freeCardsForAll.push(card);
+    else grid.append(card);
    }
+   // Keep free listings visible alongside paid listings under All, not buried after pagination.
+   if(freeCardsForAll.length)grid.prepend(...freeCardsForAll);
  }
  window.abaRenderFreeCards=renderFreeCards;
  async function showOwned(){
