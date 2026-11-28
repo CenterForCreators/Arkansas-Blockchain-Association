@@ -2573,10 +2573,48 @@ if(new URLSearchParams(location.search).get('view')==='my-library')setTimeout(()
   },2000);
   // The existing modal stays on the marketplace page; no extra status link appears under the card.
  }
- async function claim(recordId){
+ function waitForFreeConfirmation(claimId){
+  const panel=freeModal('Sign in XAMAN','Confirming your signed NFT acceptance on XRPL...');
+  panel.append(html('div','spinner'),freeModalCloseButton());
+  if(freeClaimPoll)clearInterval(freeClaimPoll);
+  let count=0,checking=false;
+  freeClaimPoll=setInterval(async()=>{
+   if(!document.getElementById('buy-modal').classList.contains('open')||++count>90){
+    clearInterval(freeClaimPoll);freeClaimPoll=null;return;
+   }
+   if(checking)return;checking=true;
+   try{await finishClaim(claimId);}catch(e){
+    const note=panel.querySelector('.modal-sub');if(note)note.textContent=e.message||'Confirmation unavailable';
+   }finally{checking=false;}
+  },2000);
+ }
+ // Reuse the paid marketplace modal's existing confirmation layout and styling.
+ // Only the free-claim transaction handler differs; paid purchase code is unchanged.
+ function claim(recordId){
+  if(freeClaimBusy)return;
+  const item=cache.find(x=>x.record_id===recordId);
+  const nft=allNFTs.find(x=>String(x.submission_id)===String(item?.submission_id));
+  const panel=freeModal('Claim NFT');
+  if(nft?.image_cid){
+   const img=html('img','buy-nft-img');img.src=IPFS_GATEWAY+nft.image_cid;
+   img.alt=nft.name||item?.title||'NFT';panel.append(img);
+  }
+  panel.append(html('div','buy-nft-name',nft?.name||item?.title||'ABA Member NFT'));
+  panel.append(html('div','buy-nft-meta',(nft?.description||'').substring(0,100)));
+  panel.append(html('hr','divider'));
+  const price=html('div','price-row');price.append(html('span','price-label','Claim Price'),html('span','price-val','0 XRP'));panel.append(price);
+  const who=html('div','price-row');who.style.marginBottom='1.5rem';
+  who.append(html('span','price-label','Claiming as'),html('span','buy-nft-meta',wallet()?wallet().slice(0,10)+'...'+wallet().slice(-4):'Connect wallet'));
+  panel.append(who);
+  const notice=html('div','alert alert-warning','You will be redirected to sign in XAMAN. Keep your XAMAN app ready.');
+  notice.style.cssText='font-size:0.78rem;margin-bottom:1.5rem;';panel.append(notice);
+  const btn=html('button','btn-full-gold','Confirm Claim for 0 XRP →');btn.type='button';
+  btn.onclick=()=>performFreeClaim(recordId);panel.append(btn,freeModalCloseButton());
+ }
+ async function performFreeClaim(recordId){
   if(freeClaimBusy)return;
   freeClaimBusy=true;
-  freeModal('Claim NFT','Preparing your 0 XRP member claim...');
+  const panel=freeModal('Sign in XAMAN','Preparing your 0 XRP member claim...');
   try{
    const a=await auth();const p=await proof(recordId,a.bearer);
    if(p.wallet!==a.w)throw Error('Your member wallet does not match Xaman');
@@ -2584,7 +2622,7 @@ if(new URLSearchParams(location.search).get('view')==='my-library')setTimeout(()
    // Continue existing offer/claim without starting a second NFT.
    const result=await advance(entry.id,recordId,a);
    if(result.status==='pending'){
-    freeModal('Claim NFT','The NFT is being confirmed on XRPL. Open My Library to continue.');
+    freeModal('Sign in XAMAN','Your NFT offer is confirming on XRPL. Return to My Library to continue.');
     document.getElementById('buy-modal-content').append(freeModalCloseButton());return;
    }
    if(result.status==='claimed'){
@@ -2593,7 +2631,20 @@ if(new URLSearchParams(location.search).get('view')==='my-library')setTimeout(()
     document.getElementById('success-message').textContent='This NFT is already in your library.';
     openModal('success-modal');await showOwned();return;
    }
+   // A previously signed acceptance may be awaiting ledger confirmation.
+   // Check it before ever requesting another signature.
+   const existing=await finishClaim(entry.id).catch(e=>{
+    if(/NFT acceptance has not started/i.test(e.message))return null;
+    throw e;
+   });
+   if(existing?.status==='claimed')return;
+   if(existing?.status==='awaiting_confirmation'){
+    waitForFreeConfirmation(entry.id);return;
+   }
    const acceptance=await api('/claims/'+encodeURIComponent(entry.id)+'/accept/start',a.token,{});
+   if(acceptance.status==='awaiting_confirmation'){
+    waitForFreeConfirmation(entry.id);return;
+   }
    showFreeXamanStep(acceptance,entry.id);
   }catch(e){freeModalError(e.message);}
   finally{freeClaimBusy=false;}
