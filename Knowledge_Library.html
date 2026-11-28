@@ -1955,6 +1955,9 @@ if(!wallet) return;
     <div class="empty-title">Library unavailable</div>
     <div class="empty-sub">Unable to load your orders. Please refresh.</div>
   </div>`;
+} finally {
+  // Add completed ABA member editions only AFTER paid purchase cards finish rendering.
+  if (typeof window.abaShowFreeOwned === 'function') await window.abaShowFreeOwned();
 }
 }
 
@@ -2717,28 +2720,26 @@ if(new URLSearchParams(location.search).get('view')==='my-library')setTimeout(()
     if(empty?.textContent?.includes('No NFTs yet'))empty.remove();
    }
    for(const c of completed){
-    const item=cache.find(x=>x.record_id===c.record_id)||c;
+    const item=cache.find(x=>String(x.record_id)===String(c.record_id))||c;
+    const paidMetadata=allNFTs.find(n=>String(n.submission_id)===String(c.submission_id));
     const card=html('div','order-card');
     card.dataset.abaFreeClaim=c.id;
-    if(item.image_cid){const cover=html('img','buy-nft-img');cover.src=IPFS_GATEWAY+item.image_cid;cover.alt=item.title||'NFT cover';card.append(cover);}
-    card.append(html('div','order-name',item?.title||'ABA Member NFT'),html('div','order-meta','Status: CLAIMED'));
+    const coverCid=item.image_cid||paidMetadata?.image_cid;
+    if(coverCid){const cover=html('img','buy-nft-img');cover.src=IPFS_GATEWAY+coverCid;cover.alt=item.title||'NFT cover';card.append(cover);}
+    card.append(html('div','order-name',paidMetadata?.name||item?.title||'ABA Member NFT'),html('div','order-meta','Status: CLAIMED'));
     const b=html('button','btn-full-outline','Open Content');
     b.onclick=()=>{
-     if(!item.metadata_uri)return status('aba-free-owned-status','Content metadata unavailable.');
-     // Reuse the existing Reader and Xaman handoff exactly as paid purchases do.
-     openReader((item.metadata_uri||'').replace(/^ipfs:\/\//,''),item.submission_id);
+     const metadataCid=paidMetadata?.metadata_cid || (item.metadata_uri||'').replace(/^ipfs:\/\//,'');
+     if(!metadataCid)return status('aba-free-owned-status','Content metadata unavailable.');
+     // Reuse the exact Reader opening function already used by paid purchases.
+     openReader(metadataCid,item.submission_id);
     };
     card.append(b);grid.append(card);
    }
   }catch(e){status('aba-free-owned-status',e.message);}
  }
- // Load paid purchases exactly as before, then append completed member claims to that grid.
- const originalLoadOrders=window.loadOrders;
- if(typeof originalLoadOrders==='function')window.loadOrders=async function(...args){
-  const result=await originalLoadOrders.apply(this,args);
-  await showOwned();
-  return result;
- };
+ // Invoked from the existing My Purchases loader after it finishes rendering.
+ window.abaShowFreeOwned=showOwned;
  document.addEventListener('DOMContentLoaded',()=>{catalog();});
  window.addEventListener('focus',()=>{if(document.getElementById('my-orders').style.display==='block')showOwned();});
 })();
